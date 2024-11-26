@@ -1,0 +1,24 @@
+name: I want to deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker-compose:
+    runs-on: self-hosted  # Make sure your runner is set up with Docker
+    steps:
+      # Check out the code to the runner
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Docker if it's not already installed on the self-hosted runner
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      # Run Docker Compose to build and start the containers
+      - name: Run Docker Compose
+        run: docker compose up --build -d
+        # Optionally, you can add `sudo` if necessary, but try to avoid it by configuring Docker permissions properly
+        # sudo docker compose up --build -d
