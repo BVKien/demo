@@ -1,18 +1,21 @@
 
 name: I want to deploy 
 
+#
 on: 
   push:
     branches: 
       - main
 
+# jobs when push code
 jobs:
   docker-compose:
     runs-on: self-hosted
     environment: docker
     steps:
+    # check out code to vps
     - name: Checkout code
       uses: actions/checkout@v2
-      #
+    # build
     - name: Run `docker compose`
       run: docker compose up --build -d
