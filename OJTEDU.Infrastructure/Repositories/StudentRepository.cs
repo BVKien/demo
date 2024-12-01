@@ -123,8 +123,17 @@ namespace OJTEDU.Infrastructure.Repositories
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.UserId == userId && u.Role.Name == "Dean");
         }
-        public async Task<IEnumerable<Student>> GetStudentListAsync(int userId, string role, string? studentName, string? lecturerName)
+        public async Task<IEnumerable<Student>> GetStudentListAsync(
+        int userId,
+        string role,
+        string? code,
+        string? studentName,
+        string? lecturerName,
+        string? majorName,
+        string? sortBy,
+        bool? isDescending)
         {
+            // Khởi tạo truy vấn
             IQueryable<Student> query = _context.Students
                 .Include(s => s.User)
                 .Include(s => s.Semester)
@@ -134,39 +143,97 @@ namespace OJTEDU.Infrastructure.Repositories
 
             if (role == "Dean")
             {
-                var dean = await GetDeanByUserIdAsync(userId);
-                if (dean == null || !dean.MajorId.HasValue)
+                // Lấy thông tin Dean và kiểm tra hợp lệ
+                var dean = await _context.Users
+                    .Include(u => u.Department) // Kết nối với bảng Department
+                    .FirstOrDefaultAsync(u => u.UserId == userId && u.Role.Name == "Dean" && u.Department.Status == "Active");
+
+                if (dean == null || !dean.DepartmentId.HasValue)
                 {
-                    throw new KeyNotFoundException("Don't have student invalid.");
+                    throw new KeyNotFoundException("Dean not found or department not assigned.");
                 }
-                var deanMajorId = dean.MajorId.Value;
-                query = query.Where(s => s.MajorId == deanMajorId);
+
+                // Lấy danh sách MajorId thuộc Department của Dean
+                var majorIdsInDepartment = await _context.Majors
+                    .Where(m => m.DepartmentId  == dean.DepartmentId && m.Status == "Active")
+                    .Select(m => m.MajorId)
+                    .ToListAsync();
+
+                if (!majorIdsInDepartment.Any())
+                {
+                    throw new KeyNotFoundException("Dean does not manage any majors.");
+                }
+
+                // Lọc danh sách sinh viên theo MajorId trong Department của Dean
+                query = query.Where(s => s.MajorId.HasValue && majorIdsInDepartment.Contains(s.MajorId.Value));
+
             }
             else if (role == "Lecturer")
             {
+                // Lọc theo LecturerId
                 query = query.Where(s => s.LecturerId == userId);
             }
-
+            else if (role == "Admin" || role == "DOET")
+            {
+                // Admin và DOET có quyền truy cập toàn bộ sinh viên, không cần thêm điều kiện
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("Role not authorized to view student list.");
+            }
+            // Tìm kiếm theo Student Name
             if (!string.IsNullOrWhiteSpace(studentName))
             {
                 studentName = studentName.ToLower();
                 query = query.Where(s => s.User.Name.ToLower().Contains(studentName));
             }
+            if (!string.IsNullOrWhiteSpace(code))
+            {
+                code = code.ToLower();
+                query = query.Where(s => s.User.UserCode.ToLower().Contains(code));
+            }
 
-            if (role == "Dean" && !string.IsNullOrWhiteSpace(lecturerName))
+            // Tìm kiếm theo Lecturer Name (chỉ áp dụng cho Dean)
+            if ((role == "Dean" || role == "Lecturer" || role == "Admin") && !string.IsNullOrWhiteSpace(lecturerName))
             {
                 lecturerName = lecturerName.ToLower();
                 query = query.Where(s => s.Lecturer != null && s.Lecturer.Name.ToLower().Contains(lecturerName));
             }
 
-            var students = await query.ToListAsync();
-
-            if (students == null || students.Count == 0)
+            // Tìm kiếm theo Major Name
+            if (!string.IsNullOrWhiteSpace(majorName))
             {
-                throw new KeyNotFoundException("Not Found Student.");
+                majorName = majorName.ToLower();
+                query = query.Where(s => s.Major != null && s.Major.Name.ToLower().Contains(majorName));
             }
 
-            return students;
+            // Sắp xếp
+            switch (sortBy?.ToLower())
+            {
+                case "studentname":
+                    query = isDescending.GetValueOrDefault()
+                        ? query.OrderByDescending(s => s.User.Name)
+                        : query.OrderBy(s => s.User.Name);
+                    break;
+
+                case "lecturername":
+                    query = isDescending.GetValueOrDefault()
+                        ? query.OrderByDescending(s => s.Lecturer.Name)
+                        : query.OrderBy(s => s.Lecturer.Name);
+                    break;
+
+                case "majorname":
+                    query = isDescending.GetValueOrDefault()
+                        ? query.OrderByDescending(s => s.Major.Name)
+                        : query.OrderBy(s => s.Major.Name);
+                    break;
+
+                default:
+                    query = query.OrderBy(s => s.User.Name); // Mặc định sắp xếp theo Student Name tăng dần
+                    break;
+            }
+
+            return await query.ToListAsync();
         }
 
         // KienBV - fixed 
@@ -225,6 +292,7 @@ namespace OJTEDU.Infrastructure.Repositories
         // Get student details for Dean or Lecturer
         public async Task<Student> GetStudentDetailsByIdAsync(int studentId, int userId, string role)
         {
+            // Khởi tạo query lấy thông tin sinh viên
             var query = _context.Students
                 .Include(s => s.User)
                 .Include(s => s.Semester)
@@ -234,27 +302,77 @@ namespace OJTEDU.Infrastructure.Repositories
                     .ThenInclude(a => a.Ward)
                 .Include(s => s.Address.District)
                 .Include(s => s.Address.Province)
-                .Where(s => s.StudentId == studentId && s.User.Status != "Deleted");
+                .Where(s => s.StudentId == studentId && s.User.Status != "Deleted" && s.Major.Status == "Active");
 
+            // Logic cho Lecturer
             if (role == "Lecturer")
             {
                 query = query.Where(s => s.LecturerId == userId);
             }
+            // Logic cho Dean
             else if (role == "Dean")
             {
+                // Lấy thông tin Dean
                 var dean = await GetDeanByUserIdAsync(userId);
-                if (dean == null || !dean.MajorId.HasValue)
+                if (dean == null || !dean.DepartmentId.HasValue)
                 {
-                    throw new KeyNotFoundException("Don't have student invalid.");
+                    throw new KeyNotFoundException("Dean not found or doesn't manage any department.");
                 }
-                var deanMajorId = dean.MajorId.Value;
-                query = query.Where(s => s.MajorId == deanMajorId);
-            }
 
+                // Lấy danh sách MajorId thuộc Department mà Dean quản lý
+                var majorIdsInDepartment = await _context.Majors
+                    .Where(m => m.DepartmentId == dean.DepartmentId)
+                    .Select(m => m.MajorId)
+                    .ToListAsync();
+
+                if (!majorIdsInDepartment.Any())
+                {
+                    throw new KeyNotFoundException("Dean does not manage any majors.");
+                }
+
+                // Kiểm tra MajorId của sinh viên có thuộc MajorId trong Department không
+                query = query.Where(s => s.MajorId.HasValue && majorIdsInDepartment.Contains(s.MajorId.Value));
+            }
+            else if (role == "Admin"|| role == "DOET") {
+
+            }
+            // Lấy sinh viên đầu tiên phù hợp
             var student = await query.FirstOrDefaultAsync();
+
+            // Nếu không tìm thấy sinh viên
+            if (student == null)
+            {
+                throw new KeyNotFoundException("Student not found or access denied.");
+            }
 
             return student;
         }
+
+        public async Task<Major> GetMajorByNameAsync(string majorName)
+        {
+            return await _context.Majors.FirstOrDefaultAsync(m => m.Name.ToLower() == majorName.ToLower() && m.Status == "Active");
+        }
+
+        public async Task<Semester> GetSemesterByNameAsync(string semesterName)
+        {
+            return await _context.Semesters.FirstOrDefaultAsync(s => s.Name.ToLower() == semesterName.ToLower());
+        }
+
+        public async Task<Student> GetStudentByIdAsync(int studentId)
+        {
+            return await _context.Students
+                .Include(s => s.User)
+                .Include(s => s.Major)
+                .Include(s => s.Semester)
+                .FirstOrDefaultAsync(s => s.StudentId == studentId);
+        }
+
+        public async Task UpdateStudentAsync(Student student)
+        {
+            _context.Students.Update(student);
+            await _context.SaveChangesAsync();
+        }
+
         //End
     }
 }

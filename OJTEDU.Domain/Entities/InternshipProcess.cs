@@ -10,6 +10,7 @@ namespace OJTEDU.Domain.Entities
         public string? FilePath { get; set; }
         public int? CreatedBy { get; set; }
         public bool? IsVisible { get; set; }
+        public string? Status { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

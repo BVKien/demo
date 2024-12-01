@@ -22,37 +22,31 @@ namespace OJTEDU.WebAPI.Controllers.Lecturer
         }
 
         // GET: api/lecturer/working-report/{studentId}
-        [HttpGet("list/{studentId}")]
-        public async Task<IActionResult> GetWorkingReportsByStudentIdForLecturer(
+        [HttpGet("list/{internshipId}")]
+        public async Task<IActionResult> GetWorkingReportsByStudentIdAsync(
         int studentId,
-        int? pageNumber,
-        int? pageSize,
         string? sortBy,
-        bool? isDescending)
+        bool? isDescending,
+        string? week,
+        int? year)
         {
             try
             {
-                var dataResponse = await _workService.GetWorkingReportsByStudentIdAsync(
-                    studentId,
-                    pageNumber ?? 1,
-                    pageSize ?? 15,
-                    sortBy,
-                    isDescending
-                );
+                var response = await _workService.GetWorkingReportsByStudentIdAsync(studentId, sortBy, isDescending, week, year);
 
-                if (dataResponse.Data == null)
+                if (response.StatusCode != 200)
                 {
-                    return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
+                    return StatusCode(response.StatusCode, new ApiResponse<object>
                     {
                         Data = null,
-                        Message = dataResponse.Message
+                        Message = response.Message
                     });
                 }
 
                 return Ok(new ApiResponse<WorkingReportResponseDTO>
                 {
-                    Data = dataResponse.Data,
-                    Message = dataResponse.Message
+                    Data = response.Data,
+                    Message = response.Message
                 });
             }
             catch (Exception ex)
@@ -113,5 +107,37 @@ namespace OJTEDU.WebAPI.Controllers.Lecturer
                 return StatusCode(500, errorResponse);
             }
         }
+        [HttpGet("{internshipId}/weeks")]
+        public async Task<IActionResult> GetWeeksForStudentAsync(int studentId, [FromQuery] int? year)
+        {
+            try
+            {
+                var response = await _workService.GetWeeksForStudentAsync(studentId, year);
+
+                if (response.StatusCode != 200)
+                {
+                    return StatusCode(response.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = response.Message
+                    });
+                }
+
+                return Ok(new ApiResponse<List<string>>
+                {
+                    Data = response.Data,
+                    Message = response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+
     }
 }

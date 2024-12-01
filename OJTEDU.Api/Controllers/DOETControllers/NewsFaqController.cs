@@ -149,6 +149,24 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 {
                     errorMessages.Add("Image is required.");
                 }
+                else
+                {
+                    // Kiểm tra phần mở rộng file
+                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
+                    }
+
+                    // Giới hạn dung lượng file (tối đa 10MB)
+                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    if (request.Image.Length > maxFileSizeInBytes)
+                    {
+                        errorMessages.Add("Image size must not exceed 10MB.");
+                    }
+                }
 
                 //if (request.ForRoleIds == null || !request.ForRoleIds.Any())
                 //{
@@ -365,6 +383,32 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 // Xử lý ảnh mới nếu có
                 if (request.Image != null && request.Image.Length > 0)
                 {
+                    // Kiểm tra phần mở rộng file (chỉ chấp nhận các định dạng ảnh)
+                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
+                    }
+
+                    // Giới hạn dung lượng file (tối đa 10MB)
+                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    if (request.Image.Length > maxFileSizeInBytes)
+                    {
+                        errorMessages.Add("Image size must not exceed 10MB.");
+                    }
+
+                    // Nếu có lỗi, trả về phản hồi lỗi
+                    if (errorMessages.Any())
+                    {
+                        return BadRequest(new ApiResponse<object>
+                        {
+                            Data = null,
+                            Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
+                        });
+                    }
+
                     string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
                     string newsPath = Path.Combine(_webHostEnvironment.WebRootPath, "news");
 
@@ -769,6 +813,24 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 {
                     errorMessages.Add("Image is required.");
                 }
+                else
+                {
+                    // Kiểm tra phần mở rộng file
+                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
+                    }
+
+                    // Giới hạn dung lượng file (tối đa 10MB)
+                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    if (request.Image.Length > maxFileSizeInBytes)
+                    {
+                        errorMessages.Add("Image size must not exceed 10MB.");
+                    }
+                }
 
                 if (request.ParentNewsId <= 0)
                 {
@@ -934,6 +996,32 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 // Xử lý ảnh mới nếu có
                 if (request.Image != null && request.Image.Length > 0)
                 {
+                    // Kiểm tra phần mở rộng file (chỉ chấp nhận các định dạng ảnh)
+                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
+                    }
+
+                    // Giới hạn dung lượng file (tối đa 10MB)
+                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    if (request.Image.Length > maxFileSizeInBytes)
+                    {
+                        errorMessages.Add("Image size must not exceed 10MB.");
+                    }
+
+                    // Nếu có lỗi, trả về phản hồi lỗi
+                    if (errorMessages.Any())
+                    {
+                        return BadRequest(new ApiResponse<object>
+                        {
+                            Data = null,
+                            Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
+                        });
+                    }
+
                     string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
                     string newsPath = Path.Combine(_webHostEnvironment.WebRootPath, "news");
 
@@ -1276,6 +1364,24 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 {
                     errorMessages.Add("Image is required.");
                 }
+                else
+                {
+                    // Kiểm tra phần mở rộng file
+                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
+                    }
+
+                    // Giới hạn dung lượng file (tối đa 10MB)
+                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    if (request.Image.Length > maxFileSizeInBytes)
+                    {
+                        errorMessages.Add("Image size must not exceed 10MB.");
+                    }
+                }
 
                 //if (request.ForRoleIds == null || !request.ForRoleIds.Any())
                 //{
@@ -1491,6 +1597,32 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 // Xử lý ảnh mới nếu có
                 if (request.Image != null && request.Image.Length > 0)
                 {
+                    // Kiểm tra phần mở rộng file (chỉ chấp nhận các định dạng ảnh)
+                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
+                    }
+
+                    // Giới hạn dung lượng file (tối đa 10MB)
+                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    if (request.Image.Length > maxFileSizeInBytes)
+                    {
+                        errorMessages.Add("Image size must not exceed 10MB.");
+                    }
+
+                    // Nếu có lỗi, trả về phản hồi lỗi
+                    if (errorMessages.Any())
+                    {
+                        return BadRequest(new ApiResponse<object>
+                        {
+                            Data = null,
+                            Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
+                        });
+                    }
+
                     string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
                     string faqPath = Path.Combine(_webHostEnvironment.WebRootPath, "faqs");
 
@@ -1894,6 +2026,24 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 {
                     errorMessages.Add("Image is required.");
                 }
+                else
+                {
+                    // Kiểm tra phần mở rộng file
+                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
+                    }
+
+                    // Giới hạn dung lượng file (tối đa 10MB)
+                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    if (request.Image.Length > maxFileSizeInBytes)
+                    {
+                        errorMessages.Add("Image size must not exceed 10MB.");
+                    }
+                }
 
                 if (request.ParentFaqId <= 0)
                 {
@@ -2060,6 +2210,32 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 // Xử lý ảnh mới nếu có
                 if (request.Image != null && request.Image.Length > 0)
                 {
+                    // Kiểm tra phần mở rộng file (chỉ chấp nhận các định dạng ảnh)
+                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
+                    }
+
+                    // Giới hạn dung lượng file (tối đa 10MB)
+                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    if (request.Image.Length > maxFileSizeInBytes)
+                    {
+                        errorMessages.Add("Image size must not exceed 10MB.");
+                    }
+
+                    // Nếu có lỗi, trả về phản hồi lỗi
+                    if (errorMessages.Any())
+                    {
+                        return BadRequest(new ApiResponse<object>
+                        {
+                            Data = null,
+                            Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
+                        });
+                    }
+
                     string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
                     string faqPath = Path.Combine(_webHostEnvironment.WebRootPath, "faqs");
 

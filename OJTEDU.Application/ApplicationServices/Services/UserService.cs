@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using static OJTEDU.Application.DTOs.UserDTO;
 using System.Net.Http;
 using static OJTEDU.Application.DTOs.StudentDTO;
+using OJTEDU.Infrastructure.Repositories;
 
 namespace OJTEDU.Application.ApplicationServices.Services
 {
@@ -26,17 +27,23 @@ namespace OJTEDU.Application.ApplicationServices.Services
     {
         private readonly IAttendanceReportRepository _attendRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IMajorRepository _majorRepository;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly IGoogleJsonWebSignatureValidator _googleValidator;
+        private readonly HttpClient _httpClient;
 
-        public UserService(IConfiguration config, IAttendanceReportRepository attendRepository, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public UserService(IConfiguration config, IAttendanceReportRepository attendRepository, IUserRepository userRepository, IMajorRepository majorRepository, IHttpContextAccessor httpContextAccessor, IMapper mapper, IGoogleJsonWebSignatureValidator googleValidator, HttpClient httpClient)
         {
             _attendRepository = attendRepository;
             _config = config;
             _userRepository = userRepository;
+            _majorRepository = majorRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _googleValidator = googleValidator;
+            _httpClient = httpClient;
         }
 
         // Common - Authentication
@@ -53,9 +60,12 @@ namespace OJTEDU.Application.ApplicationServices.Services
                         StatusCode = 400 // Lỗi yêu cầu không hợp lệ
                     };
                 }
-                string decodedCode = Uri.UnescapeDataString(token);
-                using (var client = new HttpClient())
+
+                using (var client = _httpClient)
                 {
+
+                    string decodedCode = Uri.UnescapeDataString(token);
+
                     var tokenRequestUri = _config["Google:TokenRequestUri"];
                     var googleClientId = _config["Google:ClientId"];
                     var googleClientSecret = _config["Google:ClientSecret"];
@@ -88,7 +98,12 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     string accessToken = tokenResponseContentJson["access_token"].ToString();
                     string idToken = tokenResponseContentJson["id_token"].ToString();
 
-                    var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
+                    //var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
+                    //{
+                    //    Audience = new[] { googleClientId }
+                    //});
+
+                    var payload = await _googleValidator.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
                     {
                         Audience = new[] { googleClientId }
                     });
@@ -474,7 +489,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     UserId = updateUserForAdminDTO.UserId,
                     Email = updateUserForAdminDTO.Email,
-                    RoleId = updateUserForAdminDTO.RoleId,
+                    //RoleId = updateUserForAdminDTO.RoleId,
                     Name = updateUserForAdminDTO.Name,
                     UserCode = updateUserForAdminDTO.UserCode,
                     Information = updateUserForAdminDTO.Information
@@ -673,9 +688,10 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     worksheet.Cells[1, 3].Value = "UserCode(*)";
                     worksheet.Cells[1, 4].Value = "RoleId(*)";
                     worksheet.Cells[1, 5].Value = "Information";
+                    worksheet.Cells[1, 6].Value = "MajorCode(* : Bắt buộc với student)";
 
                     // Định dạng tiêu đề cột
-                    for (int col = 1; col <= 5; col++)
+                    for (int col = 1; col <= 6; col++)
                     {
                         worksheet.Cells[1, col].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                         worksheet.Cells[1, col].Style.Font.Bold = true; // Đặt chữ in đậm
@@ -687,6 +703,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     worksheet.Cells[2, 3].Value = "HE163935"; // User Code
                     worksheet.Cells[2, 4].Value = 2; // Role ID
                     worksheet.Cells[2, 5].Value = "SĐT: 123456789, Địa chỉ: Hà Nội"; // Information
+                    worksheet.Cells[2, 6].Value = "SE"; // MajorCode
 
                     // Thêm dữ liệu mẫu cho doet
                     worksheet.Cells[3, 1].Value = "phongdaotaoFPT@fe.edu.vn"; // Email
@@ -717,43 +734,43 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     worksheet.Cells[6, 5].Value = "SĐT: 123456789, Địa chỉ: Hà Nội"; // Information
 
                     // Thêm tiêu đề "Hướng dẫn điền Role" chiếm 2 cột
-                    worksheet.Cells[4, 6].Value = "Hướng dẫn điền Role";
-                    worksheet.Cells[4, 6, 4, 7].Merge = true; // Ghép ô từ F4 đến G4
-                    worksheet.Cells[4, 6].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    worksheet.Cells[4, 6].Style.Font.Bold = true; // Đặt chữ in đậm
+                    worksheet.Cells[4, 7].Value = "Hướng dẫn điền Role";
+                    worksheet.Cells[4, 7, 4, 8].Merge = true; // Ghép ô từ F4 đến G4
+                    worksheet.Cells[4, 7].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[4, 7].Style.Font.Bold = true; // Đặt chữ in đậm
 
                     // Thêm tiêu đề cho bảng hướng dẫn
-                    worksheet.Cells[5, 6].Value = "Role ID";
-                    worksheet.Cells[5, 7].Value = "Role Name";
+                    worksheet.Cells[5, 7].Value = "Role ID";
+                    worksheet.Cells[5, 8].Value = "Role Name";
 
                     // Định dạng tiêu đề Role ID và Role Name
-                    worksheet.Cells[5, 6, 5, 7].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    worksheet.Cells[5, 6, 5, 7].Style.Font.Bold = true; // Đặt chữ in đậm
+                    worksheet.Cells[5, 7, 5, 8].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[5, 7, 5, 8].Style.Font.Bold = true; // Đặt chữ in đậm
 
                     // Thêm dữ liệu mẫu cho các role
-                    worksheet.Cells[6, 6].Value = 2; // Role ID
-                    worksheet.Cells[6, 7].Value = "Student"; // Role Name
+                    worksheet.Cells[6, 7].Value = 2; // Role ID
+                    worksheet.Cells[6, 8].Value = "Student"; // Role Name
 
-                    worksheet.Cells[7, 6].Value = 3; // Role ID
-                    worksheet.Cells[7, 7].Value = "Company"; // Role Name
+                    worksheet.Cells[7, 7].Value = 3; // Role ID
+                    worksheet.Cells[7, 8].Value = "Company"; // Role Name
 
-                    worksheet.Cells[8, 6].Value = 4; // Role ID
-                    worksheet.Cells[8, 7].Value = "DOET"; // Role Name
+                    worksheet.Cells[8, 7].Value = 4; // Role ID
+                    worksheet.Cells[8, 8].Value = "DOET"; // Role Name
 
-                    worksheet.Cells[9, 6].Value = 5; // Role ID
-                    worksheet.Cells[9, 7].Value = "Dean"; // Role Name
+                    worksheet.Cells[9, 7].Value = 5; // Role ID
+                    worksheet.Cells[9, 8].Value = "Dean"; // Role Name
 
-                    worksheet.Cells[10, 6].Value = 6; // Role ID
-                    worksheet.Cells[10, 7].Value = "Lecturer"; // Role Name
+                    worksheet.Cells[10, 7].Value = 6; // Role ID
+                    worksheet.Cells[10, 8].Value = "Lecturer"; // Role Name
 
                     // Định dạng bảng hướng dẫn
-                    worksheet.Cells[4, 6, 10, 7].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-                    worksheet.Cells[5, 6, 10, 7].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[4, 7, 10, 8].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+                    worksheet.Cells[5, 7, 10, 8].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 
                     // Căn giữa cho tất cả các ô
                     for (int row = 2; row <= 10; row++)
                     {
-                        for (int col = 1; col <= 5; col++)
+                        for (int col = 1; col <= 6; col++)
                         {
                             worksheet.Cells[row, col].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                         }
@@ -765,21 +782,23 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     worksheet.Column(3).Width = 27; // User Code
                     worksheet.Column(4).Width = 10; // Role ID
                     worksheet.Column(5).Width = 60; // Information
-                    worksheet.Column(6).Width = 15; // Role ID (guidance)
-                    worksheet.Column(7).Width = 20; // Role Name (guidance)
+                    worksheet.Column(6).Width = 40; // MajorCode
+                    worksheet.Column(7).Width = 15; // Role ID (guidance)
+                    worksheet.Column(8).Width = 20; // Role Name (guidance)
 
                     // Thêm ghi chú cho các trường
-                    worksheet.Cells[13, 6].Value = "Ghi chú:"; // Cột 6
-                    worksheet.Cells[14, 6].Value = "(*) : Bắt buộc điền."; // Cột 6
-                    worksheet.Cells[15, 6].Value = "Giới hạn UserCode <= 50 ký tự."; // Cột 6
-                    worksheet.Cells[16, 6].Value = "Email cần đúng định dạng (vd: example@mail.com)."; // Cột 6
-                    worksheet.Cells[17, 6].Value = "Role: Phải là số theo mẫu và dựa vào template."; // Cột 6
+                    worksheet.Cells[13, 7].Value = "Ghi chú:"; // Cột 6
+                    worksheet.Cells[14, 7].Value = "(*) : Bắt buộc điền."; // Cột 6
+                    worksheet.Cells[15, 7].Value = "Giới hạn UserCode <= 50 ký tự."; // Cột 6
+                    worksheet.Cells[16, 7].Value = "Email cần đúng định dạng (vd: example@mail.com)."; // Cột 6
+                    worksheet.Cells[17, 7].Value = "Role: Phải là số theo mẫu và dựa vào template."; // Cột 6
+                    worksheet.Cells[18, 7].Value = "MajorCode: Bắt buộc với role Student (2), là mã của ngành học."; // Ghi chú cho cột Major
 
                     // Định dạng ghi chú
-                    for (int row = 13; row <= 17; row++)
+                    for (int row = 13; row <= 18; row++)
                     {
-                        worksheet.Cells[row, 6].Style.Font.Bold = true;
-                        worksheet.Cells[row, 6].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                        worksheet.Cells[row, 7].Style.Font.Bold = true;
+                        worksheet.Cells[row, 7].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
                     }
 
                     // Lưu file vào MemoryStream
@@ -866,7 +885,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                         for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
                         {
                             bool hasDataInRange = false;
-                            for (int col = 1; col <= 5; col++) // Chỉ từ cột A đến E (1 đến 5)
+                            for (int col = 1; col <= 6; col++) // Chỉ từ cột A đến E (1 đến 6)
                             {
                                 if (!string.IsNullOrWhiteSpace(worksheet.Cells[row, col]?.Text))
                                 {
@@ -880,6 +899,9 @@ namespace OJTEDU.Application.ApplicationServices.Services
                             }
                         }
 
+                        // Tạo dictionary để lưu mối quan hệ giữa email và majorId
+                        var majorMapping = new Dictionary<string, int?>(); // Lưu email và MajorId tương ứng
+
                         for (int row = 2; row <= lastRow; row++)
                         {
                             var email = worksheet.Cells[row, 1].Value?.ToString().Trim();
@@ -887,6 +909,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                             var userCode = worksheet.Cells[row, 3].Value?.ToString().Trim();
                             var roleIdValue = worksheet.Cells[row, 4].Value?.ToString().Trim();
                             var information = worksheet.Cells[row, 5].Value?.ToString().Trim();
+                            var majorCode = worksheet.Cells[row, 6].Value?.ToString().Trim();
 
                             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(userCode) || string.IsNullOrEmpty(roleIdValue))
                             {
@@ -908,12 +931,55 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 continue;
                             }
 
+                            if (email.Length > 50)
+                            {
+                                errorMessages.Add($"Row {row}: Email must not exceed 50 characters.");
+                                continue;
+                            }
+
+                            if (fullName.Length > 350)
+                            {
+                                errorMessages.Add($"Row {row}: FullName must not exceed 350 characters.");
+                                continue;
+                            }
+
                             // Kiểm tra và parse RoleId
                             if (!int.TryParse(roleIdValue, out int roleId) || !(new[] { 2, 3, 4, 5, 6 }.Contains(roleId)))
                             {
                                 errorMessages.Add($"Row {row}: RoleId must follow the template and cannot be a letter. It must be one of the following values: 2, 3, 4, 5, 6.");
                                 continue;
                             }
+
+                            // Nếu RoleId là Student, kiểm tra Major
+                            int? majorId = null;
+                            if (roleId == 2)
+                            {
+                                if (string.IsNullOrWhiteSpace(majorCode))
+                                {
+                                    errorMessages.Add($"Row {row}: Major is required for RoleId = 2 (Student).");
+                                    continue;
+                                }
+
+                                // Kiểm tra Major Code có tồn tại trong bảng Major không
+                                var major = await _majorRepository.GetMajorByCodeAsync(majorCode);
+                                if (major == null)
+                                {
+                                    errorMessages.Add($"Row {row}: Major code '{majorCode}' does not exist.");
+                                    continue;
+                                }
+
+                                // Kiểm tra trạng thái Active của Major
+                                if (major.Status.ToLower() != "active")
+                                {
+                                    errorMessages.Add($"Row {row}: Major code '{majorCode}' is not active and cannot be assigned to students.");
+                                    continue;
+                                }
+
+                                majorId = major.MajorId; // Lấy MajorId từ bảng Major
+                            }
+
+                            // Lưu MajorId vào dictionary
+                            majorMapping[email] = majorId;
 
                             // Kiểm tra nếu UserCode hoặc Email đã tồn tại
                             var isUserCodeExists = await _userRepository.IsUserCodeExistsAsync(userCode);
@@ -977,7 +1043,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                             {
                                 if (addedUser.RoleId == 2) // RoleId = 2 là Student
                                 {
-                                    studentUsers.Add(new Student { UserId = addedUser.UserId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
+                                    var majorId = majorMapping[user.Email]; // Lấy MajorId từ dictionary
+                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
                                 }
                                 else if (addedUser.RoleId == 3) // RoleId = 3 là Company
                                 {
@@ -1523,7 +1590,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     UserId = updateUserForDoetDTO.UserId,
                     Email = updateUserForDoetDTO.Email,
-                    RoleId = updateUserForDoetDTO.RoleId,
+                    //RoleId = updateUserForDoetDTO.RoleId,
                     Name = updateUserForDoetDTO.Name,
                     UserCode = updateUserForDoetDTO.UserCode,
                     Information = updateUserForDoetDTO.Information
@@ -1718,9 +1785,10 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     worksheet.Cells[1, 3].Value = "UserCode(*)";
                     worksheet.Cells[1, 4].Value = "RoleId(*)";
                     worksheet.Cells[1, 5].Value = "Information";
+                    worksheet.Cells[1, 6].Value = "MajorCode(* : Bắt buộc với student)";
 
                     // Định dạng tiêu đề cột
-                    for (int col = 1; col <= 5; col++)
+                    for (int col = 1; col <= 6; col++)
                     {
                         worksheet.Cells[1, col].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                         worksheet.Cells[1, col].Style.Font.Bold = true; // Đặt chữ in đậm
@@ -1732,6 +1800,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     worksheet.Cells[2, 3].Value = "HE163935"; // User Code
                     worksheet.Cells[2, 4].Value = 2; // Role ID
                     worksheet.Cells[2, 5].Value = "SĐT: 123456789, Địa chỉ: Hà Nội"; // Information
+                    worksheet.Cells[2, 6].Value = "SE"; // MajorCode
 
                     // Thêm dữ liệu mẫu cho dean
                     worksheet.Cells[3, 1].Value = "nguyenvananh123@fe.edu.vn"; // Email
@@ -1755,40 +1824,40 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     worksheet.Cells[5, 5].Value = "SĐT: 123456789, Địa chỉ: Hà Nội"; // Information
 
                     // Thêm tiêu đề "Hướng dẫn điền Role" chiếm 2 cột
-                    worksheet.Cells[4, 6].Value = "Hướng dẫn điền Role";
-                    worksheet.Cells[4, 6, 4, 7].Merge = true; // Ghép ô từ F4 đến G4
-                    worksheet.Cells[4, 6].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    worksheet.Cells[4, 6].Style.Font.Bold = true; // Đặt chữ in đậm
+                    worksheet.Cells[4, 7].Value = "Hướng dẫn điền Role";
+                    worksheet.Cells[4, 7, 4, 8].Merge = true; // Ghép ô từ F4 đến G4
+                    worksheet.Cells[4, 7].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[4, 7].Style.Font.Bold = true; // Đặt chữ in đậm
 
                     // Thêm tiêu đề cho bảng hướng dẫn
-                    worksheet.Cells[5, 6].Value = "Role ID";
-                    worksheet.Cells[5, 7].Value = "Role Name";
+                    worksheet.Cells[5, 7].Value = "Role ID";
+                    worksheet.Cells[5, 8].Value = "Role Name";
 
                     // Định dạng tiêu đề Role ID và Role Name
-                    worksheet.Cells[5, 6, 5, 7].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                    worksheet.Cells[5, 6, 5, 7].Style.Font.Bold = true; // Đặt chữ in đậm
+                    worksheet.Cells[5, 7, 5, 8].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[5, 7, 5, 8].Style.Font.Bold = true; // Đặt chữ in đậm
 
                     // Thêm dữ liệu mẫu cho các role
-                    worksheet.Cells[6, 6].Value = 2; // Role ID
-                    worksheet.Cells[6, 7].Value = "Student"; // Role Name
+                    worksheet.Cells[6, 7].Value = 2; // Role ID
+                    worksheet.Cells[6, 8].Value = "Student"; // Role Name
 
-                    worksheet.Cells[7, 6].Value = 3; // Role ID
-                    worksheet.Cells[7, 7].Value = "Company"; // Role Name
+                    worksheet.Cells[7, 7].Value = 3; // Role ID
+                    worksheet.Cells[7, 8].Value = "Company"; // Role Name
 
-                    worksheet.Cells[8, 6].Value = 5; // Role ID
-                    worksheet.Cells[8, 7].Value = "Dean"; // Role Name
+                    worksheet.Cells[8, 7].Value = 5; // Role ID
+                    worksheet.Cells[8, 8].Value = "Dean"; // Role Name
 
-                    worksheet.Cells[9, 6].Value = 6; // Role ID
-                    worksheet.Cells[9, 7].Value = "Lecturer"; // Role Name
+                    worksheet.Cells[9, 7].Value = 6; // Role ID
+                    worksheet.Cells[9, 8].Value = "Lecturer"; // Role Name
 
                     // Định dạng bảng hướng dẫn
-                    worksheet.Cells[4, 6, 9, 7].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-                    worksheet.Cells[5, 6, 9, 7].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[4, 7, 9, 8].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+                    worksheet.Cells[5, 7, 9, 8].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
 
                     // Căn giữa cho tất cả các ô
                     for (int row = 2; row <= 9; row++)
                     {
-                        for (int col = 1; col <= 5; col++)
+                        for (int col = 1; col <= 6; col++)
                         {
                             worksheet.Cells[row, col].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                         }
@@ -1800,21 +1869,23 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     worksheet.Column(3).Width = 27; // User Code
                     worksheet.Column(4).Width = 10; // Role ID
                     worksheet.Column(5).Width = 60; // Information
-                    worksheet.Column(6).Width = 15; // Role ID (guidance)
-                    worksheet.Column(7).Width = 20; // Role Name (guidance)
+                    worksheet.Column(6).Width = 40; // MajorCode
+                    worksheet.Column(7).Width = 15; // Role ID (guidance)
+                    worksheet.Column(8).Width = 20; // Role Name (guidance)
 
                     // Thêm ghi chú cho các trường
-                    worksheet.Cells[13, 6].Value = "Ghi chú:"; // Cột 6
-                    worksheet.Cells[14, 6].Value = "(*) : Bắt buộc điền."; // Cột 6
-                    worksheet.Cells[15, 6].Value = "Giới hạn UserCode <= 50 ký tự."; // Cột 6
-                    worksheet.Cells[16, 6].Value = "Email cần đúng định dạng (vd: example@mail.com)."; // Cột 6
-                    worksheet.Cells[17, 6].Value = "Role: Phải là số theo mẫu và dựa vào template."; // Cột 6
+                    worksheet.Cells[13, 7].Value = "Ghi chú:"; // Cột 6
+                    worksheet.Cells[14, 7].Value = "(*) : Bắt buộc điền."; // Cột 6
+                    worksheet.Cells[15, 7].Value = "Giới hạn UserCode <= 50 ký tự."; // Cột 6
+                    worksheet.Cells[16, 7].Value = "Email cần đúng định dạng (vd: example@mail.com)."; // Cột 6
+                    worksheet.Cells[17, 7].Value = "Role: Phải là số theo mẫu và dựa vào template."; // Cột 6
+                    worksheet.Cells[18, 7].Value = "MajorCode: Bắt buộc với role Student (2), là mã của ngành học."; // Ghi chú cho cột Major
 
                     // Định dạng ghi chú
-                    for (int row = 13; row <= 17; row++)
+                    for (int row = 13; row <= 18; row++)
                     {
-                        worksheet.Cells[row, 6].Style.Font.Bold = true;
-                        worksheet.Cells[row, 6].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                        worksheet.Cells[row, 7].Style.Font.Bold = true;
+                        worksheet.Cells[row, 7].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
                     }
 
                     // Lưu file vào MemoryStream
@@ -1915,6 +1986,9 @@ namespace OJTEDU.Application.ApplicationServices.Services
                             }
                         }
 
+                        // Tạo dictionary để lưu mối quan hệ giữa email và majorId
+                        var majorMapping = new Dictionary<string, int?>(); // Lưu email và MajorId tương ứng
+
                         for (int row = 2; row <= lastRow; row++)
                         {
                             var email = worksheet.Cells[row, 1].Value?.ToString().Trim();
@@ -1922,6 +1996,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                             var userCode = worksheet.Cells[row, 3].Value?.ToString().Trim();
                             var roleIdValue = worksheet.Cells[row, 4].Value?.ToString().Trim();
                             var information = worksheet.Cells[row, 5].Value?.ToString().Trim();
+                            var majorCode = worksheet.Cells[row, 6].Value?.ToString().Trim();
 
                             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(userCode) || string.IsNullOrEmpty(roleIdValue))
                             {
@@ -1949,6 +2024,37 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 errorMessages.Add($"Row {row}: RoleId must follow the template and cannot be a letter. It must be one of the following values: 2, 3, 5, 6.");
                                 continue;
                             }
+
+                            // Nếu RoleId là Student, kiểm tra Major
+                            int? majorId = null;
+                            if (roleId == 2)
+                            {
+                                if (string.IsNullOrWhiteSpace(majorCode))
+                                {
+                                    errorMessages.Add($"Row {row}: Major is required for RoleId = 2 (Student).");
+                                    continue;
+                                }
+
+                                // Kiểm tra Major Code có tồn tại trong bảng Major không
+                                var major = await _majorRepository.GetMajorByCodeAsync(majorCode);
+                                if (major == null)
+                                {
+                                    errorMessages.Add($"Row {row}: Major code '{majorCode}' does not exist.");
+                                    continue;
+                                }
+
+                                // Kiểm tra trạng thái Active của Major
+                                if (major.Status.ToLower() != "active")
+                                {
+                                    errorMessages.Add($"Row {row}: Major code '{majorCode}' is not active and cannot be assigned to students.");
+                                    continue;
+                                }
+
+                                majorId = major.MajorId; // Lấy MajorId từ bảng Major
+                            }
+
+                            // Lưu MajorId vào dictionary
+                            majorMapping[email] = majorId;
 
                             // Kiểm tra nếu UserCode hoặc Email đã tồn tại
                             var isUserCodeExists = await _userRepository.IsUserCodeExistsAsync(userCode);
@@ -2012,7 +2118,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                             {
                                 if (addedUser.RoleId == 2) // RoleId = 2 là Student
                                 {
-                                    studentUsers.Add(new Student { UserId = addedUser.UserId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
+                                    var majorId = majorMapping[user.Email]; // Lấy MajorId từ dictionary
+                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
                                 }
                                 else if (addedUser.RoleId == 3) // RoleId = 3 là Company
                                 {
@@ -3187,6 +3294,118 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     Data = null,
                     Message = $"Error retrieving lecturer list: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        public async Task<DataResponse<string>> AssignDepartmentToDeanAsync(int deanId, int departmentId)
+        {
+            try
+            {
+                // Kiểm tra điều kiện gán
+                var isAssignable = await _userRepository.IsDeanAssignableToDepartmentAsync(deanId);
+
+                if (!isAssignable)
+                {
+                    return new DataResponse<string>
+                    {
+                        Data = null,
+                        Message = "Cannot assign department. The dean has related lecturers or students assigned.",
+                        StatusCode = 400
+                    };
+                }
+
+                // Gán Department
+                await _userRepository.AssignDepartmentToDeanAsync(deanId, departmentId);
+
+                return new DataResponse<string>
+                {
+                    Data = "Success",
+                    Message = "Department assigned successfully.",
+                    StatusCode = 200
+                };
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new DataResponse<string>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    StatusCode = 404
+                };
+            }
+            catch (InvalidOperationException ex)
+            {
+                return new DataResponse<string>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    StatusCode = 400
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<string>
+                {
+                    Data = null,
+                    Message = $"Error assigning department: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        public async Task<DataResponse<string>> AssignMajorToLecturerAsync(int lecturerId, int majorId)
+        {
+            try
+            {
+                // Kiểm tra điều kiện gán
+                var isAssignable = await _userRepository.IsLecturerAssignableToMajorAsync(lecturerId, majorId);
+
+                if (!isAssignable)
+                {
+                    return new DataResponse<string>
+                    {
+                        Data = null,
+                        Message = "Cannot assign major. The lecturer is either assigned to students or the major is not allowed.",
+                        StatusCode = 400
+                    };
+                }
+
+                // Gán Major
+                await _userRepository.AssignMajorToLecturerAsync(lecturerId, majorId);
+
+                return new DataResponse<string>
+                {
+                    Data = "Success",
+                    Message = "Major assigned successfully.",
+                    StatusCode = 200
+                };
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new DataResponse<string>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    StatusCode = 404
+                };
+            }
+            catch (InvalidOperationException ex)
+            {
+                return new DataResponse<string>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    StatusCode = 400
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<string>
+                {
+                    Data = null,
+                    Message = $"Error assigning major: {ex.Message}",
                     StatusCode = 500
                 };
             }

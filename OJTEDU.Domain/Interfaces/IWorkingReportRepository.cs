@@ -24,12 +24,9 @@ namespace OJTEDU.Domain.Interfaces
         //For Dean
         Task<User> GetDeanByUserIdAsync(int userId);
         Task<Student> GetStudentDetailsByIdAsync(int studentId, int userId, string role);
+        Task<List<string>> GetWeeksForStudentAsync(int studentId, int? year = null);
         Task<List<WorkingReport>> GetWorkingReportsByStudentIdAsync(
-        int studentId,
-        int userId,
-        string role,
-        string? sortBy,
-        bool? isDescending);
+        int internshipId, int userId, string role, string? sortBy, bool? isDescending, string? week, int? year = null);
         Task<bool> UpdateWorkingReportAsync(int workingReportId, int userId, string role, string? feedback, double? score);
 
         // Mentor 

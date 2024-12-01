@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static OJTEDU.Application.DTOs.WorkingReportDTO;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace OJTEDU.Application.DTOs
@@ -95,5 +96,28 @@ namespace OJTEDU.Application.DTOs
             public DateTime? CreatedAt { get; set; }
             public DateTime? UpdatedAt { get; set; }
         }
+
+        //Admin DOET Lecturer Dean 
+        public class InternshipDto
+        {
+            public int IntershipId { get; set; }
+            public string StudentName { get; set; }
+            public string CompanyName { get; set; }
+            public string JobName { get; set; }
+            public string LecturerName { get; set; }
+            public int Status { get; set; } // 0: Failed, 1: In progress, 2: Passed
+            public string SemesterName { get; set; }
+            public string Code { get; set; }
+            public DateTime? StartDate { get; set; }
+            public DateTime? EndDate { get; set; }
+        }
+        public class InternshipDetailWithReportsDTO
+        {
+            public InternshipDetailForMentorDTO Internship { get; set; }
+            public string Week { get; set; } // Thêm thông tin tuần
+            public List<WorkingReportDto> WorkingReports { get; set; }
+        }
+
+
     }
 }

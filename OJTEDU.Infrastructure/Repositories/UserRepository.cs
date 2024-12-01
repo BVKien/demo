@@ -303,6 +303,7 @@ namespace OJTEDU.Infrastructure.Repositories
             // Xóa các bảng liên quan trước khi xóa user
             var newsFAQs = _context.NewsFaqs.Where(n => n.UserId == userId);
             var documents = _context.Documents.Where(d => d.UniversityId == userId);
+            var document2s = _context.Documents.Where(d => d.UserId == userId);
             var banners = _context.Banners.Where(b => b.UserId == userId);
             var policies = _context.Policies.Where(p => p.UserId == userId);
             var companies = _context.Companies.Where(p => p.UserId == userId);
@@ -317,6 +318,7 @@ namespace OJTEDU.Infrastructure.Repositories
             var supportRequests = _context.SupportRequests.Where(sr => sr.UniversityId == userId);
             var workingReports = _context.WorkingReports.Where(wr => wr.LecturerId == userId);
             var companyProposals = _context.CompanyProposals.Where(cp => cp.UniversityId == userId);
+            var internshipProcesses = _context.InternshipProcesses.Where(cp => cp.CreatedBy == userId);
 
             _context.Banners.RemoveRange(banners);
             _context.Documents.RemoveRange(documents);
@@ -334,6 +336,7 @@ namespace OJTEDU.Infrastructure.Repositories
             _context.SupportRequests.RemoveRange(supportRequests);
             _context.WorkingReports.RemoveRange(workingReports);
             _context.CompanyProposals.RemoveRange(companyProposals);
+            _context.InternshipProcesses.RemoveRange(internshipProcesses);
 
             user.DeletedAt = DateTime.Now; // Cập nhật thời gian xóa
 
@@ -763,7 +766,7 @@ namespace OJTEDU.Infrastructure.Repositories
         {
             return await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.UserId == userId && u.Role.Name == "Dean");
+                .FirstOrDefaultAsync(u => u.UserId == userId && u.Role.Name == "Dean" && u.Major.Status == "Active");
         }
 
         // Get Lecturer by UserId
@@ -771,7 +774,7 @@ namespace OJTEDU.Infrastructure.Repositories
         {
             return await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.UserId == userId && u.Role.Name == "Lecturer");
+                .FirstOrDefaultAsync(u => u.UserId == userId && u.Role.Name == "Lecturer" && u.Major.Status == "Active");
         }
 
         // Get user by ID
@@ -779,7 +782,7 @@ namespace OJTEDU.Infrastructure.Repositories
         {
             return await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.UserId == userId);
+                .FirstOrDefaultAsync(u => u.UserId == userId && u.Major.Status == "Active");
         }
 
         // Get role ID by name
@@ -826,7 +829,7 @@ namespace OJTEDU.Infrastructure.Repositories
             IQueryable<User> query = _context.Users
                 .Include(u => u.Role)
                 .Include(u => u.Major)
-                .Where(u => u.Status != "Deleted" && u.Role.Name == "Lecturer" && u.AssignForId == assignForId);
+                .Where(u => u.Status != "Deleted" && u.Role.Name == "Lecturer" && u.AssignForId == assignForId && u.Major.Status == "Active");
 
             // Tìm kiếm theo Name
             if (!string.IsNullOrWhiteSpace(name))
@@ -874,7 +877,7 @@ namespace OJTEDU.Infrastructure.Repositories
             var lecturer = await _context.Users
                 .Include(u => u.Role)
                 .Include(u => u.Major)
-                .FirstOrDefaultAsync(u => u.Status != "Deleted" && u.UserId == lecturerId && u.Role.Name == "Lecturer");
+                .FirstOrDefaultAsync(u => u.Status != "Deleted" && u.UserId == lecturerId && u.Role.Name == "Lecturer" && u.Major.Status == "Active");
 
             if (lecturer == null)
             {
@@ -902,7 +905,7 @@ namespace OJTEDU.Infrastructure.Repositories
         public async Task<List<User>> GetAllDeansAsync(string? userCode, string? name, string? departmentName, string? sortBy, bool? isDescending)
         {
             IQueryable<User> query = _context.Users
-                .Where(u => u.Role.Name == "Dean" && u.Status != "Deleted")
+                .Where(u => u.Role.Name == "Dean" && u.Status != "Deleted" && u.Major.Status == "Active")
                 .Include(u => u.Role)
                 .Include(u => u.Department);
 
@@ -957,7 +960,7 @@ namespace OJTEDU.Infrastructure.Repositories
             var dean = await _context.Users
                 .Include(u => u.Department)
                 .Include(u => u.Role)
-                .Where(u => u.Role.Name == "Dean" && u.UserId == deanId)
+                .Where(u => u.Role.Name == "Dean" && u.UserId == deanId && u.Department.Status == "Active")
                 .FirstOrDefaultAsync();
 
             if (dean == null)
@@ -967,13 +970,13 @@ namespace OJTEDU.Infrastructure.Repositories
 
             // Lấy danh sách Lecturers thuộc Dean
             var lecturers = await _context.Users
-                .Where(u => u.Status != "Deleted" && u.Role.Name == "Lecturer" && u.AssignForId == deanId)
+                .Where(u => u.Status != "Deleted" && u.Role.Name == "Lecturer" && u.AssignForId == deanId && u.Major.Status == "Active")
                 .Include(u => u.Major)
                 .ToListAsync();
 
             // Lấy danh sách Students do Dean trực tiếp quản lý
             var students = await _context.Students
-                .Where(s => s.LecturerId == deanId && s.User.Status != "Deleted")
+                .Where(s => s.LecturerId == deanId && s.User.Status != "Deleted" && s.Major.Status == "Active")
                 .Include(s => s.User)
                 .Include(s => s.Major)
                 .Include(s => s.Semester)
@@ -986,7 +989,7 @@ namespace OJTEDU.Infrastructure.Repositories
         public async Task<List<User>> GetLecturersByIdsAsync(List<int> lecturerIds)
         {
             return await _context.Users
-                .Where(u => lecturerIds.Contains(u.UserId) && u.Role.Name == "Lecturer" && u.Status != "Deleted")
+                .Where(u => lecturerIds.Contains(u.UserId) && u.Role.Name == "Lecturer" && u.Status != "Deleted" && u.Major.Status == "Active")
                 .Include(u => u.Major)
                 .ToListAsync();
         }
@@ -1000,7 +1003,7 @@ namespace OJTEDU.Infrastructure.Repositories
         public async Task<List<User>> GetAllLecturerAsync(string? userCode, string? name, string? majorName, string? sortBy, bool? isDescending)
         {
             IQueryable<User> query = _context.Users
-                .Where(u => u.Role.Name == "Lecturer" && u.Status != "Deleted")
+                .Where(u => u.Role.Name == "Lecturer" && u.Status != "Deleted" && u.Major.Status == "Active")
                 .Include(u => u.Role)
                 .Include(u => u.Major);
 
@@ -1047,6 +1050,110 @@ namespace OJTEDU.Infrastructure.Repositories
 
             return await query.ToListAsync();
         }
+        public async Task<bool> IsDeanAssignableToDepartmentAsync(int deanId)
+        {
+            // Kiểm tra trong bảng Users nếu Lecturer có AssignForId trùng với deanId
+            var hasLecturerAssigned = await _context.Users
+                .AnyAsync(u => u.Role.Name == "Lecturer" && u.Status != "Deleted" && u.AssignForId == deanId);
 
+            // Kiểm tra trong bảng Students nếu có LecturerId trùng với deanId
+            var hasStudentWithDeanLecturer = await _context.Students
+                .AnyAsync(s => s.LecturerId == deanId);
+
+            return !hasLecturerAssigned && !hasStudentWithDeanLecturer;
+        }
+
+        // Gán Department cho Dean
+        public async Task AssignDepartmentToDeanAsync(int deanId, int departmentId)
+        {
+            // Lấy thông tin Dean
+            var dean = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserId == deanId && u.Role.Name == "Dean" && u.Status != "Deleted" && u.Major.Status == "Active" && u.Department.Status == "Active");
+
+            if (dean == null)
+            {
+                throw new KeyNotFoundException("Dean not found.");
+            }
+
+            // Kiểm tra nếu đã gán DepartmentId
+            if (dean.DepartmentId == departmentId)
+            {
+                throw new InvalidOperationException("This dean is already assigned to the specified department.");
+            }
+
+            // Cập nhật DepartmentId
+            dean.DepartmentId = departmentId;
+            dean.UpdatedAt = GetVietnamTime();
+
+            // Lưu thay đổi
+            _context.Users.Update(dean);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<bool> IsLecturerAssignableToMajorAsync(int lecturerId, int majorId)
+        {
+            // Lấy thông tin Lecturer
+            var lecturer = await _context.Users
+                .Include(l => l.Role)
+                .FirstOrDefaultAsync(u => u.UserId == lecturerId && u.Role.Name == "Lecturer" && u.Status != "Deleted" && u.Major.Status == "Active");
+
+            if (lecturer == null)
+            {
+                throw new KeyNotFoundException("Lecturer not found.");
+            }
+
+            // Nếu Lecturer có AssignForId, kiểm tra Major thuộc Department của AssignForId
+            if (lecturer.AssignForId.HasValue)
+            {
+                // Lấy thông tin Dean (người được AssignForId)
+                var dean = await _context.Users
+                    .FirstOrDefaultAsync(u => u.UserId == lecturer.AssignForId && u.Role.Name == "Dean" && u.Major.Status == "Active" && u.Department.Status == "Active");
+
+                if (dean == null || !dean.DepartmentId.HasValue)
+                {
+                    throw new InvalidOperationException("Dean assigned to the lecturer is invalid.");
+                }
+
+                // Kiểm tra Major có thuộc Department của Dean không
+                var isMajorInDepartment = await _context.Majors
+                    .AnyAsync(m => m.MajorId == majorId && m.DepartmentId == dean.DepartmentId);
+
+                if (!isMajorInDepartment)
+                {
+                    return false;
+                }
+            }
+
+            // Kiểm tra nếu Student nào đã được gán LecturerId trùng với lecturerId
+            var hasStudentAssigned = await _context.Students
+                .AnyAsync(s => s.LecturerId == lecturerId);
+
+            return !hasStudentAssigned;
+        }
+
+        // Gán Major cho Lecturer
+        public async Task AssignMajorToLecturerAsync(int lecturerId, int majorId)
+        {
+            // Lấy thông tin Lecturer
+            var lecturer = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserId == lecturerId && u.Role.Name == "Lecturer" && u.Status != "Deleted" && u.Major.Status == "Active");
+
+            if (lecturer == null)
+            {
+                throw new KeyNotFoundException("Lecturer not found.");
+            }
+
+            // Cập nhật MajorId
+            lecturer.MajorId = majorId;
+            lecturer.UpdatedAt = GetVietnamTime();
+
+            // Lưu thay đổi
+            _context.Users.Update(lecturer);
+            await _context.SaveChangesAsync();
+        }
+        public DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
+        }
     }
 }

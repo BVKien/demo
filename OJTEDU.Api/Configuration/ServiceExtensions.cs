@@ -61,6 +61,7 @@ namespace OJTEDU.Api.Configuration
             services.AddScoped<IUserGuideRepository, UserGuideRepository>();
             services.AddScoped<IInternshipProcessRepository, InternshipProcessRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<IGoogleJsonWebSignatureValidator, GoogleJsonWebSignatureValidator>();
 
             // Services 
             services.AddScoped<ICompanyService, CompanyService>();

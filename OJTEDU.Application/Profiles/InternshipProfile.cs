@@ -54,6 +54,19 @@ namespace OJTEDU.Application.Profiles
                 .ReverseMap();
 
             CreateMap<Internship, CreateInternshipForCompanyDTO>().ReverseMap();
+
+            CreateMap<Internship, InternshipDto>()
+           .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User.Name))
+           .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Company.User.Name))
+           .ForMember(dest => dest.JobName, opt => opt.MapFrom(src => src.Job.Title))
+           .ForMember(dest => dest.LecturerName, opt => opt.MapFrom(src => src.Student.Lecturer.Name))
+           .ForMember(dest => dest.SemesterName, opt => opt.MapFrom(src => src.Semester.Name))
+           .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+           .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Code))
+           .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+           .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate));
+
+           
         }
     }
 }

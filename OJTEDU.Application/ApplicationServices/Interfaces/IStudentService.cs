@@ -21,15 +21,20 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
 
         // 2. GetStudentListAsync
         Task<DataResponse<PagedResponse<List<StudentListDto>>>> GetStudentListAsync(
-            string? studentName,
-            string? lecturerName,
-            int pageNumber,
-            int pageSize);
+        string? code,
+        string? studentName,
+        string? lecturerName,
+        string? majorName,
+        int pageNumber,
+        int pageSize,
+        string? sortBy,
+        bool? isDescending);
 
         // KienBV - fix
         Task<DataResponse<List<StudentListDto>>> GetOjtStudentListAsync();
 
         // 3. GetStudentDetailsAsync
         Task<DataResponse<StudentDetailsDto>> GetStudentDetailsAsync(int studentId);
+        Task<DataResponse<string>> UpdateStudentAsync(int studentId, UpdateStudentDto dto);
     }
 }

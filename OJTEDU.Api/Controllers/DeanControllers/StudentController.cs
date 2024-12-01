@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OJTEDU.Api.Configuration;
 using OJTEDU.Application.ApplicationServices.Interfaces;
+using OJTEDU.Application.ApplicationServices.Services;
 using OJTEDU.Application.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,26 +24,45 @@ namespace OJTEDU.WebAPI.Controllers.Dean
 
         // GET: api/dean/student/list
         [HttpGet("list")]
-        public async Task<IActionResult> GetStudentList([FromQuery] string? studentName, [FromQuery] string? lecturerName, int? pageNumber, int? pageSize)
+        public async Task<IActionResult> GetStudentListForDeanAsync(
+        string? code,
+        string? studentName,
+        string? lecturerName,
+        string? majorName,
+        int? pageNumber,
+        int? pageSize,
+        string? sortBy,
+        bool? isDescending)
         {
             try
             {
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
-                var dataResponse = await _stuService.GetStudentListAsync(studentName, lecturerName, actualPageNumber, actualPageSize);
 
-                if (dataResponse.Data == null)
+                var response = await _stuService.GetStudentListAsync(
+                    code,
+                    studentName,
+                    lecturerName,
+                    majorName,
+                    actualPageNumber,
+                    actualPageSize,
+                    sortBy,
+                    isDescending
+                );
+
+                if (response.Data == null)
                 {
-                    return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
+                    return StatusCode(response.StatusCode, new ApiResponse<object>
                     {
                         Data = null,
-                        Message = dataResponse.Message
+                        Message = response.Message
                     });
                 }
+
                 return Ok(new ApiResponse<PagedResponse<List<StudentListDto>>>
                 {
-                    Data = dataResponse.Data,
-                    Message = dataResponse.Message
+                    Data = response.Data,
+                    Message = response.Message
                 });
             }
             catch (Exception ex)
@@ -53,11 +73,10 @@ namespace OJTEDU.WebAPI.Controllers.Dean
                     Message = $"Internal Server Error: {ex.Message}"
                 });
             }
-
         }
+    
 
-
-        [HttpGet("ojt/list")]
+    [HttpGet("ojt/list")]
         public async Task<IActionResult> GetOjtStudentList()
         {
             try

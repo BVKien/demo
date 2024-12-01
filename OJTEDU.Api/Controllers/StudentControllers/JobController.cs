@@ -83,7 +83,7 @@ namespace OJTEDU.Api.Controllers.GuestControllers
             }
         }
 
-        [Authorize(Roles = "Student")]
+        //[Authorize(Roles = "Student")]
         [HttpGet("search")]
         public async Task<IActionResult> SearchJobs(string? title, int? majorId, int? provinceId, int? districtId, int? wardId, int? pageNumber, int? pageSize)
         {
@@ -91,7 +91,9 @@ namespace OJTEDU.Api.Controllers.GuestControllers
             {
                 pageSize = pageSize ?? 15;
 
-                int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                //int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+                int userId = 7;
 
                 var dataResponse = await _jobService.SearchJobsAsync(userId, title, majorId, provinceId, districtId, wardId, pageNumber, pageSize);
                 var dbJobs = dataResponse.Data;
@@ -110,10 +112,11 @@ namespace OJTEDU.Api.Controllers.GuestControllers
                     return Ok(apiResponseNoneAi);
                 }
 
-                var suggestedJobs = await GetSuggestedJobsFromAiApiAsync(cvFilePathResponse.Data);
+                var suggestedJobs = await GetSuggestedJobsFromAiApiAsync("wwwroot" + cvFilePathResponse.Data);
 
-                var combinedJobs = dbJobs.Concat(suggestedJobs)
-                    .DistinctBy(j => j.JobId) // Remove duplicate work
+                var combinedJobs = suggestedJobs
+                    .Concat(dbJobs)
+                    .DistinctBy(j => j.JobId)
                     .ToList();
 
                 var apiResponse = new ApiResponseTotalPaged<List<JobListSearchForStudentDTO>>
@@ -139,25 +142,52 @@ namespace OJTEDU.Api.Controllers.GuestControllers
 
         private async Task<IEnumerable<JobListSearchForStudentDTO>> GetSuggestedJobsFromAiApiAsync(string? filePath)
         {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                _logger.LogError("File path is null or empty.");
+                return Enumerable.Empty<JobListSearchForStudentDTO>();
+            }
+
             var client = _httpClientFactory.CreateClient();
             var request = new MultipartFormDataContent();
 
-            using (var fileStream = System.IO.File.OpenRead(filePath))
+            try
             {
-                request.Add(new StreamContent(fileStream), "file", Path.GetFileName(filePath));
-
-                try
+                // Open the file stream
+                using (var fileStream = System.IO.File.OpenRead(filePath))
                 {
+                    // Add the file content to the request
+                    request.Add(new StreamContent(fileStream), "file", Path.GetFileName(filePath));
+
+                    // Send the POST request to the Flask API
                     var response = await client.PostAsync("http://127.0.0.1:5001/api/ai/analyze", request);
+
+                    // Ensure success status code or throw exception
                     response.EnsureSuccessStatusCode();
 
-                    return await response.Content.ReadFromJsonAsync<IEnumerable<JobListSearchForStudentDTO>>();
+                    // Deserialize the JSON response into the desired DTO
+                    var jobSuggestions = await response.Content.ReadFromJsonAsync<IEnumerable<JobListSearchForStudentDTO>>();
+
+                    if (jobSuggestions == null || !jobSuggestions.Any())
+                    {
+                        _logger.LogWarning("No job suggestions returned from AI API.");
+                        return Enumerable.Empty<JobListSearchForStudentDTO>();
+                    }
+
+                    return jobSuggestions;
                 }
-                catch (HttpRequestException e)
-                {
-                    _logger.LogError($"Request error: {e.Message}");
-                    return Enumerable.Empty<JobListSearchForStudentDTO>(); // Return null or handle error 
-                }
+            }
+            catch (HttpRequestException e)
+            {
+                // Log error and return empty collection if request fails
+                _logger.LogError($"Request error: {e.Message}");
+                return Enumerable.Empty<JobListSearchForStudentDTO>();
+            }
+            catch (Exception e)
+            {
+                // Log any other unexpected errors
+                _logger.LogError($"An unexpected error occurred: {e.Message}");
+                return Enumerable.Empty<JobListSearchForStudentDTO>();
             }
         }
 

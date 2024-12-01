@@ -227,7 +227,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 var role = new Role
                 {
                     RoleId = updateRoleForAdminDTO.RoleId,
-                    Name = updateRoleForAdminDTO.Name,
+                    //Name = updateRoleForAdminDTO.Name,
                     Description = updateRoleForAdminDTO.Description,
                     Status = updateRoleForAdminDTO.Status
                 };

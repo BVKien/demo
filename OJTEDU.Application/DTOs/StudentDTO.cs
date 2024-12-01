@@ -50,6 +50,7 @@ namespace OJTEDU.Application.DTOs
         }
         public class StudentListDto
         {
+            public string StudentId { get; set; }
             public string Name { get; set; }
             public string UserCode { get; set; }
             public string MajorName { get; set; }
@@ -71,6 +72,12 @@ namespace OJTEDU.Application.DTOs
             public string Phone { get; set; }
             public DateTime? DOB { get; set; }
             public string Address { get; set; }
+        }
+        public class UpdateStudentDto
+        {
+            public string Information { get; set; }
+            public string MajorName { get; set; }
+            public string SemesterName { get; set; }
         }
 
     }

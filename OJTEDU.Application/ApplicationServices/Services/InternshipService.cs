@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using OJTEDU.Application.ApplicationServices.Interfaces;
 using OJTEDU.Application.DTOs;
 using OJTEDU.Domain.Entities;
@@ -6,12 +7,14 @@ using OJTEDU.Domain.Interfaces;
 using OJTEDU.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Google.Apis.Requests.BatchRequest;
 using static OJTEDU.Application.DTOs.GroupChatDTO;
 using static OJTEDU.Application.DTOs.InternshipDTO;
+using static OJTEDU.Application.DTOs.WorkingReportDTO;
 
 namespace OJTEDU.Application.ApplicationServices.Services
 {
@@ -230,5 +233,188 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+        //Admin DOET Dean Lecturer 
+        public async Task<DataResponse<PagedResponse<List<InternshipDto>>>> GetAllInternshipsAsync(
+    int userId,
+    string role,
+    string? searchTerm,
+    DateTime? startDate,
+    DateTime? endDate,
+    string? statusFilter,
+    string? sortBy,
+    bool isDescending,
+    int pageNumber,
+    int pageSize)
+        {
+            try
+            {
+                // Validate startDate and endDate
+                if (startDate.HasValue && endDate.HasValue && startDate > endDate)
+                {
+                    return new DataResponse<PagedResponse<List<InternshipDto>>>
+                    {
+                        Data = null,
+                        Message = "Start date cannot be later than end date.",
+                        StatusCode = 400
+                    };
+                }
+
+                // Lấy danh sách internships từ repository
+                var internships = await _internshipRepository.GetAllInternshipsAsync(
+                    userId, role, searchTerm, startDate, endDate, statusFilter, sortBy, isDescending);
+
+                if (internships == null || !internships.Any())
+                {
+                    return new DataResponse<PagedResponse<List<InternshipDto>>>
+                    {
+                        Data = null,
+                        Message = "No internships found.",
+                        StatusCode = 404
+                    };
+                }
+
+                // Phân trang
+                var totalInternships = internships.Count();
+                var totalPages = (int)Math.Ceiling((double)totalInternships / pageSize);
+
+                // Áp dụng phân trang
+                var paginatedInternships = internships
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                // Mapping dữ liệu sang DTO
+                var internshipDtos = _mapper.Map<List<InternshipDto>>(paginatedInternships);
+
+                // Chuẩn bị response
+                var pagedResponse = new PagedResponse<List<InternshipDto>>
+                {
+                    Items = internshipDtos,
+                    TotalCount = totalInternships,
+                    PageSize = pageSize,
+                    CurrentPage = pageNumber,
+                    TotalPages = totalPages
+                };
+
+                return new DataResponse<PagedResponse<List<InternshipDto>>>
+                {
+                    Data = pagedResponse,
+                    Message = "Internships retrieved successfully!",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<PagedResponse<List<InternshipDto>>>
+                {
+                    Data = null,
+                    Message = $"Error retrieving internships: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+        public async Task<DataResponse<InternshipDetailWithReportsDTO>> GetInternshipDetailsAsync(
+            int internshipId,
+            string? sortBy,
+            bool? isDescending,
+            string? week,
+            int userId,
+            string role,
+            int? year = null)
+        {
+            try
+            {
+                // Lấy thông tin Internship và danh sách WorkingReports từ repository
+                var (internship, workingReports) = await _internshipRepository.GetInternshipDetailsWithWorkingReportsAsync(internshipId, userId, role);
+
+                if (internship == null)
+                {
+                    return new DataResponse<InternshipDetailWithReportsDTO>
+                    {
+                        Data = null,
+                        Message = "Internship not found.",
+                        StatusCode = 404
+                    };
+                }
+
+                // Lấy múi giờ Việt Nam
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
+
+                // Nếu không có năm, mặc định lấy năm hiện tại
+                year ??= currentVietnamTime.Year;
+
+                // Mặc định lấy tuần hiện tại nếu không có tuần nào được chọn
+                string selectedWeek = week;
+                if (string.IsNullOrEmpty(week))
+                {
+                    DateTime currentWeekStart = currentVietnamTime.AddDays(-(int)currentVietnamTime.DayOfWeek + (int)DayOfWeek.Monday);
+                    DateTime currentWeekEnd = currentWeekStart.AddDays(6);
+
+                    selectedWeek = $"{currentWeekStart:dd/MM} to {currentWeekEnd:dd/MM}";
+                }
+
+                // Lọc WorkingReports theo tuần được chọn
+                var weekDates = selectedWeek.Split(" to ");
+                if (weekDates.Length == 2)
+                {
+                    DateTime weekStart = DateTime.ParseExact($"{weekDates[0]}/{year}", "dd/MM/yyyy", null);
+                    DateTime weekEnd = DateTime.ParseExact($"{weekDates[1]}/{year}", "dd/MM/yyyy", null).AddDays(1).AddSeconds(-1);
+
+                    workingReports = workingReports
+                        .Where(w => w.CreatedAt >= weekStart && w.CreatedAt <= weekEnd)
+                        .ToList();
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid week format. Expected format: 'dd/MM to dd/MM'.");
+                }
+
+                // Sắp xếp danh sách WorkingReports
+                switch (sortBy?.ToLower())
+                {
+                    case "updatedat":
+                        workingReports = isDescending.GetValueOrDefault()
+                            ? workingReports.OrderByDescending(w => w.UpdatedAt).ToList()
+                            : workingReports.OrderBy(w => w.UpdatedAt).ToList();
+                        break;
+                    case "createdat":
+                    default:
+                        workingReports = isDescending.GetValueOrDefault()
+                            ? workingReports.OrderByDescending(w => w.CreatedAt).ToList()
+                            : workingReports.OrderBy(w => w.CreatedAt).ToList();
+                        break;
+                }
+
+                // Mapping dữ liệu
+                var internshipDto = _mapper.Map<InternshipDetailForMentorDTO>(internship);
+                var workingReportsDto = _mapper.Map<List<WorkingReportDto>>(workingReports);
+
+                // Tạo đối tượng DTO chứa thông tin Internship và WorkingReports
+                var responseDto = new InternshipDetailWithReportsDTO
+                {
+                    Internship = internshipDto,
+                    Week = selectedWeek, // Gán tuần được chọn
+                    WorkingReports = workingReportsDto
+                };
+
+                return new DataResponse<InternshipDetailWithReportsDTO>
+                {
+                    Data = responseDto,
+                    Message = "Internship details retrieved successfully.",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<InternshipDetailWithReportsDTO>
+                {
+                    Data = null,
+                    Message = $"Error retrieving internship details: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
     }
 }

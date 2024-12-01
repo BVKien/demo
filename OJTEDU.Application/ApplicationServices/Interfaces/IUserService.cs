@@ -113,6 +113,8 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         int pageSize,
         string? sortBy,
         bool? isDescending);
-        
+        Task<DataResponse<string>> AssignDepartmentToDeanAsync(int deanId, int departmentId);
+        Task<DataResponse<string>> AssignMajorToLecturerAsync(int lecturerId, int majorId);
+
     }
 }

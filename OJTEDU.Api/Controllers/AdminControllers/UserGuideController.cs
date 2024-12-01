@@ -147,6 +147,13 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     {
                         errorMessages.Add("Only .pdf files are allowed.");
                     }
+
+                    // Giới hạn dung lượng file (tối đa 10MB)
+                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    if (request.UserGuideFile.Length > maxFileSizeInBytes)
+                    {
+                        errorMessages.Add("File size must not exceed 10MB.");
+                    }
                 }
 
                 if (!request.RoleId.HasValue)
@@ -272,6 +279,13 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     if (fileExtension != ".pdf")
                     {
                         errorMessages.Add("Only .pdf files are allowed.");
+                    }
+
+                    // Giới hạn dung lượng file (tối đa 10MB)
+                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    if (request.UserGuideFile.Length > maxFileSizeInBytes)
+                    {
+                        errorMessages.Add("File size must not exceed 10MB.");
                     }
                 }
 

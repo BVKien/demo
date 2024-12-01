@@ -26,5 +26,15 @@ namespace OJTEDU.Domain.Interfaces
         Task<IEnumerable<Internship>> GetAllInternshipsByUserIdForCompanyAsync(int? userId); // filter, search, sort...
         Task<bool> AssignInternshipsForMentorAsync(int? userId, int? mentorId, int[]? internshipIds);
         Task<Internship> CreateInternshipAsync(int? studentId);
+        Task<List<Internship>> GetAllInternshipsAsync(
+        int userId,
+        string role,
+        string? searchTerm,
+        DateTime? startDate,
+        DateTime? endDate,
+        string? statusFilter,
+        string? sortBy,
+        bool isDescending);
+        Task<(Internship, List<WorkingReport>)> GetInternshipDetailsWithWorkingReportsAsync(int internshipId, int userId, string role);
     }
 }

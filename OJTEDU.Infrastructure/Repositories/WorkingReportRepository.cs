@@ -218,8 +218,65 @@ namespace OJTEDU.Infrastructure.Repositories
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.UserId == userId && u.Role.Name == "Dean");
         }
+
+        public async Task<List<string>> GetWeeksForStudentAsync(int studentId, int? year = null)
+        {
+            var internship = await _context.Internships
+                .Where(i => i.StudentId == studentId)
+                .FirstOrDefaultAsync();
+
+            if (internship == null || internship.StartDate == null || internship.EndDate == null)
+            {
+                throw new KeyNotFoundException("Internship details not found for the given student.");
+            }
+
+            DateTime startDate = internship.StartDate.Value;
+            DateTime endDate = internship.EndDate.Value;
+
+            // Nếu năm không được cung cấp, mặc định là năm hiện tại theo giờ Việt Nam
+            if (!year.HasValue)
+            {
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
+                year = currentVietnamTime.Year;
+            }
+
+            List<(DateTime WeekStart, string WeekRange, int Year)> weeks = new List<(DateTime, string, int)>();
+
+            // Tạo danh sách các năm trong khoảng thời gian thực tập
+            int startYear = startDate.Year;
+            int endYear = endDate.Year;
+
+            for (int y = startYear; y <= endYear; y++)
+            {
+                DateTime validStartDate = startDate.Year < y ? new DateTime(y, 1, 1) : startDate;
+                DateTime validEndDate = endDate.Year > y ? new DateTime(y, 12, 31) : endDate;
+
+                DateTime weekStart = validStartDate.AddDays(-(int)validStartDate.DayOfWeek + (int)DayOfWeek.Monday);
+
+                while (weekStart <= validEndDate)
+                {
+                    DateTime weekEnd = weekStart.AddDays(6);
+                    if (weekStart >= validStartDate && weekEnd <= validEndDate)
+                    {
+                        string weekRange = $"{weekStart:dd/MM} to {weekEnd:dd/MM}";
+                        weeks.Add((weekStart, weekRange, y));
+                    }
+                    weekStart = weekStart.AddDays(7);
+                }
+            }
+
+            // Sắp xếp danh sách tuần theo ngày bắt đầu
+            weeks = weeks.OrderBy(w => w.WeekStart).ToList();
+
+            // Trả về danh sách chuỗi tuần (không bao gồm năm)
+            return weeks.Select(w => w.WeekRange).ToList();
+        }
+
+
         public async Task<Student> GetStudentDetailsByIdAsync(int studentId, int userId, string role)
         {
+            // Khởi tạo query lấy thông tin sinh viên
             var query = _context.Students
                 .Include(s => s.User)
                 .Include(s => s.Semester)
@@ -231,32 +288,68 @@ namespace OJTEDU.Infrastructure.Repositories
                 .Include(s => s.Address.Province)
                 .Where(s => s.StudentId == studentId && s.User.Status != "Deleted");
 
+            // Logic cho Lecturer
             if (role == "Lecturer")
             {
                 query = query.Where(s => s.LecturerId == userId);
             }
+            // Logic cho Dean
             else if (role == "Dean")
             {
+                // Lấy thông tin Dean
                 var dean = await GetDeanByUserIdAsync(userId);
-                if (dean == null || !dean.MajorId.HasValue)
+                if (dean == null || !dean.DepartmentId.HasValue)
                 {
-                    throw new KeyNotFoundException("Don't have student invalid.");
+                    throw new KeyNotFoundException("Dean not found or doesn't manage any department.");
                 }
-                var deanMajorId = dean.MajorId.Value;
-                query = query.Where(s => s.MajorId == deanMajorId);
+
+                // Lấy danh sách MajorId thuộc Department mà Dean quản lý
+                var majorIdsInDepartment = await _context.Majors
+                    .Where(m => m.DepartmentId == dean.DepartmentId)
+                    .Select(m => m.MajorId)
+                    .ToListAsync();
+
+                if (!majorIdsInDepartment.Any())
+                {
+                    throw new KeyNotFoundException("Dean does not manage any majors.");
+                }
+
+                // Kiểm tra MajorId của sinh viên có thuộc MajorId trong Department không
+                query = query.Where(s => s.MajorId.HasValue && majorIdsInDepartment.Contains(s.MajorId.Value));
             }
 
+            // Lấy sinh viên đầu tiên phù hợp
             var student = await query.FirstOrDefaultAsync();
+
+            // Nếu không tìm thấy sinh viên
+            if (student == null)
+            {
+                throw new KeyNotFoundException("Student not found or access denied.");
+            }
 
             return student;
         }
+
         public async Task<List<WorkingReport>> GetWorkingReportsByStudentIdAsync(
-        int studentId,
-        int userId,
-        string role,
-        string? sortBy,
-        bool? isDescending)
+        int internshipId, int userId, string role, string? sortBy, bool? isDescending, string? week, int? year = null)
         {
+            // Lấy thông tin Internship và StudentId từ InternshipId
+            var internship = await _context.Internships
+                .Include(i => i.Student)
+                .FirstOrDefaultAsync(i => i.IntershipId == internshipId);
+
+            if (internship == null || internship.StartDate == null || internship.EndDate == null)
+            {
+                throw new KeyNotFoundException("Internship not found or invalid start/end date.");
+            }
+
+            if (!internship.StudentId.HasValue)
+            {
+                throw new InvalidOperationException("StudentId is null for the given internship.");
+            }
+
+            int studentId = internship.StudentId.Value;
+
             // Kiểm tra quyền truy cập
             var student = await GetStudentDetailsByIdAsync(studentId, userId, role);
             if (student == null)
@@ -264,10 +357,64 @@ namespace OJTEDU.Infrastructure.Repositories
                 throw new KeyNotFoundException("Student not found or access denied.");
             }
 
-            // Khởi tạo truy vấn
+            DateTime internshipStart = internship.StartDate.Value;
+            DateTime internshipEnd = internship.EndDate.Value.AddDays(1).AddSeconds(-1);
+
             IQueryable<WorkingReport> query = _context.WorkingReports
                 .Include(w => w.Student)
-                .Where(w => w.StudentId == studentId);
+                .Where(w => w.StudentId == studentId && w.CreatedAt >= internshipStart && w.CreatedAt <= internshipEnd);
+
+            // Nếu năm không được cung cấp, mặc định là năm hiện tại theo giờ Việt Nam
+            if (!year.HasValue)
+            {
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
+                year = currentVietnamTime.Year;
+            }
+
+            // Mặc định lấy tuần hiện tại nếu không có tuần nào được chọn
+            if (string.IsNullOrEmpty(week))
+            {
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
+
+                DateTime currentWeekStart = currentVietnamTime.AddDays(-(int)currentVietnamTime.DayOfWeek + (int)DayOfWeek.Monday);
+                DateTime currentWeekEnd = currentWeekStart.AddDays(6).AddDays(1).AddSeconds(-1);
+
+                query = query.Where(w => w.CreatedAt >= currentWeekStart && w.CreatedAt <= currentWeekEnd);
+            }
+            else
+            {
+                var weekDates = week.Split(" to ");
+                if (weekDates.Length == 2)
+                {
+                    DateTime weekStart, weekEnd;
+
+                    // Xử lý nếu StartDate và EndDate nằm trong hai năm khác nhau
+                    if (internshipStart.Year != internshipEnd.Year)
+                    {
+                        // Xác định năm dựa trên tháng của tuần
+                        int weekStartMonth = int.Parse(weekDates[0].Split('/')[1]);
+                        int weekEndMonth = int.Parse(weekDates[1].Split('/')[1]);
+
+                        int weekYear = weekStartMonth >= internshipStart.Month ? internshipStart.Year : internshipEnd.Year;
+
+                        weekStart = DateTime.ParseExact($"{weekDates[0]}/{weekYear}", "dd/MM/yyyy", null);
+                        weekEnd = DateTime.ParseExact($"{weekDates[1]}/{weekYear}", "dd/MM/yyyy", null).AddDays(1).AddSeconds(-1);
+                    }
+                    else
+                    {
+                        weekStart = DateTime.ParseExact($"{weekDates[0]}/{internshipStart.Year}", "dd/MM/yyyy", null);
+                        weekEnd = DateTime.ParseExact($"{weekDates[1]}/{internshipStart.Year}", "dd/MM/yyyy", null).AddDays(1).AddSeconds(-1);
+                    }
+
+                    query = query.Where(w => w.CreatedAt >= weekStart && w.CreatedAt <= weekEnd);
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid week format. Expected format: 'dd/MM to dd/MM'.");
+                }
+            }
 
             // Sắp xếp
             switch (sortBy?.ToLower())
@@ -285,15 +432,10 @@ namespace OJTEDU.Infrastructure.Repositories
                     break;
             }
 
-            var workingReports = await query.ToListAsync();
-
-            if (workingReports == null || !workingReports.Any())
-            {
-                throw new KeyNotFoundException("No working reports found for the given student.");
-            }
-
-            return workingReports;
+            return await query.ToListAsync();
         }
+
+
         public async Task<bool> UpdateWorkingReportAsync(int workingReportId, int userId, string role, string? feedback, double? score)
         {
             var workingReport = await _context.WorkingReports

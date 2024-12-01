@@ -14,6 +14,7 @@ namespace OJTEDU.Domain.Entities
         public int? StudentId { get; set; }
         public int? UniversityId { get; set; }
         public int? ResponseForProposalId { get; set; }
+        public string? ProposalTitle { get; set; }
         public string? ProposalContent { get; set; }
         public string? ResponseContent { get; set; }
         public DateTime? ProposalDate { get; set; }

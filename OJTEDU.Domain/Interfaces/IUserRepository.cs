@@ -71,5 +71,9 @@ namespace OJTEDU.Domain.Interfaces
         Task UpdateLecturersAsync(List<User> lecturers);
         Task<List<User>> GetLecturersByIdsAsync(List<int> lecturerIds);
         Task<List<User>> GetAllLecturerAsync(string? userCode, string? name, string? majorName, string? sortBy, bool? isDescending);
+        Task AssignDepartmentToDeanAsync(int deanId, int departmentId);
+        Task<bool> IsDeanAssignableToDepartmentAsync(int deanId);
+        Task AssignMajorToLecturerAsync(int lecturerId, int majorId);
+        Task<bool> IsLecturerAssignableToMajorAsync(int lecturerId, int majorId);
     }
 }

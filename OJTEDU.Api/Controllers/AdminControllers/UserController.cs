@@ -268,10 +268,18 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 {
                     errorMessages.Add("Invalid email format.");
                 }
+                else if (request.Email.Length > 50)
+                {
+                    errorMessages.Add("Email must not exceed 50 characters.");
+                }
 
                 if (string.IsNullOrWhiteSpace(request.Name))
                 {
                     errorMessages.Add("Name is required.");
+                }
+                else if (request.Name.Length > 350)
+                {
+                    errorMessages.Add("Name must not exceed 350 characters.");
                 }
 
                 if (string.IsNullOrWhiteSpace(request.UserCode))
@@ -283,10 +291,10 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     errorMessages.Add("UserCode cannot exceed 50 characters.");
                 }
 
-                if (request.RoleId <= 0) // Kiểm tra RoleId
-                {
-                    errorMessages.Add("Role is required.");
-                }
+                //if (request.RoleId <= 0) // Kiểm tra RoleId
+                //{
+                //    errorMessages.Add("Role is required.");
+                //}
 
                 // Nếu có lỗi, trả về phản hồi lỗi
                 if (errorMessages.Any())
@@ -303,7 +311,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 {
                     UserId = userId.Value,
                     Email = request.Email,
-                    RoleId = request.RoleId,
+                    //RoleId = request.RoleId,
                     Name = request.Name,
                     UserCode = request.UserCode,
                     Information = request.Information
@@ -494,7 +502,18 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     return BadRequest(new ApiResponse<object>
                     {
                         Data = null,
-                        Message = "File is empty or not provided."
+                        Message = "The uploaded file is empty or missing. Please ensure you provide a valid Excel file. If you're unsure of the required format, download the template and follow the instructions provided in the User Guide."
+                    });
+                }
+
+                // Kiểm tra định dạng file (chỉ chấp nhận .xlsx hoặc .xls)
+                string fileExtension = Path.GetExtension(file.FileName).ToLower();
+                if (fileExtension != ".xlsx" && fileExtension != ".xls")
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "Invalid file format. Only Excel files (.xlsx, .xls) are accepted. Please download the template to prepare your data correctly and follow the instructions in the User Guide."
                     });
                 }
 
@@ -511,11 +530,12 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     });
                 }
 
-                if (dataResponse.Data == null)
+                // Trả về lỗi nếu có
+                if (dataResponse.StatusCode != 200)
                 {
                     return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
                     {
-                        Data = null,
+                        Data = dataResponse.Data,
                         Message = dataResponse.Message
                     });
                 }
@@ -539,7 +559,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         }
 
 
-        [HttpPost("download-file-template")]
+        [HttpGet("download-file-template")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DownloadTemplateForAdmin()
         {
@@ -858,7 +878,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         }
 
         [HttpGet("dean-list")]
-        // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllDeansForAdminAsync(
         string? userCode,
         string? name,
@@ -909,7 +929,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
 
         [HttpGet("dean-details/{deanId}")]
         [Authorize(Roles = "Admin")]
-         public async Task<IActionResult> GetDeanDetailsForAdminAsync(int deanId,
+        public async Task<IActionResult> GetDeanDetailsForAdminAsync(int deanId,
         int? pageNumber,
         int? pageSize,
         string? sortBy,
@@ -961,8 +981,72 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 });
             }
         }
+        [HttpPut("assign-department")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AssignDepartmentToDeanAsync(int deanId, int departmentId)
+        {
+            try
+            {
+                var response = await _userService.AssignDepartmentToDeanAsync(deanId, departmentId);
+
+                if (response.StatusCode != 200)
+                {
+                    return StatusCode(response.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = response.Message
+                    });
+                }
+
+                return Ok(new ApiResponse<string>
+                {
+                    Data = response.Data,
+                    Message = response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+        [HttpPut("assign-major")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AssignMajorToLecturerAsync(int lecturerId, int majorId)
+        {
+            try
+            {
+                var response = await _userService.AssignMajorToLecturerAsync(lecturerId, majorId);
+
+                if (response.StatusCode != 200)
+                {
+                    return StatusCode(response.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = response.Message
+                    });
+                }
+
+                return Ok(new ApiResponse<string>
+                {
+                    Data = response.Data,
+                    Message = response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
         [HttpPost("assign-lecturers")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AssignLecturersToDeanForAdmin([FromBody] AssignLecturersToDeanDto assignLecturersDto)
         {
             var response = await _userService.AssignLecturersToDeanAsync(assignLecturersDto);
@@ -983,7 +1067,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         }
 
         [HttpGet("lecturer-list")]
-        // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllLecturersAsync(
          string? userCode,
          string? name,
@@ -1033,7 +1117,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         }
 
         [HttpGet("lecturer-detail/{lecturerId}")]
-        // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetLecturerDetailsForAdminAsync(
         int lecturerId,
         string? studentName,

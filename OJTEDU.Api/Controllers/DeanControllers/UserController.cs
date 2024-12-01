@@ -79,26 +79,40 @@ namespace OJTEDU.WebAPI.Controllers.Dean
         string? userCode,
         string? majorName,
         string? sortBy,
-        bool isDescending = false,
-        int pageNumber = 1,
-        int pageSize = 10)
+        int? pageNumber,
+        int? pageSize,
+        bool isDescending = false)
         {
-            var response = await _userService.GetLecturerListForDeanAsync(name, userCode, majorName, sortBy, isDescending, pageNumber, pageSize);
-
-            if (response.Data == null)
+            try
             {
-                return StatusCode(response.StatusCode, new ApiResponse<object>
+                var actualPageNumber = pageNumber ?? 1;
+                var actualPageSize = pageSize ?? 15;
+                var response = await _userService.GetLecturerListForDeanAsync(name, userCode, majorName, sortBy, isDescending, actualPageNumber, actualPageSize);
+
+                if (response.Data == null)
                 {
-                    Data = null,
+                    return StatusCode(response.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = response.Message
+                    });
+                }
+
+                return Ok(new ApiResponse<PagedResponse<List<LecturerListDto>>>
+                {
+                    Data = response.Data,
                     Message = response.Message
                 });
             }
-
-            return Ok(new ApiResponse<PagedResponse<List<LecturerListDto>>>
+            catch (Exception ex)
             {
-                Data = response.Data,
-                Message = response.Message
-            });
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+
         }
 
         [HttpGet("lecturer-detail/{lecturerId}")]

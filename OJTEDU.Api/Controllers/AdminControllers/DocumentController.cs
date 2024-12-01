@@ -153,6 +153,15 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 {
                     errorMessages.Add("DocumentFile is required.");
                 }
+                else
+                {
+                    // Giới hạn dung lượng file (tối đa 10MB)
+                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    if (request.DocumentFile.Length > maxFileSizeInBytes)
+                    {
+                        errorMessages.Add("File size must not exceed 10MB.");
+                    }
+                }
 
                 //if (request.ForRoleIds == null || !request.ForRoleIds.Any())
                 //{
@@ -372,6 +381,24 @@ namespace OJTEDU.Api.Controllers.AdminControllers
 
                 if (request.DocumentFile != null && request.DocumentFile.Length > 0)
                 {
+
+                    // Giới hạn dung lượng file (tối đa 10MB)
+                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    if (request.DocumentFile.Length > maxFileSizeInBytes)
+                    {
+                        errorMessages.Add("File size must not exceed 10MB.");
+                    }
+
+                    // Nếu có lỗi, trả về phản hồi lỗi
+                    if (errorMessages.Any())
+                    {
+                        return BadRequest(new ApiResponse<object>
+                        {
+                            Data = null,
+                            Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
+                        });
+                    }
+
                     string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.DocumentFile.FileName}";
                     string documentsPath = Path.Combine(_webHostEnvironment.WebRootPath, "documents");
 

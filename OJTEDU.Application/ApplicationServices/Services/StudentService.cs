@@ -162,6 +162,20 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     };
                 }
 
+                // Kiểm tra MajorId của Lecturer phải trùng với MajorId của các Student
+                foreach (var student in studentsToUpdate)
+                {
+                    if (student.MajorId != lecturer.MajorId)
+                    {
+                        return new DataResponse<string>
+                        {
+                            Data = null,
+                            Message = $"Major mismatch. Student has a different major from Lecturer.",
+                            StatusCode = 400
+                        };
+                    }
+                }
+
                 // Cập nhật LecturerId cho từng sinh viên
                 foreach (var student in studentsToUpdate)
                 {
@@ -193,47 +207,51 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
 
+
         // 2. GetStudentListAsync (for Dean and Lecturer)
         public async Task<DataResponse<PagedResponse<List<StudentListDto>>>> GetStudentListAsync(
-            string? studentName,
-            string? lecturerName,
-            int pageNumber,
-            int pageSize)
+        string? code,
+        string? studentName,
+        string? lecturerName,
+        string? majorName,
+        int pageNumber,
+        int pageSize,
+        string? sortBy,
+        bool? isDescending)
         {
             try
             {
                 var userId = GetCurrentUserId();
                 var role = GetCurrentUserRole();
 
-                var students = await _studentRepository.GetStudentListAsync(userId, role, studentName, lecturerName);
+                var students = await _studentRepository.GetStudentListAsync(
+                    userId,
+                    role,
+                    code,
+                    studentName,
+                    lecturerName,
+                    majorName,
+                    sortBy,
+                    isDescending
+                );
 
-                if (students == null || !students.Any())
-                {
-                    return new DataResponse<PagedResponse<List<StudentListDto>>>
-                    {
-                        Data = null,
-                        Message = "No students found.",
-                        StatusCode = 404
-                    };
-                }
-
+                // Phân trang
                 var totalStudents = students.Count();
-                var totalPages = (int)Math.Ceiling((double)totalStudents / pageSize);
+                var paginatedStudents = students
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
 
-                var studentDtos = _mapper.Map<List<StudentListDto>>(students)
-                                          .Skip((pageNumber - 1) * pageSize)
-                                          .Take(pageSize)
-                                          .ToList();
-
-                // Calculate 'Attended' status for each student
-               
+                // Ánh xạ sang DTO
+                var studentDtos = _mapper.Map<List<StudentListDto>>(paginatedStudents);
 
                 var pagedResponse = new PagedResponse<List<StudentListDto>>
                 {
                     Items = studentDtos,
+                    TotalCount = totalStudents,
                     PageSize = pageSize,
                     CurrentPage = pageNumber,
-                    TotalPages = totalPages
+                    TotalPages = (int)Math.Ceiling((double)totalStudents / pageSize)
                 };
 
                 return new DataResponse<PagedResponse<List<StudentListDto>>>
@@ -343,6 +361,81 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
 
             return roleClaim;
+        }
+        public async Task<DataResponse<string>> UpdateStudentAsync(int studentId, UpdateStudentDto dto)
+        {
+            try
+            {
+                // Lấy thông tin sinh viên
+                var student = await _studentRepository.GetStudentByIdAsync(studentId);
+
+                if (student == null)
+                {
+                    return new DataResponse<string>
+                    {
+                        Data = null,
+                        Message = "Student not found.",
+                        StatusCode = 404
+                    };
+                }
+
+                // Cập nhật Information
+                student.User.Information = dto.Information;
+
+                // Kiểm tra MajorName
+                if (!string.IsNullOrWhiteSpace(dto.MajorName))
+                {
+                    var major = await _studentRepository.GetMajorByNameAsync(dto.MajorName);
+                    if (major == null)
+                    {
+                        return new DataResponse<string>
+                        {
+                            Data = null,
+                            Message = "Major not found or inactive.",
+                            StatusCode = 400
+                        };
+                    }
+
+                    student.MajorId = major.MajorId;
+                }
+
+                // Kiểm tra SemesterName
+                if (!string.IsNullOrWhiteSpace(dto.SemesterName))
+                {
+                    var semester = await _studentRepository.GetSemesterByNameAsync(dto.SemesterName);
+                    if (semester == null)
+                    {
+                        return new DataResponse<string>
+                        {
+                            Data = null,
+                            Message = "Semester not found.",
+                            StatusCode = 400
+                        };
+                    }
+
+                    student.SemesterId = semester.SemesterId;
+                }
+                student.UpdatedAt = DateTime.Now;
+
+                // Lưu thay đổi
+                await _studentRepository.UpdateStudentAsync(student);
+
+                return new DataResponse<string>
+                {
+                    Data = "Success",
+                    Message = "Student updated successfully.",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<string>
+                {
+                    Data = null,
+                    Message = $"Error updating student: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
         }
     }
 }

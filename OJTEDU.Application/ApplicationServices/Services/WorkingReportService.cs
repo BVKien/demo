@@ -203,83 +203,109 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         //For Dean
-        public async Task<DataResponse<WorkingReportResponseDTO>> GetWorkingReportsByStudentIdAsync(
-        int studentId,
-        int pageNumber,
-        int pageSize,
-        string? sortBy,
-        bool? isDescending)
+
+        public async Task<DataResponse<List<string>>> GetWeeksForStudentAsync(int studentId, int? year = null)
         {
             try
             {
-                // Lấy thông tin userId và role từ Claims
+                // If year is not provided, default to current year in Vietnam time
+                if (!year.HasValue)
+                {
+                    TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                    DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
+                    year = currentVietnamTime.Year;
+                }
+
+                // Get the list of weeks from the repository
+                var weeks = await _workingReportRepository.GetWeeksForStudentAsync(studentId, year.Value);
+
+                if (weeks == null || !weeks.Any())
+                {
+                    return new DataResponse<List<string>>
+                    {
+                        Data = null,
+                        Message = "No weeks found for the specified student and year.",
+                        StatusCode = 404
+                    };
+                }
+
+                return new DataResponse<List<string>>
+                {
+                    Data = weeks,
+                    Message = "Weeks retrieved successfully!",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<List<string>>
+                {
+                    Data = null,
+                    Message = $"Error retrieving weeks: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        public async Task<DataResponse<WorkingReportResponseDTO>> GetWorkingReportsByStudentIdAsync(
+        int studentId, string? sortBy, bool? isDescending, string? week, int? year = null)
+        {
+            try
+            {
                 var userId = GetCurrentUserId();
                 var role = GetCurrentUserRole();
 
-                // Lấy danh sách báo cáo làm việc từ repository
-                var workingReports = await _workingReportRepository.GetWorkingReportsByStudentIdAsync(
-                    studentId,
-                    userId,
-                    role,
-                    sortBy,
-                    isDescending
-                );
-
-                // Lấy thông tin sinh viên từ repository
                 var student = await _workingReportRepository.GetStudentDetailsByIdAsync(studentId, userId, role);
 
                 if (student == null)
                 {
                     return new DataResponse<WorkingReportResponseDTO>
                     {
-                        Data = null,
-                        Message = "Student not found or access denied.",
-                        StatusCode = 404
+                        StatusCode = 403,
+                        Message = "Access denied or student not found.",
+                        Data = null
                     };
                 }
 
-                // Phân trang
-                var totalReports = workingReports.Count;
-                var totalPages = (int)Math.Ceiling((double)totalReports / pageSize);
+                var workingReports = await _workingReportRepository.GetWorkingReportsByStudentIdAsync(
+                    studentId, userId, role, sortBy, isDescending, week, year);
 
-                var paginatedReports = workingReports
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
+                // Xác định tuần được chọn
+                string selectedWeek = week;
 
-                // Ánh xạ dữ liệu sang DTO
-                var workingReportDtos = _mapper.Map<List<WorkingReportDto>>(paginatedReports);
+                // Nếu không có tuần được chọn, sử dụng tuần hiện tại
+                if (string.IsNullOrEmpty(week))
+                {
+                    TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                    DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
+                    DateTime currentWeekStart = currentVietnamTime.AddDays(-(int)currentVietnamTime.DayOfWeek + (int)DayOfWeek.Monday);
+                    DateTime currentWeekEnd = currentWeekStart.AddDays(6);
 
-                var responseDto = new WorkingReportResponseDTO
+                    selectedWeek = $"{currentWeekStart:dd/MM} to {currentWeekEnd:dd/MM}";
+                }
+
+                var response = new WorkingReportResponseDTO
                 {
                     StudentName = student.User.Name,
                     LecturerName = student.Lecturer.Name,
-                    WorkingReports = workingReportDtos
+                    Week = selectedWeek, 
+                    WorkingReports = _mapper.Map<List<WorkingReportDto>>(workingReports)
                 };
 
                 return new DataResponse<WorkingReportResponseDTO>
                 {
-                    Data = responseDto,
+                    StatusCode = 200,
                     Message = "Working reports retrieved successfully.",
-                    StatusCode = 200
-                };
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return new DataResponse<WorkingReportResponseDTO>
-                {
-                    Data = null,
-                    Message = ex.Message,
-                    StatusCode = 404
+                    Data = response
                 };
             }
             catch (Exception ex)
             {
                 return new DataResponse<WorkingReportResponseDTO>
                 {
-                    Data = null,
+                    StatusCode = 500,
                     Message = $"Error retrieving working reports: {ex.Message}",
-                    StatusCode = 500
+                    Data = null
                 };
             }
         }

@@ -13,6 +13,7 @@ namespace OJTEDU.Domain.Entities
         public int SupportRequestId { get; set; }
         public int? StudentId { get; set; }
         public int? UniversityId { get; set; }
+        public string? RequestTitle { get; set; }
         public string? RequestContent { get; set; }
         public string? FeedbackContent { get; set; }
         public string? Status { get; set; }

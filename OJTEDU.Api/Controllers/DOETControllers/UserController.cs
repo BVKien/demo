@@ -291,10 +291,10 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     errorMessages.Add("UserCode cannot exceed 50 characters.");
                 }
 
-                if (request.RoleId <= 0) // Kiểm tra RoleId
-                {
-                    errorMessages.Add("Role is required.");
-                }
+                //if (request.RoleId <= 0) // Kiểm tra RoleId
+                //{
+                //    errorMessages.Add("Role is required.");
+                //}
 
                 // Nếu có lỗi, trả về phản hồi lỗi
                 if (errorMessages.Any())
@@ -311,7 +311,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 {
                     UserId = userId.Value,
                     Email = request.Email,
-                    RoleId = request.RoleId,
+                    //RoleId = request.RoleId,
                     Name = request.Name,
                     UserCode = request.UserCode,
                     Information = request.Information
@@ -502,7 +502,18 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     return BadRequest(new ApiResponse<object>
                     {
                         Data = null,
-                        Message = "File is empty or not provided."
+                        Message = "The uploaded file is empty or missing. Please ensure you provide a valid Excel file. If you're unsure of the required format, download the template and follow the instructions provided in the User Guide."
+                    });
+                }
+
+                // Kiểm tra định dạng file (chỉ chấp nhận .xlsx hoặc .xls)
+                string fileExtension = Path.GetExtension(file.FileName).ToLower();
+                if (fileExtension != ".xlsx" && fileExtension != ".xls")
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "Invalid file format. Only Excel files (.xlsx, .xls) are accepted. Please download the template to prepare your data correctly and follow the instructions in the User Guide."
                     });
                 }
 
@@ -519,11 +530,12 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                if (dataResponse.Data == null)
+                // Trả về lỗi nếu có
+                if (dataResponse.StatusCode != 200)
                 {
                     return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
                     {
-                        Data = null,
+                        Data = dataResponse.Data,
                         Message = dataResponse.Message
                     });
                 }
@@ -547,7 +559,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
         }
 
 
-        [HttpPost("download-file-template")]
+        [HttpGet("download-file-template")]
         [Authorize(Roles = "DOET")]
         public async Task<IActionResult> DownloadTemplateForDoet()
         {
@@ -639,7 +651,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 });
             }
         }
-        
+
         [HttpGet("dean-list")]
         [Authorize(Roles = "DOET")]
         public async Task<IActionResult> GetAllDeansForDOETAsync(
@@ -764,9 +776,72 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 Message = response.Message
             });
         }
+        [HttpPut("assign-department")]
+        [Authorize(Roles = "DOET")]
+        public async Task<IActionResult> AssignDepartmentToDeanAsync(int deanId, int departmentId)
+        {
+            try
+            {
+                var response = await _userService.AssignDepartmentToDeanAsync(deanId, departmentId);
 
+                if (response.StatusCode != 200)
+                {
+                    return StatusCode(response.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = response.Message
+                    });
+                }
+
+                return Ok(new ApiResponse<string>
+                {
+                    Data = response.Data,
+                    Message = response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
+        [HttpPut("assign-major")]
+        [Authorize(Roles = "DOET")]
+        public async Task<IActionResult> AssignMajorToLecturerAsync(int lecturerId, int majorId)
+        {
+            try
+            {
+                var response = await _userService.AssignMajorToLecturerAsync(lecturerId, majorId);
+
+                if (response.StatusCode != 200)
+                {
+                    return StatusCode(response.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = response.Message
+                    });
+                }
+
+                return Ok(new ApiResponse<string>
+                {
+                    Data = response.Data,
+                    Message = response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
         [HttpGet("lecturer-list")]
-        // [Authorize(Roles = "DOET")]
+        [Authorize(Roles = "DOET")]
         public async Task<IActionResult> GetAllLecturersForDOETAsync(
          string? userCode,
          string? name,
@@ -816,7 +891,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
         }
 
         [HttpGet("lecturer-detail/{lecturerId}")]
-        // [Authorize(Roles = "DOET")]
+        [Authorize(Roles = "DOET")]
         public async Task<IActionResult> GetLecturerDetailsForDOETAsync(
         int lecturerId,
         string? studentName,

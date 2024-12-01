@@ -121,6 +121,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new Exception("Not found company.");
                 }
 
+                // Notification
                 var notificationContent = $"{studentExists?.User?.Name} has applied for the position {jobExists.Title} at {company?.User?.Name}.";
                 var notiInfo = new Notification
                 {
@@ -252,6 +253,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     await _context.SaveChangesAsync();
 
+                    // Notification
                     var notificationContent = $"{student?.User?.Name} has accepted the interview invitation for the position {job?.Title} and will attend the interview at {company?.User?.Name}.";
                     var notiInfo = new Notification
                     {
@@ -275,6 +277,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     await _context.SaveChangesAsync();
 
+                    // Notification
                     var notificationContent = $"{student?.User?.Name} has declined offer for positions at {company?.User?.Name}.";
                     var notiInfo = new Notification
                     {
@@ -343,6 +346,18 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     await _context.Internships.AddAsync(internship);
                     await _context.SaveChangesAsync();
+
+                    // Notification
+                    var notificationContent = $"{student?.User?.Name} has accepted the internship offer for the position {job?.Title} and will begin the internship at {company?.User?.Name}.";
+                    var notiInfo = new Notification
+                    {
+                        NotificationContent = notificationContent,
+                        Image = student?.User?.Image,
+                        StudentId = student?.StudentId,
+                        CompanyId = company?.CompanyId,
+                        ApplicationId = application.ApplicationId,
+                    };
+                    await _notificationRepository.CreateNotificationAsync(notiInfo);
 
                     return true;
                 }
@@ -435,6 +450,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     await _context.SaveChangesAsync();
 
+                    // Notification
                     var notificationContent = $"{company?.User?.Name} has accepted your application for the position {job?.Title} and is inviting you for an interview.";
                     var notiInfo = new Notification
                     {
@@ -458,6 +474,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     await _context.SaveChangesAsync();
 
+                    // Notification
                     var notificationContent = $"{company?.User?.Name} has rejected your application for the position {job?.Title}.";
                     var notiInfo = new Notification
                     {
@@ -487,6 +504,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     await _context.SaveChangesAsync();
 
+                    // Notification
                     var notificationContent = $"{company?.User?.Name} has accepted your internship application for the position {job?.Title} after a successful interview.";
                     var notiInfo = new Notification
                     {

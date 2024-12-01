@@ -211,6 +211,8 @@ namespace OJTEDU.Infrastructure.Data
 
                 entity.Property(e => e.ProposalDate).HasColumnType("datetime");
 
+                entity.Property(e => e.ProposalTitle).HasMaxLength(250);
+
                 entity.Property(e => e.ResponseDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Status).HasMaxLength(50);
@@ -505,6 +507,8 @@ namespace OJTEDU.Infrastructure.Data
                 entity.ToTable("InternshipProcess");
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Status).HasMaxLength(50);
 
                 entity.Property(e => e.Title).HasMaxLength(100);
 
@@ -874,6 +878,8 @@ namespace OJTEDU.Infrastructure.Data
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.RequestTitle).HasMaxLength(250);
 
                 entity.Property(e => e.Status).HasMaxLength(50);
 

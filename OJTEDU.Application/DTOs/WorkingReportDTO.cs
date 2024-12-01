@@ -61,6 +61,7 @@ namespace OJTEDU.Application.DTOs
         public class WorkingReportDto
         {
             public string WorkingReportId { get; set; }
+            public string ReportTitle { get; set; }
             public string FeedbackFromLecturer { get; set; }
             public double? LecturerScore { get; set; }
             public double? MentorScore { get; set; }
@@ -70,8 +71,10 @@ namespace OJTEDU.Application.DTOs
         }
         public class WorkingReportResponseDTO
         {
+            public string MentorName { get; set; }
             public string LecturerName { get; set; }
             public string StudentName { get; set; }
+            public string Week { get; set; }
             public List<WorkingReportDto> WorkingReports { get; set; }
         }
         public class GiveFeedbackOrScoreDto

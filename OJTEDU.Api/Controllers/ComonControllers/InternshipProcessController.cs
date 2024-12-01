@@ -59,9 +59,14 @@ namespace OJTEDU.Api.Controllers.ComonControllers
                     });
                 }
 
-                // Đọc file PDF và trả về
+                //// Đọc file PDF và trả về
+                //var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                //return File(fileBytes, "application/pdf", Path.GetFileName(filePath));
+
+                // Đọc nội dung file
                 var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-                return File(fileBytes, "application/pdf", Path.GetFileName(filePath));
+                // Trả về file dưới dạng stream để tải xuống
+                return File(fileBytes, "application/octet-stream", dataResponse.Data.FilePath);
             }
             catch (Exception ex)
             {

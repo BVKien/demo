@@ -23,11 +23,12 @@ namespace OJTEDU.Infrastructure.Repositories
         // Admin - DOET
         public async Task<IEnumerable<Company>> GetAllCompaniesForAdminDoetAsync(string? companyName, string? companyCode, string? status, int? provinceId, int? districtId, int? wardId)
         {
-            IQueryable<Company> query = _context.Companies.Include(u => u.User)
-                                                          .Include(c => c.Address)
-                                                          .ThenInclude(p => p.Province)
-                                                          .ThenInclude(d => d.Districts)
-                                                          .ThenInclude(w => w.Wards);
+            IQueryable<Company> query = _context.Companies.Include(u => u.User).ThenInclude(u => u.Role)
+                                                                      .Include(c => c.Address)
+                                                                      .ThenInclude(p => p.Province)
+                                                                      .ThenInclude(d => d.Districts)
+                                                                      .ThenInclude(w => w.Wards)
+                                                                      .Where(c => c.User.Role.Name == "Company" && c.User.Status != "Deleted");
 
             // Apply search filters if provided
             if (!string.IsNullOrWhiteSpace(companyName))

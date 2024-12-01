@@ -262,14 +262,14 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 var errorMessages = new List<string>();
 
                 // Kiểm tra từng thuộc tính
-                if (string.IsNullOrWhiteSpace(request.Name))
-                {
-                    errorMessages.Add("Name is required.");
-                }
-                else if (request.Name.Length > 100)
-                {
-                    errorMessages.Add("Name must not exceed 100 characters.");
-                }
+                //if (string.IsNullOrWhiteSpace(request.Name))
+                //{
+                //    errorMessages.Add("Name is required.");
+                //}
+                //else if (request.Name.Length > 100)
+                //{
+                //    errorMessages.Add("Name must not exceed 100 characters.");
+                //}
 
                 if (string.IsNullOrWhiteSpace(request.Description))
                 {
@@ -289,7 +289,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 var roleDto = new UpdateRoleForAdminDTO
                 {
                     RoleId = roleId.Value,
-                    Name = request.Name,
+                    //Name = request.Name,
                     Description = request.Description
                 };
 

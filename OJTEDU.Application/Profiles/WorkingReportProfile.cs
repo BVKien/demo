@@ -45,7 +45,8 @@ namespace OJTEDU.Application.Profiles
 
             CreateMap<WorkingReport, WorkingReportResponseDTO>()
                  .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User.Name))
-                 .ForMember(dest => dest.LecturerName, opt => opt.MapFrom(src => src.Lecturer.Name));
+                 .ForMember(dest => dest.LecturerName, opt => opt.MapFrom(src => src.Lecturer.Name))
+                 .ForMember(dest => dest.MentorName, opt => opt.MapFrom(src => src.Mentor.User.Name));
 
 
             // Mentor 
