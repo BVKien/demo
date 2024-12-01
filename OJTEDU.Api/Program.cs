@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.FileProviders;
+﻿using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.FileProviders;
 using OfficeOpenXml;
 using OJTEDU.Api.Configuration;
 
@@ -102,15 +103,18 @@ app.UseSwaggerUI(c =>
 
 app.UseStaticFiles(); // Đặt sau Swagger nếu phục vụ file tĩnh
 
-app.UseHttpsRedirection(); // Chuyển hướng từ HTTP sang HTTPS
+app.UseHttpsRedirection();
 
-app.UseCors(); // Đặt gần cuối để áp dụng chính sách CORS
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto
+});
 
-app.UseAuthentication(); // Kích hoạt xác thực
+app.UseCors();
 
-app.UseRouting(); // Đặt trước Authentication và Authorization
-
-app.UseAuthorization();  // Kích hoạt kiểm tra quyền (phụ thuộc vào Authentication)
+app.UseAuthentication();
+app.UseRouting();
+app.UseAuthorization();
 
 app.MapControllers(); // Map các Controller
 
