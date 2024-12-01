@@ -62,8 +62,36 @@ var app = builder.Build();
 //}
 
 // For production environment
+//app.UseSwagger();
+//app.UseSwaggerUI();
+//app.UseSwaggerUI(c =>
+//{
+//    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API V1");
+//    c.DisplayRequestDuration();
+//    c.EnableFilter();
+//    c.EnableDeepLinking();
+//});
+
+//app.UseHttpsRedirection();
+
+//app.UseAuthentication();
+//app.UseRouting();
+//app.UseAuthorization();
+
+//app.UseCors();
+
+//app.MapControllers();
+
+//app.UseStaticFiles();
+
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapControllers();
+//});
+
+//app.Run();
+
 app.UseSwagger();
-app.UseSwaggerUI();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API V1");
@@ -72,17 +100,18 @@ app.UseSwaggerUI(c =>
     c.EnableDeepLinking();
 });
 
-app.UseHttpsRedirection();
+app.UseStaticFiles(); // Đặt sau Swagger nếu phục vụ file tĩnh
 
-app.UseAuthentication();
-app.UseRouting();
-app.UseAuthorization();
+app.UseHttpsRedirection(); // Chuyển hướng từ HTTP sang HTTPS
 
-app.UseCors();
+app.UseRouting(); // Đặt trước Authentication và Authorization
 
-app.MapControllers();
+app.UseAuthentication(); // Kích hoạt xác thực
+app.UseAuthorization();  // Kích hoạt kiểm tra quyền (phụ thuộc vào Authentication)
 
-app.UseStaticFiles();
+app.UseCors(); // Đặt gần cuối để áp dụng chính sách CORS
+
+app.MapControllers(); // Map các Controller
 
 app.UseEndpoints(endpoints =>
 {

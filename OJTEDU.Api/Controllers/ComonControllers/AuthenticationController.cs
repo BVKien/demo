@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OJTEDU.Api.Configuration;
 using OJTEDU.Api.Input;
@@ -10,6 +11,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigin")]
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;
