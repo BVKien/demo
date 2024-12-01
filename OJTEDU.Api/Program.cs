@@ -104,12 +104,13 @@ app.UseStaticFiles(); // Đặt sau Swagger nếu phục vụ file tĩnh
 
 app.UseHttpsRedirection(); // Chuyển hướng từ HTTP sang HTTPS
 
-app.UseRouting(); // Đặt trước Authentication và Authorization
+app.UseCors(); // Đặt gần cuối để áp dụng chính sách CORS
 
 app.UseAuthentication(); // Kích hoạt xác thực
-app.UseAuthorization();  // Kích hoạt kiểm tra quyền (phụ thuộc vào Authentication)
 
-app.UseCors(); // Đặt gần cuối để áp dụng chính sách CORS
+app.UseRouting(); // Đặt trước Authentication và Authorization
+
+app.UseAuthorization();  // Kích hoạt kiểm tra quyền (phụ thuộc vào Authentication)
 
 app.MapControllers(); // Map các Controller
 
