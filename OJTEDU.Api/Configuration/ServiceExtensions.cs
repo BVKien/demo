@@ -110,13 +110,28 @@ namespace OJTEDU.Api.Configuration
         //    });
         //}
 
-        public static void ConfigureCors(this IServiceCollection services, string origin)
+        //public static void ConfigureCors(this IServiceCollection services, string origin)
+        //{
+        //    services.AddCors(options =>
+        //    {
+        //        options.AddPolicy("AllowSpecificOrigin", builder =>
+        //        {
+        //            builder.WithOrigins(origin)
+        //                   .AllowAnyMethod()
+        //                   .AllowAnyHeader()
+        //                   .AllowCredentials()
+        //                   .WithExposedHeaders("Content-Disposition");
+        //        });
+        //    });
+        //}
+
+        public static void ConfigureCors(this IServiceCollection services)
         {
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowSpecificOrigin", builder =>
                 {
-                    builder.WithOrigins(origin)
+                    builder.WithOrigins("https://localhost:3000", "https://ojtedubdomain.site")  // Thêm nhiều domain nếu cần
                            .AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials()

@@ -39,7 +39,7 @@ builder.Services.ConfigureRepositories();
 
 // Configure CORS for ReactJS default port
 logger.LogInformation("Configuring CORS for ReactJS on port 3000.");
-builder.Services.ConfigureCors("https://ojtedubdomain.site/api/Authentication/login-google");
+builder.Services.ConfigureCors();
 
 // Configure Http Context Accessor
 logger.LogInformation("Configuring HttpContextAccessor.");
