@@ -12,7 +12,6 @@ namespace OJTEDU.Api.Controllers.ComonControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("AllowSpecificOrigin")]
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -24,6 +23,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             _logger = logger;
         }
 
+        [EnableCors("AllowSpecificOrigin")]
         [HttpPost("login-google")]
         public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
         {
