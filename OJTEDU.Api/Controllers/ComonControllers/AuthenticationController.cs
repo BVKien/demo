@@ -11,8 +11,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[EnableCors("AllowSpecificOrigin")]
-    //[EnableCors]
+    [EnableCors("AllowSpecificOrigin")]
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -23,83 +22,58 @@ namespace OJTEDU.Api.Controllers.ComonControllers
         }
 
         [HttpPost("login-google")]
-        public async Task<IActionResult> LoginWithGoogle(string? token)
+        public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
         {
             try
             {
-                // Gọi UserService
-                var dataResponse = await _userService.LoginWithGoogleAsync(token);
+                // Kiểm tra xem model có hợp lệ hay không
+                if (string.IsNullOrWhiteSpace(request.AuthorizeCode))
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "AuthorizeCode is required."
+                    });
+                }
 
-                // Thành công
-                return Ok(new ApiResponse<UserReadForAuthDTO>
+                var dataResponse = await _userService.LoginWithGoogleAsync(request.AuthorizeCode);
+
+
+                if (dataResponse == null)
+                {
+                    return StatusCode(500, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "Unexpected error occurred."
+                    });
+                }
+
+                if (dataResponse.Data == null)
+                {
+                    return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = dataResponse.Message
+                    });
+                }
+
+                var apiResponse = new ApiResponse<UserReadForAuthDTO>()
                 {
                     Data = dataResponse.Data,
                     Message = dataResponse.Message
-                });
+                };
+
+                return Ok(apiResponse);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ApiResponse<string>
+                return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,
                     Message = $"Internal Server Error: {ex.Message}"
                 });
             }
         }
-
-        //[HttpPost("login-google")]
-        //public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
-        //{
-        //    try
-        //    {
-        //        // Kiểm tra xem model có hợp lệ hay không
-        //        if (string.IsNullOrWhiteSpace(request.AuthorizeCode))
-        //        {
-        //            return BadRequest(new ApiResponse<object>
-        //            {
-        //                Data = null,
-        //                Message = "AuthorizeCode is required."
-        //            });
-        //        }
-
-        //        var dataResponse = await _userService.LoginWithGoogleAsync(request.AuthorizeCode);
-
-
-        //        if (dataResponse == null)
-        //        {
-        //            return StatusCode(500, new ApiResponse<object>
-        //            {
-        //                Data = null,
-        //                Message = "Unexpected error occurred."
-        //            });
-        //        }
-
-        //        if (dataResponse.Data == null)
-        //        {
-        //            return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
-        //            {
-        //                Data = null,
-        //                Message = dataResponse.Message
-        //            });
-        //        }
-
-        //        var apiResponse = new ApiResponse<UserReadForAuthDTO>()
-        //        {
-        //            Data = dataResponse.Data,
-        //            Message = dataResponse.Message
-        //        };
-
-        //        return Ok(apiResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new ApiResponse<object>
-        //        {
-        //            Data = null,
-        //            Message = $"Internal Server Error: {ex.Message}"
-        //        });
-        //    }
-        //}
 
         [HttpGet("check-auth")]
         public async Task<IActionResult> CheckAuthentication()

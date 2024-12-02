@@ -25,7 +25,7 @@ builder.Services.ConfigureAutoMapper();
 builder.Services.ConfigureRepositories();
 
 // Configure CORS for ReactJS default port
-builder.Services.ConfigureCors("https://ojtedubdomain.site/api/Authentication/login-google");
+builder.Services.ConfigureCors("https://localhost:3000");
 
 // Configure Http Context Accessor
 builder.Services.AddHttpContextAccessor();
@@ -118,7 +118,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 });
 
 app.UseStaticFiles();
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthentication();
 app.UseRouting();
