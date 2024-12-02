@@ -12,7 +12,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
     [Route("api/[controller]")]
     [ApiController]
     //[EnableCors("AllowSpecificOrigin")]
-    [EnableCors]
+    //[EnableCors]
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -22,12 +22,67 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             _userService = userService;
         }
 
+        //[HttpPost("login-google")]
+        //public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
+        //{
+        //    try
+        //    {
+        //        // Kiểm tra xem model có hợp lệ hay không
+        //        if (string.IsNullOrWhiteSpace(request.AuthorizeCode))
+        //        {
+        //            return BadRequest(new ApiResponse<object>
+        //            {
+        //                Data = null,
+        //                Message = "AuthorizeCode is required."
+        //            });
+        //        }
+
+        //        var dataResponse = await _userService.LoginWithGoogleAsync(request.AuthorizeCode);
+
+
+        //        if (dataResponse == null)
+        //        {
+        //            return StatusCode(500, new ApiResponse<object>
+        //            {
+        //                Data = null,
+        //                Message = "Unexpected error occurred."
+        //            });
+        //        }
+
+        //        if (dataResponse.Data == null)
+        //        {
+        //            return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
+        //            {
+        //                Data = null,
+        //                Message = dataResponse.Message
+        //            });
+        //        }
+
+        //        var apiResponse = new ApiResponse<UserReadForAuthDTO>()
+        //        {
+        //            Data = dataResponse.Data,
+        //            Message = dataResponse.Message
+        //        };
+
+        //        return Ok(apiResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new ApiResponse<object>
+        //        {
+        //            Data = null,
+        //            Message = $"Internal Server Error: {ex.Message}"
+        //        });
+        //    }
+        //}
+
+
         [HttpPost("login-google")]
         public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
         {
             try
             {
-                // Kiểm tra xem model có hợp lệ hay không
+                // Kiểm tra dữ liệu đầu vào
                 if (string.IsNullOrWhiteSpace(request.AuthorizeCode))
                 {
                     return BadRequest(new ApiResponse<object>
@@ -37,34 +92,43 @@ namespace OJTEDU.Api.Controllers.ComonControllers
                     });
                 }
 
+                // Gọi UserService
                 var dataResponse = await _userService.LoginWithGoogleAsync(request.AuthorizeCode);
 
-
+                // Kiểm tra phản hồi
                 if (dataResponse == null)
                 {
                     return StatusCode(500, new ApiResponse<object>
                     {
                         Data = null,
-                        Message = "Unexpected error occurred."
+                        Message = "Service returned null unexpectedly."
                     });
                 }
 
-                if (dataResponse.Data == null)
+                if (dataResponse.StatusCode == 400 || dataResponse.StatusCode == 401)
                 {
-                    return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
+                    return BadRequest(new ApiResponse<object>
                     {
                         Data = null,
                         Message = dataResponse.Message
                     });
                 }
 
-                var apiResponse = new ApiResponse<UserReadForAuthDTO>()
+                if (dataResponse.StatusCode == 500)
+                {
+                    return StatusCode(500, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = dataResponse.Message
+                    });
+                }
+
+                // Thành công
+                return Ok(new ApiResponse<UserReadForAuthDTO>
                 {
                     Data = dataResponse.Data,
                     Message = dataResponse.Message
-                };
-
-                return Ok(apiResponse);
+                });
             }
             catch (Exception ex)
             {
@@ -75,6 +139,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
                 });
             }
         }
+
 
         [HttpGet("check-auth")]
         public async Task<IActionResult> CheckAuthentication()
