@@ -46,21 +46,10 @@ namespace OJTEDU.Application.ApplicationServices.Services
             _httpClient = httpClient;
         }
 
-        // Common - Authentication
         public async Task<DataResponse<UserReadForAuthDTO>> LoginWithGoogleAsync(string token)
         {
             try
             {
-                if (string.IsNullOrEmpty(token))
-                {
-                    return new DataResponse<UserReadForAuthDTO>
-                    {
-                        Data = null,
-                        Message = "Token cannot be empty.",
-                        StatusCode = 400 // Lỗi yêu cầu không hợp lệ
-                    };
-                }
-
                 using (var client = _httpClient)
                 {
 
@@ -107,16 +96,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Audience = new[] { googleClientId }
                     });
-
-                    if (payload == null)
-                    {
-                        return new DataResponse<UserReadForAuthDTO>
-                        {
-                            Data = null,
-                            Message = "Invalid Google Token.",
-                            StatusCode = 401 // Lỗi xác thực
-                        };
-                    }
 
                     var user = await _userRepository.GetUserByEmailAsync(payload.Email);
 
@@ -204,6 +183,165 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+
+        // Common - Authentication
+        //public async Task<DataResponse<UserReadForAuthDTO>> LoginWithGoogleAsync(string token)
+        //{
+        //    try
+        //    {
+        //        if (string.IsNullOrEmpty(token))
+        //        {
+        //            return new DataResponse<UserReadForAuthDTO>
+        //            {
+        //                Data = null,
+        //                Message = "Token cannot be empty.",
+        //                StatusCode = 400 // Lỗi yêu cầu không hợp lệ
+        //            };
+        //        }
+
+        //        using (var client = _httpClient)
+        //        {
+
+        //            string decodedCode = Uri.UnescapeDataString(token);
+
+        //            var tokenRequestUri = _config["Google:TokenRequestUri"];
+        //            var googleClientId = _config["Google:ClientId"];
+        //            var googleClientSecret = _config["Google:ClientSecret"];
+        //            var redirectUri = _config["Google:RedirectUri"];
+
+        //            var requestContent = new FormUrlEncodedContent(new[]
+        //            {
+        //                new KeyValuePair<string, string>("code", decodedCode),
+        //                new KeyValuePair<string, string>("client_id", googleClientId),
+        //                new KeyValuePair<string, string>("client_secret", googleClientSecret),
+        //                new KeyValuePair<string, string>("redirect_uri", redirectUri),
+        //                new KeyValuePair<string, string>("grant_type", "authorization_code")
+        //            });
+
+        //            var tokenResponse = await client.PostAsync(tokenRequestUri, requestContent);
+
+        //            if (!tokenResponse.IsSuccessStatusCode)
+        //            {
+        //                return new DataResponse<UserReadForAuthDTO>
+        //                {
+        //                    Data = null,
+        //                    Message = "Invalid Google Token.",
+        //                    StatusCode = 401 // Lỗi xác thực
+        //                };
+        //            }
+
+        //            var tokenResponseContent = await tokenResponse.Content.ReadAsStringAsync();
+        //            var tokenResponseContentJson = JObject.Parse(tokenResponseContent);
+
+        //            string accessToken = tokenResponseContentJson["access_token"].ToString();
+        //            string idToken = tokenResponseContentJson["id_token"].ToString();
+
+        //            //var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
+        //            //{
+        //            //    Audience = new[] { googleClientId }
+        //            //});
+
+        //            var payload = await _googleValidator.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
+        //            {
+        //                Audience = new[] { googleClientId }
+        //            });
+
+        //            if (payload == null)
+        //            {
+        //                return new DataResponse<UserReadForAuthDTO>
+        //                {
+        //                    Data = null,
+        //                    Message = "Invalid Google Token.",
+        //                    StatusCode = 401 // Lỗi xác thực
+        //                };
+        //            }
+
+        //            var user = await _userRepository.GetUserByEmailAsync(payload.Email);
+
+        //            if (user == null)
+        //            {
+        //                return new DataResponse<UserReadForAuthDTO>
+        //                {
+        //                    Data = null,
+        //                    Message = "User not found.",
+        //                    StatusCode = 404 // Không tìm thấy tài khoản
+        //                };
+        //            }
+
+        //            if (user.Status == null)
+        //            {
+        //                return new DataResponse<UserReadForAuthDTO>
+        //                {
+        //                    Data = null,
+        //                    Message = "User account is not activated.",
+        //                    StatusCode = 409 // Xung đột tài nguyên
+        //                };
+        //            }
+
+        //            // Kiểm tra nếu Avatar chưa có, lấy từ Google và cập nhật vào DB
+        //            if (string.IsNullOrEmpty(user.Image))
+        //            {
+        //                user.Image = payload.Picture; // Lấy avatar từ Google
+        //                await _userRepository.UpdateUserForAdminAsync(user); // Lưu cập nhật vào DB
+        //            }
+
+        //            if (user.Status.Equals("Active", StringComparison.OrdinalIgnoreCase))
+        //            {
+        //                var claims = new List<Claim>
+        //                {
+        //                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+        //                    new Claim(ClaimTypes.Email, user.Email),
+        //                    new Claim(ClaimTypes.Role, user.Role.Name)
+        //                };
+
+        //                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        //                var httpContext = _httpContextAccessor.HttpContext;
+
+        //                if (httpContext == null)
+        //                {
+        //                    return new DataResponse<UserReadForAuthDTO>
+        //                    {
+        //                        Data = null,
+        //                        Message = "HttpContext not found.",
+        //                        StatusCode = 500 // Lỗi phía máy chủ
+        //                    };
+        //                }
+
+        //                await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), new AuthenticationProperties
+        //                {
+        //                    IsPersistent = true,
+        //                });
+
+        //                var userDto = _mapper.Map<UserReadForAuthDTO>(user);
+
+        //                return new DataResponse<UserReadForAuthDTO>
+        //                {
+        //                    Data = userDto,
+        //                    Message = "Login successful!",
+        //                    StatusCode = 200 // Thành công
+        //                };
+        //            }
+        //            else
+        //            {
+        //                return new DataResponse<UserReadForAuthDTO>
+        //                {
+        //                    Data = null,
+        //                    Message = "User account is not activated.",
+        //                    StatusCode = 403 // Không được phép truy cập
+        //                };
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new DataResponse<UserReadForAuthDTO>
+        //        {
+        //            Data = null,
+        //            Message = $"Login failed: {ex.Message}",
+        //            StatusCode = 500 // Lỗi phía máy chủ
+        //        };
+        //    }
+        //}
 
         public async Task<DataResponse<object>> LogoutAsync()
         {

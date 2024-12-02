@@ -22,6 +22,31 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             _userService = userService;
         }
 
+        [HttpPost("login-google")]
+        public async Task<IActionResult> LoginWithGoogle(string? token)
+        {
+            try
+            {
+                // Gọi UserService
+                var dataResponse = await _userService.LoginWithGoogleAsync(token);
+
+                // Thành công
+                return Ok(new ApiResponse<UserReadForAuthDTO>
+                {
+                    Data = dataResponse.Data,
+                    Message = dataResponse.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<string>
+                {
+                    Data = null,
+                    Message = $"Internal Server Error: {ex.Message}"
+                });
+            }
+        }
+
         //[HttpPost("login-google")]
         //public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
         //{
@@ -75,71 +100,6 @@ namespace OJTEDU.Api.Controllers.ComonControllers
         //        });
         //    }
         //}
-
-
-        [HttpPost("login-google")]
-        public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
-        {
-            try
-            {
-                // Kiểm tra dữ liệu đầu vào
-                if (string.IsNullOrWhiteSpace(request.AuthorizeCode))
-                {
-                    return BadRequest(new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = "AuthorizeCode is required."
-                    });
-                }
-
-                // Gọi UserService
-                var dataResponse = await _userService.LoginWithGoogleAsync(request.AuthorizeCode);
-
-                // Kiểm tra phản hồi
-                if (dataResponse == null)
-                {
-                    return StatusCode(500, new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = "Service returned null unexpectedly."
-                    });
-                }
-
-                if (dataResponse.StatusCode == 400 || dataResponse.StatusCode == 401)
-                {
-                    return BadRequest(new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = dataResponse.Message
-                    });
-                }
-
-                if (dataResponse.StatusCode == 500)
-                {
-                    return StatusCode(500, new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = dataResponse.Message
-                    });
-                }
-
-                // Thành công
-                return Ok(new ApiResponse<UserReadForAuthDTO>
-                {
-                    Data = dataResponse.Data,
-                    Message = dataResponse.Message
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ApiResponse<object>
-                {
-                    Data = null,
-                    Message = $"Internal Server Error: {ex.Message}"
-                });
-            }
-        }
-
 
         [HttpGet("check-auth")]
         public async Task<IActionResult> CheckAuthentication()
