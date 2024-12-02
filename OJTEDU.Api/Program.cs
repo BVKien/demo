@@ -92,6 +92,15 @@ var app = builder.Build();
 
 //app.Run();
 
+//app.UseSwagger();
+//app.UseSwaggerUI(c =>
+//{
+//    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API V1");
+//    c.DisplayRequestDuration();
+//    c.EnableFilter();
+//    c.EnableDeepLinking();
+//});
+
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -101,8 +110,6 @@ app.UseSwaggerUI(c =>
     c.EnableDeepLinking();
 });
 
-app.UseStaticFiles(); // Đặt sau Swagger nếu phục vụ file tĩnh
-
 app.UseHttpsRedirection();
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
@@ -110,7 +117,8 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.XForwardedProto
 });
 
-app.UseCors();
+app.UseStaticFiles();
+app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthentication();
 app.UseRouting();

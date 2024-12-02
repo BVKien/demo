@@ -11,7 +11,8 @@ namespace OJTEDU.Api.Controllers.ComonControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("AllowSpecificOrigin")]
+    //[EnableCors("AllowSpecificOrigin")]
+    [EnableCors]
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;

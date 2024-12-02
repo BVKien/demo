@@ -95,11 +95,26 @@ namespace OJTEDU.Api.Configuration
             services.AddHostedService<AutoAttendanceReportService>();
         }
 
+        //public static void ConfigureCors(this IServiceCollection services, string origin)
+        //{
+        //    services.AddCors(options =>
+        //    {
+        //        options.AddDefaultPolicy(builder =>
+        //        {
+        //            builder.WithOrigins(origin)
+        //                   .AllowAnyMethod()
+        //                   .AllowAnyHeader()
+        //                   .AllowCredentials()
+        //                   .WithExposedHeaders("Content-Disposition");
+        //        });
+        //    });
+        //}
+
         public static void ConfigureCors(this IServiceCollection services, string origin)
         {
             services.AddCors(options =>
             {
-                options.AddDefaultPolicy(builder =>
+                options.AddPolicy("AllowSpecificOrigin", builder =>
                 {
                     builder.WithOrigins(origin)
                            .AllowAnyMethod()
