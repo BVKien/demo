@@ -114,13 +114,20 @@ namespace OJTEDU.Api.Configuration
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowSpecificOrigin", builder =>
+                //options.AddPolicy("AllowAll", builder =>
+                //{
+                //    builder.WithOrigins(origin)
+                //           .AllowAnyMethod()
+                //           .AllowAnyHeader()
+                //           .AllowCredentials()
+                //           .WithExposedHeaders("Content-Disposition");
+                //});
+
+                options.AddPolicy("AllowAll", builder =>
                 {
-                    builder.WithOrigins(origin)
-                           .AllowAnyMethod()
-                           .AllowAnyHeader()
-                           .AllowCredentials()
-                           .WithExposedHeaders("Content-Disposition");
+                    builder.AllowAnyOrigin() // Cho phép tất cả các domain
+                           .AllowAnyMethod() // Cho phép tất cả các phương thức
+                           .AllowAnyHeader(); // Cho phép tất cả các headers
                 });
             });
         }
