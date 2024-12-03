@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace OJTEDU.Api.Controllers.ComonControllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/common/auth")]
     //[EnableCors("AllowSpecificOrigin")]
     [EnableCors]
     public class AuthenticationController : ControllerBase
