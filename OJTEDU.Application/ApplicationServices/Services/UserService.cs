@@ -31,10 +31,9 @@ namespace OJTEDU.Application.ApplicationServices.Services
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly IGoogleJsonWebSignatureValidator _googleValidator;
         private readonly HttpClient _httpClient;
 
-        public UserService(IConfiguration config, IAttendanceReportRepository attendRepository, IUserRepository userRepository, IMajorRepository majorRepository, IHttpContextAccessor httpContextAccessor, IMapper mapper, IGoogleJsonWebSignatureValidator googleValidator, HttpClient httpClient)
+        public UserService(IConfiguration config, IAttendanceReportRepository attendRepository, IUserRepository userRepository, IMajorRepository majorRepository, IHttpContextAccessor httpContextAccessor, IMapper mapper, HttpClient httpClient)
         {
             _attendRepository = attendRepository;
             _config = config;
@@ -42,7 +41,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
             _majorRepository = majorRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _googleValidator = googleValidator;
             _httpClient = httpClient;
         }
 
@@ -98,15 +96,15 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     string accessToken = tokenResponseContentJson["access_token"].ToString();
                     string idToken = tokenResponseContentJson["id_token"].ToString();
 
-                    //var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
-                    //{
-                    //    Audience = new[] { googleClientId }
-                    //});
-
-                    var payload = await _googleValidator.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
+                    var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
                     {
                         Audience = new[] { googleClientId }
                     });
+
+                    //var payload = await _googleValidator.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
+                    //{
+                    //    Audience = new[] { googleClientId }
+                    //});
 
                     if (payload == null)
                     {

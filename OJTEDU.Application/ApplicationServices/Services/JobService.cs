@@ -544,5 +544,63 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+
+        public async Task<DataResponse<PagedResponse<List<UserListForAdminDTO>>>> GetAllUsersForAdminAsync(string? name, int? roleId, string? status, int pageNumber, int pageSize)
+        {
+            try
+            {
+                var users = await _userRepository.GetAllUsersForAdminAsync(name, roleId, status);
+
+                var totalUsers = users.Count();
+                var totalPages = totalUsers == 0 ? 1 : (int)Math.Ceiling((double)totalUsers / pageSize);
+
+                var userDtos = totalUsers > 0 ? _mapper.Map<List<UserListForAdminDTO>>(users).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList()
+                                                : new List<UserListForAdminDTO>();
+
+                var pagedResponse = new PagedResponse<List<UserListForAdminDTO>>
+                {
+                    Items = userDtos,
+                    TotalCount = totalUsers,
+                    PageSize = pageSize,
+                    CurrentPage = pageNumber,
+                    TotalPages = totalPages
+                };
+
+                return new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
+                {
+                    Data = pagedResponse,
+                    Message = "User list retrieved successfully!",
+                    StatusCode = 200
+                };
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    StatusCode = 404
+                };
+            }
+            catch (UnauthorizedAccessException authEx)
+            {
+                // Xử lý lỗi quyền truy cập
+                return new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
+                {
+                    Data = null,
+                    Message = $"Access denied while get user list: {authEx.Message}",
+                    StatusCode = 403 // Forbidden
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
+                {
+                    Data = null,
+                    Message = $"Error retrieving user list: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
     }
 }
