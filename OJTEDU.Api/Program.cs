@@ -95,6 +95,8 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 logger.LogInformation("Configuring static files.");
 app.UseStaticFiles();
 
+app.UseRouting();
+
 // Enable CORS
 logger.LogInformation("Enabling CORS.");
 app.UseCors("AllowSpecificOrigin");
@@ -102,7 +104,6 @@ app.UseCors("AllowSpecificOrigin");
 // Enable authentication and authorization
 logger.LogInformation("Enabling authentication and authorization.");
 app.UseAuthentication();
-app.UseRouting();
 app.UseAuthorization();
 
 // Map controllers to endpoints

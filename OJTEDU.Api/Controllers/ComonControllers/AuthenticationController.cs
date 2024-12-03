@@ -10,8 +10,9 @@ using Microsoft.Extensions.Logging;
 
 namespace OJTEDU.Api.Controllers.ComonControllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+    [EnableCors("AllowSpecificOrigin")]
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -23,7 +24,13 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             _logger = logger;
         }
 
-        [EnableCors("AllowSpecificOrigin")]
+        [HttpPost("LoginWithGoogle")]
+        public IActionResult LoginWithGoogle()
+        {
+            // Logic xử lý login
+            return Ok();
+        }
+
         [HttpPost("login-google")]
         public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
         {

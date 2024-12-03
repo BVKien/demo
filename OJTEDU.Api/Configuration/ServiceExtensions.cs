@@ -131,7 +131,7 @@ namespace OJTEDU.Api.Configuration
             {
                 options.AddPolicy("AllowSpecificOrigin", builder =>
                 {
-                    builder.WithOrigins("https://ojtedubdomain.site")  // Thay bằng domain của bạn
+                    builder.WithOrigins("https://ojtedu.site")  // Thay bằng domain của bạn
                            .AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials()
