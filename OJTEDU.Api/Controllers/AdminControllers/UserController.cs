@@ -14,12 +14,10 @@ namespace OJTEDU.Api.Controllers.AdminControllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IUsersService _usersService;
 
-        public UserController(IUserService userService, IUsersService usersService)
+        public UserController(IUserService userService)
         {
             _userService = userService;
-            _usersService = usersService;
         }
 
         [HttpGet("list")]
@@ -31,7 +29,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
 
-                var dataResponse = await _usersService.GetAllUsersForAdminAsync(name, roleId, status, actualPageNumber, actualPageSize);
+                var dataResponse = await _userService.GetAllUsersForAdminAsync(name, roleId, status, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
