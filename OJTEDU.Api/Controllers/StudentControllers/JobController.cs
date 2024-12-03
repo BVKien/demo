@@ -7,7 +7,9 @@ using OJTEDU.Application.ApplicationServices.Interfaces;
 using OJTEDU.Application.ApplicationServices.Services;
 using OJTEDU.Domain.Entities;
 using System.Security.Claims;
+using static OJTEDU.Api.Input.CommonControllers.AuthenticationController;
 using static OJTEDU.Application.DTOs.JobDTO;
+using static OJTEDU.Application.DTOs.UserDTO;
 
 namespace OJTEDU.Api.Controllers.GuestControllers
 {
@@ -20,12 +22,76 @@ namespace OJTEDU.Api.Controllers.GuestControllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<CvController> _logger;
 
-        public JobController(IJobService jobService, ICvService cvService, IHttpClientFactory httpClientFactory, ILogger<CvController> logger)
+        private readonly IUserService _userService;
+
+        public JobController(IJobService jobService, ICvService cvService, IHttpClientFactory httpClientFactory, ILogger<CvController> logger, IUserService userService)
         {
             _jobService = jobService;
             _cvService = cvService;
             _httpClientFactory = httpClientFactory;
             _logger = logger;
+            _userService = userService;
+        }
+
+        [HttpPost("testok")]
+        public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("LoginWithGoogle method started.");
+
+                // Kiểm tra xem model có hợp lệ hay không
+                if (string.IsNullOrWhiteSpace(request.AuthorizeCode))
+                {
+                    _logger.LogWarning("AuthorizeCode is missing or empty.");
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "AuthorizeCode is required."
+                    });
+                }
+
+                _logger.LogInformation("Processing Google login with the provided authorize code.");
+                var dataResponse = await _userService.LoginWithGoogleAsync(request.AuthorizeCode);
+
+                if (dataResponse == null)
+                {
+                    _logger.LogError("Unexpected error occurred while logging in with Google.");
+                    return StatusCode(500, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "Unexpected error occurred."
+                    });
+                }
+
+                if (dataResponse.Data == null)
+                {
+                    _logger.LogWarning($"Login failed: {dataResponse.Message}");
+                    return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = dataResponse.Message
+                    });
+                }
+
+                _logger.LogInformation("Login successful with Google.");
+                var apiResponse = new ApiResponse<UserReadForAuthDTO>()
+                {
+                    Data = dataResponse.Data,
+                    Message = dataResponse.Message
+                };
+
+                return Ok(apiResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occurred in LoginWithGoogle method: {ex.Message}");
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Internal Server Error: {ex.Message}"
+                });
+            }
         }
 
         [Authorize(Roles = "Student")]

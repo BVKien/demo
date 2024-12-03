@@ -130,7 +130,7 @@ namespace OJTEDU.Api.Configuration
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", builder =>
+                options.AddPolicy("AllowSpecificOrigin", builder =>
                 {
                     builder.WithOrigins("https://ojtedubdomain.site/api/Authentication/login-google")  // Thay bằng domain của bạn
                            .AllowAnyMethod()
