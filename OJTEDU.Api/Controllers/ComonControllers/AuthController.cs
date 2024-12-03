@@ -5,6 +5,7 @@ using OJTEDU.Api.Configuration;
 using OJTEDU.Api.Controllers.StudentControllers;
 using OJTEDU.Application.ApplicationServices.Interfaces;
 using OJTEDU.Application.ApplicationServices.Services;
+using OJTEDU.Application.DTOs;
 using OJTEDU.Domain.Entities;
 using System.Security.Claims;
 using static OJTEDU.Api.Input.CommonControllers.AuthenticationController;
@@ -19,10 +20,13 @@ namespace OJTEDU.Api.Controllers.ComonControllers
         private readonly IJobService _jobService;
         private readonly ILogger<CvController> _logger;
 
-        public AuthController(IJobService jobService, ILogger<CvController> logger)
+        private readonly IUsersService _usersService;
+
+        public AuthController(IJobService jobService, ILogger<CvController> logger, IUsersService usersService)
         {
             _jobService = jobService;
             _logger = logger;
+            _usersService = usersService;
         }
 
         [HttpPost("login")]
@@ -31,7 +35,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             try
             {
                 _logger.LogInformation("LoginWithGoogle method started.");
-                var dataResponse = await _jobService.LoginWithGoogleAsync(request.AuthorizeCode);
+                var dataResponse = await _usersService.LoginWithGoogleAsync(request.AuthorizeCode);
                 _logger.LogInformation("Login successful with Google.");
                 var apiResponse = new ApiResponse<UserReadForAuthDTO>()
                 {
@@ -45,6 +49,54 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             {
                 _logger.LogError($"Error occurred in LoginWithGoogle method: {ex.Message}");
                 return StatusCode(500, new ApiResponse<string>
+                {
+                    Data = null,
+                    Message = $"Internal Server Error: {ex.Message}"
+                });
+            }
+        }
+
+        [HttpGet("list-test")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllUsersForAdmin(string? name, int? roleId, string? status, int? pageNumber, int? pageSize)
+        {
+            try
+            {
+                int actualPageNumber = pageNumber ?? 1;
+                int actualPageSize = pageSize ?? 15;
+
+                var dataResponse = await _usersService.GetAllUsersForAdminAsync(name, roleId, status, actualPageNumber, actualPageSize);
+
+                if (dataResponse == null)
+                {
+                    return StatusCode(500, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "Unexpected error occurred."
+                    });
+                }
+
+                if (dataResponse.Data == null)
+                {
+                    return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = dataResponse.Message
+                    });
+                }
+
+                // Successful retrieval of users
+                var apiResponse = new ApiResponse<PagedResponse<List<UserListForAdminDTO>>>
+                {
+                    Data = dataResponse.Data,
+                    Message = dataResponse.Message
+                };
+
+                return Ok(apiResponse);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,
                     Message = $"Internal Server Error: {ex.Message}"

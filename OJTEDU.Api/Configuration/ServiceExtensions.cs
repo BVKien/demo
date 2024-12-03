@@ -94,6 +94,7 @@ namespace OJTEDU.Api.Configuration
             services.AddScoped<IUserGuideService, UserGuideService>();
             services.AddScoped<IInternshipProcessService, InternshipProcessService>();
             services.AddHostedService<AutoAttendanceReportService>();
+            services.AddScoped<IUsersService, UsersService>();
         }
 
         //public static void ConfigureCors(this IServiceCollection services, string origin)
