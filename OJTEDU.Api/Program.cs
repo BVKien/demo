@@ -2,6 +2,10 @@
 using Microsoft.Extensions.FileProviders;
 using OfficeOpenXml;
 using OJTEDU.Api.Configuration;
+using OJTEDU.Application.ApplicationServices.Interfaces;
+using OJTEDU.Application.ApplicationServices.Services;
+using OJTEDU.Domain.Interfaces;
+using OJTEDU.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +64,9 @@ builder.Services.ConfigureAuthorization();
 // Configure IHttpClientFactory to call API AI
 logger.LogInformation("Configuring IHttpClientFactory.");
 builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Thiết lập LicenseContext cho EPPlus
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Hoặc LicenseContext.Commercial nếu bạn có giấy phép thương mại
