@@ -798,67 +798,67 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
-        public async Task<DataResponse<UserReadForAuthDTO>> GetAuthenticatedUserInfoAsync(ClaimsPrincipal userClaims)
-        {
-            var email = userClaims.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            if (string.IsNullOrEmpty(email))
-            {
-                await LogoutAsync();
-                return new DataResponse<UserReadForAuthDTO>
-                {
-                    Data = null,
-                    Message = "Email claim not found.",
-                    StatusCode = 404
-                };
-            }
+        //public async Task<DataResponse<UserReadForAuthDTO>> GetAuthenticatedUserInfoAsync(ClaimsPrincipal userClaims)
+        //{
+        //    var email = userClaims.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        //    if (string.IsNullOrEmpty(email))
+        //    {
+        //        await LogoutAsync();
+        //        return new DataResponse<UserReadForAuthDTO>
+        //        {
+        //            Data = null,
+        //            Message = "Email claim not found.",
+        //            StatusCode = 404
+        //        };
+        //    }
 
-            try
-            {
-                // Gọi phương thức không đồng bộ để lấy thông tin người dùng
-                var user = await _userRepository.GetUserByEmailAsync(email);
+        //    try
+        //    {
+        //        // Gọi phương thức không đồng bộ để lấy thông tin người dùng
+        //        var user = await _userRepository.GetUserByEmailAsync(email);
 
-                // Kiểm tra nếu tài khoản không còn hoạt động
-                if (user.Status != "Active")
-                {
-                    await LogoutAsync();
-                    return new DataResponse<UserReadForAuthDTO>
-                    {
-                        Data = null,
-                        Message = "User account is no longer active.",
-                        StatusCode = 404
-                    };
-                }
+        //        // Kiểm tra nếu tài khoản không còn hoạt động
+        //        if (user.Status != "Active")
+        //        {
+        //            await LogoutAsync();
+        //            return new DataResponse<UserReadForAuthDTO>
+        //            {
+        //                Data = null,
+        //                Message = "User account is no longer active.",
+        //                StatusCode = 404
+        //            };
+        //        }
 
-                var userDto = _mapper.Map<UserReadForAuthDTO>(user);
+        //        var userDto = _mapper.Map<UserReadForAuthDTO>(user);
 
-                return new DataResponse<UserReadForAuthDTO>
-                {
-                    Data = userDto,
-                    Message = "User details retrieved successfully.",
-                    StatusCode = 200
-                };
-            }
-            catch (Exception ex) when (ex is KeyNotFoundException || ex.InnerException is KeyNotFoundException)
-            {
-                await LogoutAsync();
-                return new DataResponse<UserReadForAuthDTO>
-                {
-                    Data = null,
-                    Message = "User account has been deleted or does not exist.",
-                    StatusCode = 404
-                };
-            }
-            catch (Exception ex)
-            {
-                await LogoutAsync();
-                // Xử lý các lỗi khác
-                return new DataResponse<UserReadForAuthDTO>
-                {
-                    Data = null,
-                    Message = $"An unexpected error occurred: {ex.Message}",
-                    StatusCode = 500
-                };
-            }
-        }
+        //        return new DataResponse<UserReadForAuthDTO>
+        //        {
+        //            Data = userDto,
+        //            Message = "User details retrieved successfully.",
+        //            StatusCode = 200
+        //        };
+        //    }
+        //    catch (Exception ex) when (ex is KeyNotFoundException || ex.InnerException is KeyNotFoundException)
+        //    {
+        //        await LogoutAsync();
+        //        return new DataResponse<UserReadForAuthDTO>
+        //        {
+        //            Data = null,
+        //            Message = "User account has been deleted or does not exist.",
+        //            StatusCode = 404
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await LogoutAsync();
+        //        // Xử lý các lỗi khác
+        //        return new DataResponse<UserReadForAuthDTO>
+        //        {
+        //            Data = null,
+        //            Message = $"An unexpected error occurred: {ex.Message}",
+        //            StatusCode = 500
+        //        };
+        //    }
+        //}
     }
 }

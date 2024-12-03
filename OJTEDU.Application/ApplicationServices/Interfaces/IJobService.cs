@@ -27,7 +27,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
 
         Task<DataResponse<UserReadForAuthDTO>> LoginWithGoogleAsync(string token);
         Task<DataResponse<PagedResponse<List<UserListForAdminDTO>>>> GetAllUsersForAdminAsync(string? name, int? roleId, string? status, int pageNumber, int pageSize);
-        Task<DataResponse<UserReadForAuthDTO>> GetAuthenticatedUserInfoAsync(ClaimsPrincipal userClaims);
+        //Task<DataResponse<UserReadForAuthDTO>> GetAuthenticatedUserInfoAsync(ClaimsPrincipal userClaims);
         Task<DataResponse<object>> LogoutAsync();
     }
 }
