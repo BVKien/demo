@@ -29,67 +29,10 @@ namespace OJTEDU.Api.Controllers.ComonControllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
         {
-            //try
-            //{
-            //    _logger.LogInformation("LoginWithGoogle method started.");
-            //    var dataResponse = await _jobService.LoginWithGoogleAsync(request.AuthorizeCode);
-            //    _logger.LogInformation("Login successful with Google.");
-            //    var apiResponse = new ApiResponse<UserReadForAuthDTO>()
-            //    {
-            //        Data = dataResponse.Data,
-            //        Message = dataResponse.Message
-            //    };
-
-            //    return Ok(apiResponse);
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError($"Error occurred in LoginWithGoogle method: {ex.Message}");
-            //    return StatusCode(500, new ApiResponse<string>
-            //    {
-            //        Data = null,
-            //        Message = $"Internal Server Error: {ex.Message}"
-            //    });
-            //}
-
             try
             {
                 _logger.LogInformation("LoginWithGoogle method started.");
-
-                // Kiểm tra xem model có hợp lệ hay không
-                if (string.IsNullOrWhiteSpace(request.AuthorizeCode))
-                {
-                    _logger.LogWarning("AuthorizeCode is missing or empty.");
-                    return BadRequest(new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = "AuthorizeCode is required."
-                    });
-                }
-
-                _logger.LogInformation("Processing Google login with the provided authorize code.");
                 var dataResponse = await _jobService.LoginWithGoogleAsync(request.AuthorizeCode);
-
-                if (dataResponse == null)
-                {
-                    _logger.LogError("Unexpected error occurred while logging in with Google.");
-                    return StatusCode(500, new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = "Unexpected error occurred."
-                    });
-                }
-
-                if (dataResponse.Data == null)
-                {
-                    _logger.LogWarning($"Login failed: {dataResponse.Message}");
-                    return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = dataResponse.Message
-                    });
-                }
-
                 _logger.LogInformation("Login successful with Google.");
                 var apiResponse = new ApiResponse<UserReadForAuthDTO>()
                 {
@@ -102,7 +45,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             catch (Exception ex)
             {
                 _logger.LogError($"Error occurred in LoginWithGoogle method: {ex.Message}");
-                return StatusCode(500, new ApiResponse<object>
+                return StatusCode(500, new ApiResponse<string>
                 {
                     Data = null,
                     Message = $"Internal Server Error: {ex.Message}"
