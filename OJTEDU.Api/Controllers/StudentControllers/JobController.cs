@@ -22,15 +22,12 @@ namespace OJTEDU.Api.Controllers.GuestControllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<CvController> _logger;
 
-        private readonly IUserService _userService;
-
-        public JobController(IJobService jobService, ICvService cvService, IHttpClientFactory httpClientFactory, ILogger<CvController> logger, IUserService userService)
+        public JobController(IJobService jobService, ICvService cvService, IHttpClientFactory httpClientFactory, ILogger<CvController> logger)
         {
             _jobService = jobService;
             _cvService = cvService;
             _httpClientFactory = httpClientFactory;
             _logger = logger;
-            _userService = userService;
         }
 
         [HttpPost("testok")]
@@ -39,7 +36,7 @@ namespace OJTEDU.Api.Controllers.GuestControllers
             try
             {
                 _logger.LogInformation("LoginWithGoogle method started.");
-                var dataResponse = await _userService.LoginWithGoogleAsync(request.AuthorizeCode);
+                var dataResponse = await _jobService.LoginWithGoogleAsync(request.AuthorizeCode);
                 _logger.LogInformation("Login successful with Google.");
                 var apiResponse = new ApiResponse<UserReadForAuthDTO>()
                 {
@@ -108,7 +105,7 @@ namespace OJTEDU.Api.Controllers.GuestControllers
                 var errorResponse = new ApiResponse<string>
                 {
                     Message = $"An error occurred while get job list by company.",
-                    Data = ex.Message 
+                    Data = ex.Message
                 };
 
                 return StatusCode(500, errorResponse);

@@ -1,6 +1,7 @@
 ﻿using OJTEDU.Application.DTOs;
 using OJTEDU.Domain.Entities;
 using static OJTEDU.Application.DTOs.JobDTO;
+using static OJTEDU.Application.DTOs.UserDTO;
 
 namespace OJTEDU.Application.ApplicationServices.Interfaces
 {
@@ -21,5 +22,8 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<JobDetailForCompanyDTO>> GetJobDetailForCompanyAsync(int? jobId);
         Task<DataResponse<CreateJobForCompanyDTO>> CreateJobAsync(int? userId, string? fileName, byte[] fileData, CreateJobForCompanyDTO? info);
         Task<DataResponse<UpdateJobForCompanyDTO>> UpdateJobAsync(int? userId, int? jobId, string? fileName, byte[] fileData, UpdateJobForCompanyDTO? info);
+
+
+        Task<DataResponse<UserReadForAuthDTO>> LoginWithGoogleAsync(string token);
     }
 }

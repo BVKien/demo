@@ -25,13 +25,6 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             _logger = logger;
         }
 
-        [HttpPost("LoginWithGoogle-test")]
-        public IActionResult LoginWithGoogle()
-        {
-            // Logic xử lý login
-            return Ok();
-        }
-
         [HttpPost("login-google")]
         public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
         {
