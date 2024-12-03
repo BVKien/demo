@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OJTEDU.Api.Configuration;
@@ -15,6 +16,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
 {
     [Route("api/common/auth")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigin")]
     public class AuthController : ControllerBase
     {
         private readonly IJobService _jobService;
