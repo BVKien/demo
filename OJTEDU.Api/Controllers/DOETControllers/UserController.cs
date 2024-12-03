@@ -13,11 +13,10 @@ namespace OJTEDU.Api.Controllers.DOETControllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
-
-        public UserController(IUserService userService)
+        private readonly IJobService _jobService;
+        public UserController(IJobService jobService)
         {
-            _userService = userService;
+            _jobService = jobService;
         }
 
         [HttpGet("list")]
@@ -29,7 +28,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
 
-                var dataResponse = await _userService.GetAllUsersForDoetAsync(name, roleId, status, actualPageNumber, actualPageSize);
+                var dataResponse = await _jobService.GetAllUsersForDoetAsync(name, roleId, status, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
@@ -83,7 +82,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                var dataResponse = await _userService.GetUserDetailByIdForDoetAsync(userId.Value);
+                var dataResponse = await _jobService.GetUserDetailByIdForDoetAsync(userId.Value);
 
                 if (dataResponse == null)
                 {
@@ -188,7 +187,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     Information = request.Information
                 };
 
-                var dataResponse = await _userService.AddUserForDoetAsync(userDto);
+                var dataResponse = await _jobService.AddUserForDoetAsync(userDto);
 
                 if (dataResponse == null)
                 {
@@ -318,7 +317,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 };
 
                 // Gọi dịch vụ để cập nhật người dùng
-                var dataResponse = await _userService.UpdateUserForDoetAsync(userDto);
+                var dataResponse = await _jobService.UpdateUserForDoetAsync(userDto);
 
                 if (dataResponse == null)
                 {
@@ -379,7 +378,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 };
 
                 // Gọi dịch vụ để xóa người dùng
-                var dataResponse = await _userService.SoftDeleteUserForDoetAsync(userDto);
+                var dataResponse = await _jobService.SoftDeleteUserForDoetAsync(userDto);
 
                 if (dataResponse == null)
                 {
@@ -451,7 +450,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 };
 
                 // Gọi dịch vụ để cập nhật người dùng
-                var dataResponse = await _userService.UpdateUserStatusForDoetAsync(userDto);
+                var dataResponse = await _jobService.UpdateUserStatusForDoetAsync(userDto);
 
                 if (dataResponse == null)
                 {
@@ -518,7 +517,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 }
 
                 // Gọi service để thực hiện import
-                var dataResponse = await _userService.ImportUsersForDoetAsync(file);
+                var dataResponse = await _jobService.ImportUsersForDoetAsync(file);
 
                 // Kiểm tra kết quả trả về từ service
                 if (dataResponse == null)
@@ -565,7 +564,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
         {
             try
             {
-                var dataResponse = await _userService.GenerateUserTemplateForDoetAsync();
+                var dataResponse = await _jobService.GenerateUserTemplateForDoetAsync();
 
                 if (dataResponse == null)
                 {
@@ -613,7 +612,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
         {
             try
             {
-                var dataResponse = await _userService.GetAllStatusesUserForDoetAsync();
+                var dataResponse = await _jobService.GetAllStatusesUserForDoetAsync();
 
                 if (dataResponse == null)
                 {
@@ -668,7 +667,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 var actualPageNumber = pageNumber ?? 1;
                 var actualPageSize = pageSize ?? 15;
 
-                var response = await _userService.GetAllDeansAsync(
+                var response = await _jobService.GetAllDeansAsync(
                     userCode,
                     name,
                     departmentName,
@@ -721,7 +720,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 var actualStudentPageNumber = studentPageNumber ?? 1;
                 var actualStudentPageSize = studentPageSize ?? 15;
 
-                var response = await _userService.GetDeanDetailsAsync(
+                var response = await _jobService.GetDeanDetailsAsync(
                     deanId,
                     actualPageNumber,
                     actualPageSize,
@@ -760,7 +759,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
         [Authorize(Roles = "DOET")]
         public async Task<IActionResult> AssignLecturersToDeanForAdmin([FromBody] AssignLecturersToDeanDto assignLecturersDto)
         {
-            var response = await _userService.AssignLecturersToDeanAsync(assignLecturersDto);
+            var response = await _jobService.AssignLecturersToDeanAsync(assignLecturersDto);
             if (response.Data == null)
             {
                 return StatusCode(response.StatusCode, new ApiResponse<object>
@@ -782,7 +781,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
         {
             try
             {
-                var response = await _userService.AssignDepartmentToDeanAsync(deanId, departmentId);
+                var response = await _jobService.AssignDepartmentToDeanAsync(deanId, departmentId);
 
                 if (response.StatusCode != 200)
                 {
@@ -814,7 +813,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
         {
             try
             {
-                var response = await _userService.AssignMajorToLecturerAsync(lecturerId, majorId);
+                var response = await _jobService.AssignMajorToLecturerAsync(lecturerId, majorId);
 
                 if (response.StatusCode != 200)
                 {
@@ -856,7 +855,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 var actualPageNumber = pageNumber ?? 1;
                 var actualPageSize = pageSize ?? 15;
 
-                var response = await _userService.GetAllLecturersAsync(
+                var response = await _jobService.GetAllLecturersAsync(
                     userCode,
                     name,
                     majorName,
@@ -907,7 +906,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 var actualPageNumber = pageNumber ?? 1;
                 var actualPageSize = pageSize ?? 15;
 
-                var response = await _userService.GetLecturerDetailsAsync(
+                var response = await _jobService.GetLecturerDetailsAsync(
                     lecturerId,
                     studentName,
                     lecturerName,
