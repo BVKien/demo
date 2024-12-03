@@ -55,6 +55,74 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             }
         }
 
+        [HttpGet("check")]
+        public async Task<IActionResult> CheckAuthentication()
+        {
+            try
+            {
+                _logger.LogInformation("CheckAuthentication method started.");
+
+                if (User.Identity?.IsAuthenticated == true)
+                {
+                    _logger.LogInformation("User is authenticated.");
+
+                    var dataResponse = await _jobService.GetAuthenticatedUserInfoAsync(User);
+
+                    if (dataResponse.StatusCode == 200 && dataResponse.Data != null)
+                    {
+                        _logger.LogInformation("User details fetched successfully.");
+                        return Ok(new ApiResponse<UserReadForAuthDTO>
+                        {
+                            Data = dataResponse.Data,
+                            Message = "User is authenticated."
+                        });
+                    }
+
+                    _logger.LogWarning("User authentication failed. Returning Unauthorized.");
+                    return Unauthorized(new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "User is not authenticated."
+                    });
+                }
+                else
+                {
+                    _logger.LogWarning("User is not authenticated. Returning Unauthorized.");
+                    return Unauthorized(new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "User is not authenticated."
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occurred in CheckAuthentication method: {ex.Message}");
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Internal Server Error: {ex.Message}"
+                });
+            }
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                _logger.LogInformation("Logout method started.");
+                var response = await _jobService.LogoutAsync();
+                _logger.LogInformation("Logout successful.");
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occurred in Logout method: {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("list-test")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsersForAdmin(string? name, int? roleId, string? status, int? pageNumber, int? pageSize)

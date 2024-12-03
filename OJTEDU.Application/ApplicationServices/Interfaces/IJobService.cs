@@ -24,8 +24,10 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<CreateJobForCompanyDTO>> CreateJobAsync(int? userId, string? fileName, byte[] fileData, CreateJobForCompanyDTO? info);
         Task<DataResponse<UpdateJobForCompanyDTO>> UpdateJobAsync(int? userId, int? jobId, string? fileName, byte[] fileData, UpdateJobForCompanyDTO? info);
 
-
+        // User service
         Task<DataResponse<UserReadForAuthDTO>> LoginWithGoogleAsync(string token);
         Task<DataResponse<PagedResponse<List<UserListForAdminDTO>>>> GetAllUsersForAdminAsync(string? name, int? roleId, string? status, int pageNumber, int pageSize);
+        Task<DataResponse<UserReadForAuthDTO>> GetAuthenticatedUserInfoAsync(ClaimsPrincipal userClaims);
+        Task<DataResponse<object>> LogoutAsync();
     }
 }
