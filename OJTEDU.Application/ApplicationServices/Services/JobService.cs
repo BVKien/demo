@@ -31,7 +31,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
         private readonly IGoogleJsonWebSignatureValidator _googleValidator;
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public JobService(IJobRepository jobRepository, IMapper mapper, HttpClient httpClient, IConfiguration config, IGoogleJsonWebSignatureValidator googleValidator, IUserRepository userRepository, IHttpContextAccessor _httpContextAccessor)
+        public JobService(IJobRepository jobRepository, IMapper mapper, HttpClient httpClient, IConfiguration config, IGoogleJsonWebSignatureValidator googleValidator, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
         {
             _jobRepository = jobRepository;
             _mapper = mapper;

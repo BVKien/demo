@@ -18,11 +18,17 @@ namespace OJTEDU.Api.Controllers.ComonControllers
     {
         private readonly IUserService _userService;
         private readonly ILogger<AuthenticationController> _logger;
+        private IUserService @object;
 
         public AuthenticationController(IUserService userService, ILogger<AuthenticationController> logger)
         {
             _userService = userService;
             _logger = logger;
+        }
+
+        public AuthenticationController(IUserService @object)
+        {
+            this.@object = @object;
         }
 
         [HttpPost("login-google")]
