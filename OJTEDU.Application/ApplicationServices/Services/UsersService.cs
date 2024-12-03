@@ -29,281 +29,281 @@ namespace OJTEDU.Application.ApplicationServices.Services
         private readonly IAttendanceReportRepository _attendRepository;
         private readonly IUserRepository _userRepository;
         private readonly IMajorRepository _majorRepository;
-        private readonly IConfiguration _config;
+        //private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly IGoogleJsonWebSignatureValidator _googleValidator;
-        private readonly HttpClient _httpClient;
+        //private readonly IGoogleJsonWebSignatureValidator _googleValidator;
+        //private readonly HttpClient _httpClient;
 
-        public UsersService(IConfiguration config, IAttendanceReportRepository attendRepository, IUserRepository userRepository, IMajorRepository majorRepository, IHttpContextAccessor httpContextAccessor, IMapper mapper, IGoogleJsonWebSignatureValidator googleValidator, HttpClient httpClient)
+        public UsersService(IAttendanceReportRepository attendRepository, IUserRepository userRepository, IMajorRepository majorRepository, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _attendRepository = attendRepository;
-            _config = config;
+            //_config = config;
             _userRepository = userRepository;
             _majorRepository = majorRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _googleValidator = googleValidator;
-            _httpClient = httpClient;
+            //_googleValidator = googleValidator;
+            //_httpClient = httpClient;
         }
 
-        // Common - Authentication
-        public async Task<DataResponse<UserReadForAuthDTO>> LoginWithGoogleAsync(string token)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(token))
-                {
-                    return new DataResponse<UserReadForAuthDTO>
-                    {
-                        Data = null,
-                        Message = "Token cannot be empty.",
-                        StatusCode = 400 // Lỗi yêu cầu không hợp lệ
-                    };
-                }
+        //// Common - Authentication
+        //public async Task<DataResponse<UserReadForAuthDTO>> LoginWithGoogleAsync(string token)
+        //{
+        //    try
+        //    {
+        //        if (string.IsNullOrEmpty(token))
+        //        {
+        //            return new DataResponse<UserReadForAuthDTO>
+        //            {
+        //                Data = null,
+        //                Message = "Token cannot be empty.",
+        //                StatusCode = 400 // Lỗi yêu cầu không hợp lệ
+        //            };
+        //        }
 
-                using (var client = _httpClient)
-                {
+        //        using (var client = _httpClient)
+        //        {
 
-                    string decodedCode = Uri.UnescapeDataString(token);
+        //            string decodedCode = Uri.UnescapeDataString(token);
 
-                    var tokenRequestUri = _config["Google:TokenRequestUri"];
-                    var googleClientId = _config["Google:ClientId"];
-                    var googleClientSecret = _config["Google:ClientSecret"];
-                    var redirectUri = _config["Google:RedirectUri"];
+        //            var tokenRequestUri = _config["Google:TokenRequestUri"];
+        //            var googleClientId = _config["Google:ClientId"];
+        //            var googleClientSecret = _config["Google:ClientSecret"];
+        //            var redirectUri = _config["Google:RedirectUri"];
 
-                    var requestContent = new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("code", decodedCode),
-                        new KeyValuePair<string, string>("client_id", googleClientId),
-                        new KeyValuePair<string, string>("client_secret", googleClientSecret),
-                        new KeyValuePair<string, string>("redirect_uri", redirectUri),
-                        new KeyValuePair<string, string>("grant_type", "authorization_code")
-                    });
+        //            var requestContent = new FormUrlEncodedContent(new[]
+        //            {
+        //                new KeyValuePair<string, string>("code", decodedCode),
+        //                new KeyValuePair<string, string>("client_id", googleClientId),
+        //                new KeyValuePair<string, string>("client_secret", googleClientSecret),
+        //                new KeyValuePair<string, string>("redirect_uri", redirectUri),
+        //                new KeyValuePair<string, string>("grant_type", "authorization_code")
+        //            });
 
-                    var tokenResponse = await client.PostAsync(tokenRequestUri, requestContent);
+        //            var tokenResponse = await client.PostAsync(tokenRequestUri, requestContent);
 
-                    if (!tokenResponse.IsSuccessStatusCode)
-                    {
-                        return new DataResponse<UserReadForAuthDTO>
-                        {
-                            Data = null,
-                            Message = "Invalid Google Token.",
-                            StatusCode = 401 // Lỗi xác thực
-                        };
-                    }
+        //            if (!tokenResponse.IsSuccessStatusCode)
+        //            {
+        //                return new DataResponse<UserReadForAuthDTO>
+        //                {
+        //                    Data = null,
+        //                    Message = "Invalid Google Token.",
+        //                    StatusCode = 401 // Lỗi xác thực
+        //                };
+        //            }
 
-                    var tokenResponseContent = await tokenResponse.Content.ReadAsStringAsync();
-                    var tokenResponseContentJson = JObject.Parse(tokenResponseContent);
+        //            var tokenResponseContent = await tokenResponse.Content.ReadAsStringAsync();
+        //            var tokenResponseContentJson = JObject.Parse(tokenResponseContent);
 
-                    string accessToken = tokenResponseContentJson["access_token"].ToString();
-                    string idToken = tokenResponseContentJson["id_token"].ToString();
+        //            string accessToken = tokenResponseContentJson["access_token"].ToString();
+        //            string idToken = tokenResponseContentJson["id_token"].ToString();
 
-                    //var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
-                    //{
-                    //    Audience = new[] { googleClientId }
-                    //});
+        //            //var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
+        //            //{
+        //            //    Audience = new[] { googleClientId }
+        //            //});
 
-                    var payload = await _googleValidator.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
-                    {
-                        Audience = new[] { googleClientId }
-                    });
+        //            var payload = await _googleValidator.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
+        //            {
+        //                Audience = new[] { googleClientId }
+        //            });
 
-                    if (payload == null)
-                    {
-                        return new DataResponse<UserReadForAuthDTO>
-                        {
-                            Data = null,
-                            Message = "Invalid Google Token.",
-                            StatusCode = 401 // Lỗi xác thực
-                        };
-                    }
+        //            if (payload == null)
+        //            {
+        //                return new DataResponse<UserReadForAuthDTO>
+        //                {
+        //                    Data = null,
+        //                    Message = "Invalid Google Token.",
+        //                    StatusCode = 401 // Lỗi xác thực
+        //                };
+        //            }
 
-                    var user = await _userRepository.GetUserByEmailAsync(payload.Email);
+        //            var user = await _userRepository.GetUserByEmailAsync(payload.Email);
 
-                    if (user == null)
-                    {
-                        return new DataResponse<UserReadForAuthDTO>
-                        {
-                            Data = null,
-                            Message = "User not found.",
-                            StatusCode = 404 // Không tìm thấy tài khoản
-                        };
-                    }
+        //            if (user == null)
+        //            {
+        //                return new DataResponse<UserReadForAuthDTO>
+        //                {
+        //                    Data = null,
+        //                    Message = "User not found.",
+        //                    StatusCode = 404 // Không tìm thấy tài khoản
+        //                };
+        //            }
 
-                    if (user.Status == null)
-                    {
-                        return new DataResponse<UserReadForAuthDTO>
-                        {
-                            Data = null,
-                            Message = "User account is not activated.",
-                            StatusCode = 409 // Xung đột tài nguyên
-                        };
-                    }
+        //            if (user.Status == null)
+        //            {
+        //                return new DataResponse<UserReadForAuthDTO>
+        //                {
+        //                    Data = null,
+        //                    Message = "User account is not activated.",
+        //                    StatusCode = 409 // Xung đột tài nguyên
+        //                };
+        //            }
 
-                    // Kiểm tra nếu Avatar chưa có, lấy từ Google và cập nhật vào DB
-                    if (string.IsNullOrEmpty(user.Image))
-                    {
-                        user.Image = payload.Picture; // Lấy avatar từ Google
-                        await _userRepository.UpdateUserForAdminAsync(user); // Lưu cập nhật vào DB
-                    }
+        //            // Kiểm tra nếu Avatar chưa có, lấy từ Google và cập nhật vào DB
+        //            if (string.IsNullOrEmpty(user.Image))
+        //            {
+        //                user.Image = payload.Picture; // Lấy avatar từ Google
+        //                await _userRepository.UpdateUserForAdminAsync(user); // Lưu cập nhật vào DB
+        //            }
 
-                    if (user.Status.Equals("Active", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                            new Claim(ClaimTypes.Email, user.Email),
-                            new Claim(ClaimTypes.Role, user.Role.Name)
-                        };
+        //            if (user.Status.Equals("Active", StringComparison.OrdinalIgnoreCase))
+        //            {
+        //                var claims = new List<Claim>
+        //                {
+        //                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+        //                    new Claim(ClaimTypes.Email, user.Email),
+        //                    new Claim(ClaimTypes.Role, user.Role.Name)
+        //                };
 
-                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                        var httpContext = _httpContextAccessor.HttpContext;
+        //                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        //                var httpContext = _httpContextAccessor.HttpContext;
 
-                        if (httpContext == null)
-                        {
-                            return new DataResponse<UserReadForAuthDTO>
-                            {
-                                Data = null,
-                                Message = "HttpContext not found.",
-                                StatusCode = 500 // Lỗi phía máy chủ
-                            };
-                        }
+        //                if (httpContext == null)
+        //                {
+        //                    return new DataResponse<UserReadForAuthDTO>
+        //                    {
+        //                        Data = null,
+        //                        Message = "HttpContext not found.",
+        //                        StatusCode = 500 // Lỗi phía máy chủ
+        //                    };
+        //                }
 
-                        await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), new AuthenticationProperties
-                        {
-                            IsPersistent = true,
-                        });
+        //                await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), new AuthenticationProperties
+        //                {
+        //                    IsPersistent = true,
+        //                });
 
-                        var userDto = _mapper.Map<UserReadForAuthDTO>(user);
+        //                var userDto = _mapper.Map<UserReadForAuthDTO>(user);
 
-                        return new DataResponse<UserReadForAuthDTO>
-                        {
-                            Data = userDto,
-                            Message = "Login successful!",
-                            StatusCode = 200 // Thành công
-                        };
-                    }
-                    else
-                    {
-                        return new DataResponse<UserReadForAuthDTO>
-                        {
-                            Data = null,
-                            Message = "User account is not activated.",
-                            StatusCode = 403 // Không được phép truy cập
-                        };
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return new DataResponse<UserReadForAuthDTO>
-                {
-                    Data = null,
-                    Message = $"Login failed: {ex.Message}",
-                    StatusCode = 500 // Lỗi phía máy chủ
-                };
-            }
-        }
+        //                return new DataResponse<UserReadForAuthDTO>
+        //                {
+        //                    Data = userDto,
+        //                    Message = "Login successful!",
+        //                    StatusCode = 200 // Thành công
+        //                };
+        //            }
+        //            else
+        //            {
+        //                return new DataResponse<UserReadForAuthDTO>
+        //                {
+        //                    Data = null,
+        //                    Message = "User account is not activated.",
+        //                    StatusCode = 403 // Không được phép truy cập
+        //                };
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new DataResponse<UserReadForAuthDTO>
+        //        {
+        //            Data = null,
+        //            Message = $"Login failed: {ex.Message}",
+        //            StatusCode = 500 // Lỗi phía máy chủ
+        //        };
+        //    }
+        //}
 
-        public async Task<DataResponse<object>> LogoutAsync()
-        {
-            try
-            {
-                var httpContext = _httpContextAccessor.HttpContext;
+        //public async Task<DataResponse<object>> LogoutAsync()
+        //{
+        //    try
+        //    {
+        //        var httpContext = _httpContextAccessor.HttpContext;
 
-                if (httpContext == null)
-                {
-                    return new DataResponse<object>
-                    {
-                        Data = null,
-                        Message = "HttpContext not found.",
-                        StatusCode = 500 // Lỗi phía máy chủ
-                    };
-                }
+        //        if (httpContext == null)
+        //        {
+        //            return new DataResponse<object>
+        //            {
+        //                Data = null,
+        //                Message = "HttpContext not found.",
+        //                StatusCode = 500 // Lỗi phía máy chủ
+        //            };
+        //        }
 
-                await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        //        await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-                return new DataResponse<object>
-                {
-                    Data = null,
-                    Message = "Logout successful!",
-                    StatusCode = 200
-                };
-            }
-            catch (Exception ex)
-            {
-                return new DataResponse<object>
-                {
-                    Data = null,
-                    Message = $"Logout failed: {ex.Message}",
-                    StatusCode = 500
-                };
-            }
-        }
+        //        return new DataResponse<object>
+        //        {
+        //            Data = null,
+        //            Message = "Logout successful!",
+        //            StatusCode = 200
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new DataResponse<object>
+        //        {
+        //            Data = null,
+        //            Message = $"Logout failed: {ex.Message}",
+        //            StatusCode = 500
+        //        };
+        //    }
+        //}
 
-        public async Task<DataResponse<UserReadForAuthDTO>> GetAuthenticatedUserInfoAsync(ClaimsPrincipal userClaims)
-        {
-            var email = userClaims.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            if (string.IsNullOrEmpty(email))
-            {
-                await LogoutAsync();
-                return new DataResponse<UserReadForAuthDTO>
-                {
-                    Data = null,
-                    Message = "Email claim not found.",
-                    StatusCode = 404
-                };
-            }
+        //public async Task<DataResponse<UserReadForAuthDTO>> GetAuthenticatedUserInfoAsync(ClaimsPrincipal userClaims)
+        //{
+        //    var email = userClaims.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        //    if (string.IsNullOrEmpty(email))
+        //    {
+        //        await LogoutAsync();
+        //        return new DataResponse<UserReadForAuthDTO>
+        //        {
+        //            Data = null,
+        //            Message = "Email claim not found.",
+        //            StatusCode = 404
+        //        };
+        //    }
 
-            try
-            {
-                // Gọi phương thức không đồng bộ để lấy thông tin người dùng
-                var user = await _userRepository.GetUserByEmailAsync(email);
+        //    try
+        //    {
+        //        // Gọi phương thức không đồng bộ để lấy thông tin người dùng
+        //        var user = await _userRepository.GetUserByEmailAsync(email);
 
-                // Kiểm tra nếu tài khoản không còn hoạt động
-                if (user.Status != "Active")
-                {
-                    await LogoutAsync();
-                    return new DataResponse<UserReadForAuthDTO>
-                    {
-                        Data = null,
-                        Message = "User account is no longer active.",
-                        StatusCode = 404
-                    };
-                }
+        //        // Kiểm tra nếu tài khoản không còn hoạt động
+        //        if (user.Status != "Active")
+        //        {
+        //            await LogoutAsync();
+        //            return new DataResponse<UserReadForAuthDTO>
+        //            {
+        //                Data = null,
+        //                Message = "User account is no longer active.",
+        //                StatusCode = 404
+        //            };
+        //        }
 
-                var userDto = _mapper.Map<UserReadForAuthDTO>(user);
+        //        var userDto = _mapper.Map<UserReadForAuthDTO>(user);
 
-                return new DataResponse<UserReadForAuthDTO>
-                {
-                    Data = userDto,
-                    Message = "User details retrieved successfully.",
-                    StatusCode = 200
-                };
-            }
-            catch (Exception ex) when (ex is KeyNotFoundException || ex.InnerException is KeyNotFoundException)
-            {
-                await LogoutAsync();
-                return new DataResponse<UserReadForAuthDTO>
-                {
-                    Data = null,
-                    Message = "User account has been deleted or does not exist.",
-                    StatusCode = 404
-                };
-            }
-            catch (Exception ex)
-            {
-                await LogoutAsync();
-                // Xử lý các lỗi khác
-                return new DataResponse<UserReadForAuthDTO>
-                {
-                    Data = null,
-                    Message = $"An unexpected error occurred: {ex.Message}",
-                    StatusCode = 500
-                };
-            }
-        }
+        //        return new DataResponse<UserReadForAuthDTO>
+        //        {
+        //            Data = userDto,
+        //            Message = "User details retrieved successfully.",
+        //            StatusCode = 200
+        //        };
+        //    }
+        //    catch (Exception ex) when (ex is KeyNotFoundException || ex.InnerException is KeyNotFoundException)
+        //    {
+        //        await LogoutAsync();
+        //        return new DataResponse<UserReadForAuthDTO>
+        //        {
+        //            Data = null,
+        //            Message = "User account has been deleted or does not exist.",
+        //            StatusCode = 404
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await LogoutAsync();
+        //        // Xử lý các lỗi khác
+        //        return new DataResponse<UserReadForAuthDTO>
+        //        {
+        //            Data = null,
+        //            Message = $"An unexpected error occurred: {ex.Message}",
+        //            StatusCode = 500
+        //        };
+        //    }
+        //}
 
         // Admin - UserManagement
         public async Task<DataResponse<PagedResponse<List<UserListForAdminDTO>>>> GetAllUsersForAdminAsync(string? name, int? roleId, string? status, int pageNumber, int pageSize)

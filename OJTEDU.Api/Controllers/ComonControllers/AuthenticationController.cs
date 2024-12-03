@@ -18,11 +18,13 @@ namespace OJTEDU.Api.Controllers.ComonControllers
         private readonly IUserService _userService;
         private readonly ILogger<AuthenticationController> _logger;
         private IUserService @object;
+        private readonly IJobService _jobService;
 
-        public AuthenticationController(IUserService userService, ILogger<AuthenticationController> logger)
+        public AuthenticationController(IUserService userService, ILogger<AuthenticationController> logger, IJobService jobService)
         {
             _userService = userService;
             _logger = logger;
+            _jobService = jobService;
         }
 
         public AuthenticationController(IUserService @object)
@@ -49,7 +51,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
                 }
 
                 _logger.LogInformation("Processing Google login with the provided authorize code.");
-                var dataResponse = await _userService.LoginWithGoogleAsync(request.AuthorizeCode);
+                var dataResponse = await _jobService.LoginWithGoogleAsync(request.AuthorizeCode);
 
                 if (dataResponse == null)
                 {
@@ -102,7 +104,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
                 {
                     _logger.LogInformation("User is authenticated.");
 
-                    var dataResponse = await _userService.GetAuthenticatedUserInfoAsync(User);
+                    var dataResponse = await _jobService.GetAuthenticatedUserInfoAsync(User);
 
                     if (dataResponse.StatusCode == 200 && dataResponse.Data != null)
                     {
@@ -148,7 +150,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             try
             {
                 _logger.LogInformation("Logout method started.");
-                var response = await _userService.LogoutAsync();
+                var response = await _jobService.LogoutAsync();
                 _logger.LogInformation("Logout successful.");
                 return Ok(response);
             }
