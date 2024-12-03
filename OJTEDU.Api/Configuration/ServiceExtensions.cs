@@ -133,7 +133,7 @@ namespace OJTEDU.Api.Configuration
             {
                 options.AddPolicy("AllowSpecificOrigin", builder =>
                 {
-                    builder.WithOrigins("https://www.ojtedu.site/login")
+                    builder.WithOrigins("https://ojtedubdomain.site/api/Authentication/login-google")
                            .AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials()
