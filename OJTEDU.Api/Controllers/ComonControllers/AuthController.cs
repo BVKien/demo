@@ -25,7 +25,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             _logger = logger;
         }
 
-        [HttpPost("testok")]
+        [HttpPost("login")]
         public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
         {
             try
