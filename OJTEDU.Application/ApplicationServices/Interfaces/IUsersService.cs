@@ -13,9 +13,9 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
     public interface IUsersService
     {
         // Common - Authentication
-        //Task<DataResponse<UserReadForAuthDTO>> LoginWithGoogleAsync(string token);
-        //Task<DataResponse<UserReadForAuthDTO>> GetAuthenticatedUserInfoAsync(ClaimsPrincipal userClaims);
-        //Task<DataResponse<object>> LogoutAsync();
+        Task<DataResponse<UserReadForAuthDTO>> LoginWithGoogleAsync(string token);
+        Task<DataResponse<UserReadForAuthDTO>> GetAuthenticatedUserInfoAsync(ClaimsPrincipal userClaims);
+        Task<DataResponse<object>> LogoutAsync();
 
         // Admin - User Management
         Task<DataResponse<PagedResponse<List<UserListForAdminDTO>>>> GetAllUsersForAdminAsync(string? name, int? roleId, string? status, int pageNumber, int pageSize);
