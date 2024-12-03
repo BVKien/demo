@@ -20,13 +20,10 @@ namespace OJTEDU.Api.Controllers.ComonControllers
         private readonly IJobService _jobService;
         private readonly ILogger<CvController> _logger;
 
-        private readonly IUsersService _usersService;
-
-        public AuthController(IJobService jobService, ILogger<CvController> logger, IUsersService usersService)
+        public AuthController(IJobService jobService, ILogger<CvController> logger)
         {
             _jobService = jobService;
             _logger = logger;
-            _usersService = usersService;
         }
 
         [HttpPost("login")]
@@ -35,7 +32,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             try
             {
                 _logger.LogInformation("LoginWithGoogle method started.");
-                var dataResponse = await _usersService.LoginWithGoogleAsync(request.AuthorizeCode);
+                var dataResponse = await _jobService.LoginWithGoogleAsync(request.AuthorizeCode);
                 _logger.LogInformation("Login successful with Google.");
                 var apiResponse = new ApiResponse<UserReadForAuthDTO>()
                 {
@@ -65,7 +62,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
 
-                var dataResponse = await _usersService.GetAllUsersForAdminAsync(name, roleId, status, actualPageNumber, actualPageSize);
+                var dataResponse = await _jobService.GetAllUsersForAdminAsync(name, roleId, status, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
