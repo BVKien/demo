@@ -125,11 +125,12 @@ namespace OJTEDU.Api.Configuration
         //    });
         //}
 
+        //AllowSpecificOrigin
         public static void ConfigureCors(this IServiceCollection services)
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowSpecificOrigin", builder =>
+                options.AddPolicy("AllowAll", builder =>
                 {
                     builder.WithOrigins("https://ojtedubdomain.site/api/Authentication/login-google")  // Thay bằng domain của bạn
                            .AllowAnyMethod()

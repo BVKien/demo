@@ -99,7 +99,8 @@ app.UseRouting();
 
 // Enable CORS
 logger.LogInformation("Enabling CORS.");
-app.UseCors("AllowSpecificOrigin");
+//app.UseCors("AllowSpecificOrigin");
+app.UseCors("AllowAll");
 
 // Enable authentication and authorization
 logger.LogInformation("Enabling authentication and authorization.");
