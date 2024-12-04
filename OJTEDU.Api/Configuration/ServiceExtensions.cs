@@ -175,7 +175,7 @@ namespace OJTEDU.Api.Configuration
                 options.Cookie.Name = "OJTEDU"; // Tên của cookie
                 options.Cookie.HttpOnly = true; // Ngăn chặn JavaScript truy cập cookie
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Cookie chỉ được gửi qua HTTPS
-                options.Cookie.SameSite = SameSiteMode.Strict; // Ngăn chặn CSRF
+                options.Cookie.SameSite = SameSiteMode.Lax; // Ngăn chặn CSRF | SameSiteMode.Strict;
                 options.Cookie.MaxAge = TimeSpan.FromHours(3); // Hết hạn sau 3 tiếng
                 options.SlidingExpiration = true; // Làm mới thời gian hết hạn mỗi lần truy cập
             });
