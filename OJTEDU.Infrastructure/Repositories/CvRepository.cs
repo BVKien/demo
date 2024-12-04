@@ -123,7 +123,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 var student = await _context.Students
                     .Include(s => s.User).ThenInclude(s => s.Role)
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync(s => s.UserId == userId);
 
                 var studentCvs = await _context.Cvs
                     .Where(c => c.StudentId == student.StudentId && c.Status != "2")
