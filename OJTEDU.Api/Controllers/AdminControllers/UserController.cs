@@ -14,7 +14,6 @@ namespace OJTEDU.Api.Controllers.AdminControllers
     public class UserController : ControllerBase
     {
         private readonly IJobService _jobService;
-        private IUserService @object;
 
         [HttpGet("list")]
         [Authorize(Roles = "Admin")]
