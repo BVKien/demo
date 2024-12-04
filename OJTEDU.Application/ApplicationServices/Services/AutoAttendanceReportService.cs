@@ -62,25 +62,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
         private DateTime GetVietnamTime()
         {
-            TimeZoneInfo vietnamTimeZone;
-            try
-            {
-                if (OperatingSystem.IsWindows())
-                {
-                    vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh"); // Windows
-                }
-                else
-                {
-                    vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh"); // Linux/macOS
-                }
-            }
-            catch (TimeZoneNotFoundException)
-            {
-                Console.WriteLine("Không tìm thấy múi giờ, sử dụng UTC làm mặc định.");
-                vietnamTimeZone = TimeZoneInfo.Utc; // Fallback nếu không tìm thấy múi giờ
-            }
-
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
+            return DateTime.UtcNow.AddHours(7);
         }
     }
 }

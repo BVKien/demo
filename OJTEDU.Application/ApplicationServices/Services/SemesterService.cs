@@ -386,8 +386,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
         private DateTime GetVietnamTime()
         {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
+            return DateTime.UtcNow.AddHours(7);
         }
     }
 }
