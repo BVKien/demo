@@ -43,8 +43,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     MessageId = info?.MessageId,
                     GroupChatId = info?.GroupChatId,
                     MessageGroupId = info?.MessageGroupId,
-                    CreatedAt = GetVietnamTime(),
-                    UpdatedAt = GetVietnamTime()
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
                 };
 
                 await _context.Notifications.AddAsync(noti);
@@ -56,11 +56,6 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
-        }
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

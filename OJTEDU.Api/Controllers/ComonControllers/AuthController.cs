@@ -16,6 +16,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
 {
     [Route("api/common/auth")]
     [ApiController]
+    //[EnableCors("AllowSpecificOrigin")]
     public class AuthController : ControllerBase
     {
         private readonly IJobService _jobService;

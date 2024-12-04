@@ -392,7 +392,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
-        // Common - Authentication
         public async Task<DataResponse<UserReadForAuthDTO>> LoginWithGoogleAsync(string token)
         {
             try
@@ -551,6 +550,64 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
+        public async Task<DataResponse<PagedResponse<List<UserListForAdminDTO>>>> GetAllUsersForAdminAsync(string? name, int? roleId, string? status, int pageNumber, int pageSize)
+        {
+            try
+            {
+                var users = await _userRepository.GetAllUsersForAdminAsync(name, roleId, status);
+
+                var totalUsers = users.Count();
+                var totalPages = totalUsers == 0 ? 1 : (int)Math.Ceiling((double)totalUsers / pageSize);
+
+                var userDtos = totalUsers > 0 ? _mapper.Map<List<UserListForAdminDTO>>(users).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList()
+                                                : new List<UserListForAdminDTO>();
+
+                var pagedResponse = new PagedResponse<List<UserListForAdminDTO>>
+                {
+                    Items = userDtos,
+                    TotalCount = totalUsers,
+                    PageSize = pageSize,
+                    CurrentPage = pageNumber,
+                    TotalPages = totalPages
+                };
+
+                return new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
+                {
+                    Data = pagedResponse,
+                    Message = "User list retrieved successfully!",
+                    StatusCode = 200
+                };
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    StatusCode = 404
+                };
+            }
+            catch (UnauthorizedAccessException authEx)
+            {
+                // Xử lý lỗi quyền truy cập
+                return new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
+                {
+                    Data = null,
+                    Message = $"Access denied while get user list: {authEx.Message}",
+                    StatusCode = 403 // Forbidden
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
+                {
+                    Data = null,
+                    Message = $"Error retrieving user list: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
         public async Task<DataResponse<object>> LogoutAsync()
         {
             try
@@ -651,64 +708,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // Admin - UserManagement
-        public async Task<DataResponse<PagedResponse<List<UserListForAdminDTO>>>> GetAllUsersForAdminAsync(string? name, int? roleId, string? status, int pageNumber, int pageSize)
-        {
-            try
-            {
-                var users = await _userRepository.GetAllUsersForAdminAsync(name, roleId, status);
-
-                var totalUsers = users.Count();
-                var totalPages = totalUsers == 0 ? 1 : (int)Math.Ceiling((double)totalUsers / pageSize);
-
-                var userDtos = totalUsers > 0 ? _mapper.Map<List<UserListForAdminDTO>>(users).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList()
-                                                : new List<UserListForAdminDTO>();
-
-                var pagedResponse = new PagedResponse<List<UserListForAdminDTO>>
-                {
-                    Items = userDtos,
-                    TotalCount = totalUsers,
-                    PageSize = pageSize,
-                    CurrentPage = pageNumber,
-                    TotalPages = totalPages
-                };
-
-                return new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
-                {
-                    Data = pagedResponse,
-                    Message = "User list retrieved successfully!",
-                    StatusCode = 200
-                };
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
-                {
-                    Data = null,
-                    Message = ex.Message,
-                    StatusCode = 404
-                };
-            }
-            catch (UnauthorizedAccessException authEx)
-            {
-                // Xử lý lỗi quyền truy cập
-                return new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
-                {
-                    Data = null,
-                    Message = $"Access denied while get user list: {authEx.Message}",
-                    StatusCode = 403 // Forbidden
-                };
-            }
-            catch (Exception ex)
-            {
-                return new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
-                {
-                    Data = null,
-                    Message = $"Error retrieving user list: {ex.Message}",
-                    StatusCode = 500
-                };
-            }
-        }
-
         public async Task<DataResponse<UserDetailForAdminDTO>> GetUserDetailByIdForAdminAsync(int userId)
         {
             try
@@ -1351,8 +1350,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 RoleId = roleId,
                                 Information = information,
                                 Status = "Active",
-                                CreatedAt = GetVietnamTime(),
-                                UpdatedAt = GetVietnamTime()
+                                CreatedAt = DateTime.Now,
+                                UpdatedAt = DateTime.Now
                             };
 
                             users.Add(user);
@@ -1390,11 +1389,11 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 if (addedUser.RoleId == 2) // RoleId = 2 là Student
                                 {
                                     var majorId = majorMapping[user.Email]; // Lấy MajorId từ dictionary
-                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = GetVietnamTime(), UpdatedAt = GetVietnamTime() });
+                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
                                 }
                                 else if (addedUser.RoleId == 3) // RoleId = 3 là Company
                                 {
-                                    companyUsers.Add(new Company { UserId = addedUser.UserId, CreatedAt = GetVietnamTime(), UpdatedAt = GetVietnamTime() });
+                                    companyUsers.Add(new Company { UserId = addedUser.UserId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
                                 }
                             }
                         }
@@ -2426,8 +2425,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 RoleId = roleId,
                                 Information = information,
                                 Status = "Active",
-                                CreatedAt = GetVietnamTime(),
-                                UpdatedAt = GetVietnamTime()
+                                CreatedAt = DateTime.Now,
+                                UpdatedAt = DateTime.Now
                             };
 
                             users.Add(user);
@@ -2465,11 +2464,11 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 if (addedUser.RoleId == 2) // RoleId = 2 là Student
                                 {
                                     var majorId = majorMapping[user.Email]; // Lấy MajorId từ dictionary
-                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = GetVietnamTime(), UpdatedAt = GetVietnamTime() });
+                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
                                 }
                                 else if (addedUser.RoleId == 3) // RoleId = 3 là Company
                                 {
-                                    companyUsers.Add(new Company { UserId = addedUser.UserId, CreatedAt = GetVietnamTime(), UpdatedAt = GetVietnamTime() });
+                                    companyUsers.Add(new Company { UserId = addedUser.UserId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
                                 }
                             }
                         }
@@ -3058,7 +3057,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
                 user.Name = dto.Name;
                 user.Information = dto.Information;
-                user.UpdatedAt = GetVietnamTime();
+                user.UpdatedAt = DateTime.Now;
 
                 if (role == "Dean")
                 {
@@ -3123,8 +3122,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     RoleId = roleId,
                     Status = "Active",
                     AssignForId = assignForId,
-                    CreatedAt = GetVietnamTime(),
-                    UpdatedAt = GetVietnamTime()
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
                 };
 
                 await _userRepository.CreateLecturerForDeanAsync(newLecturer);
@@ -3557,7 +3556,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 else
                 {
                     lecturer.AssignForId = dto.DeanId;
-                    lecturer.UpdatedAt = GetVietnamTime();
+                    lecturer.UpdatedAt = DateTime.Now;
                 }
             }
 
@@ -3755,12 +3754,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     StatusCode = 500
                 };
             }
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

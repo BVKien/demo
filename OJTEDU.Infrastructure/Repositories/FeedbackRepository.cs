@@ -134,8 +134,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     UniversityId = doet.UserId,
                     FeedbackContent = info?.FeedbackContent,
                     Status = "1",
-                    CreatedAt = GetVietnamTime(),
-                    UpdatedAt = GetVietnamTime(),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
                 };
 
                 await _context.Feedbacks.AddAsync(feedback);
@@ -175,7 +175,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Not found feedback.");
                 }
 
-                if (GetVietnamTime() - feedback.CreatedAt >= TimeSpan.FromHours(24))
+                if (DateTime.Now - feedback.CreatedAt >= TimeSpan.FromHours(24))
                 {
                     throw new Exception("Cannot delete feedback. The valid time is out of 24 hours.");
                 }
@@ -206,8 +206,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 // Stored 
                 feedback.Status = "0";
-                feedback.UpdatedAt = GetVietnamTime();
-                feedback.DeletedAt = GetVietnamTime();
+                feedback.UpdatedAt = DateTime.Now;
+                feedback.DeletedAt = DateTime.Now;
 
                 await _context.SaveChangesAsync();
 
@@ -231,11 +231,6 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
-        }
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }
