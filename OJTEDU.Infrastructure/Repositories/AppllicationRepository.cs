@@ -68,7 +68,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Create file name format studentId_timestamp_filename
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                 var newTestFileName = testFileName != null ? $"{studentExists.StudentId}_{timestamp}_{testFileName}" : null;
                 var newCvFileName = cvFileName != null ? $"{studentExists.StudentId}_{timestamp}_{cvFileName}" : null;
 
@@ -106,8 +106,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     CvId = applyInfo.CvId,
                     CvFile = cvFilePath?.Replace("wwwroot", ""),
                     Status = "1",
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime(),
                 };
 
                 _context.Appllications.Add(application);
@@ -249,7 +249,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     // Accept offer
                     application.StudentRejectReason = null;
                     application.Status = status;
-                    application.UpdatedAt = DateTime.Now;
+                    application.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -273,7 +273,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     // Reject an offer
                     application.StudentRejectReason = studentRejectReason;
                     application.Status = status;
-                    application.UpdatedAt = DateTime.Now;
+                    application.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -303,7 +303,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     // Internship Comfirmed
                     applicationAssign.Status = status;
-                    applicationAssign.UpdatedAt = DateTime.Now;
+                    applicationAssign.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -335,13 +335,13 @@ namespace OJTEDU.Infrastructure.Repositories
                         StudentId = studentValid.StudentId,
                         JobId = application.JobId,
                         LecturerId = studentValid.LecturerId,
-                        StartDate = DateTime.Now,
+                        StartDate = GetVietnamTime(),
                         EndDate = semester.EndDate,
                         Status = "1",
                         SemesterId = studentValid.SemesterId,
                         MajorId = studentValid.MajorId,
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime()
                     };
 
                     await _context.Internships.AddAsync(internship);
@@ -446,7 +446,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     application.Feedback = feedback;
                     application.InterviewDate = interviewDate;
                     application.Status = status;
-                    application.UpdatedAt = DateTime.Now;
+                    application.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -470,7 +470,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     // Reject an application 
                     application.Feedback = feedback;
                     application.Status = status;
-                    application.UpdatedAt = DateTime.Now;
+                    application.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -500,7 +500,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     // Internship Accepted
                     applicationValid.Status = status;
-                    applicationValid.UpdatedAt = DateTime.Now;
+                    applicationValid.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -525,6 +525,11 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
+        }
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

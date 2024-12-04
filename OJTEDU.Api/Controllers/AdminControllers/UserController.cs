@@ -13,11 +13,11 @@ namespace OJTEDU.Api.Controllers.AdminControllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IJobService _jobService;
+        private readonly IUserService _userService;
 
-        public UserController(IJobService jobService)
+        public UserController(IUserService userService)
         {
-            _jobService = jobService;
+            _userService = userService;
         }
 
         [HttpGet("list")]
@@ -29,7 +29,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
 
-                var dataResponse = await _jobService.GetAllUsersForAdminAsync(name, roleId, status, actualPageNumber, actualPageSize);
+                var dataResponse = await _userService.GetAllUsersForAdminAsync(name, roleId, status, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
@@ -83,7 +83,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     });
                 }
 
-                var dataResponse = await _jobService.GetUserDetailByIdForAdminAsync(userId.Value);
+                var dataResponse = await _userService.GetUserDetailByIdForAdminAsync(userId.Value);
 
                 if (dataResponse == null)
                 {
@@ -188,7 +188,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     Information = request.Information
                 };
 
-                var dataResponse = await _jobService.AddUserForAdminAsync(userDto);
+                var dataResponse = await _userService.AddUserForAdminAsync(userDto);
 
                 if (dataResponse == null)
                 {
@@ -318,7 +318,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 };
 
                 // Gọi dịch vụ để cập nhật người dùng
-                var dataResponse = await _jobService.UpdateUserForAdminAsync(userDto);
+                var dataResponse = await _userService.UpdateUserForAdminAsync(userDto);
 
                 if (dataResponse == null)
                 {
@@ -379,7 +379,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 };
 
                 // Gọi dịch vụ để xóa người dùng
-                var dataResponse = await _jobService.SoftDeleteUserForAdminAsync(userDto);
+                var dataResponse = await _userService.SoftDeleteUserForAdminAsync(userDto);
 
                 if (dataResponse == null)
                 {
@@ -451,7 +451,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 };
 
                 // Gọi dịch vụ để cập nhật người dùng
-                var dataResponse = await _jobService.UpdateUserStatusForAdminAsync(userDto);
+                var dataResponse = await _userService.UpdateUserStatusForAdminAsync(userDto);
 
                 if (dataResponse == null)
                 {
@@ -518,7 +518,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 }
 
                 // Gọi service để thực hiện import
-                var dataResponse = await _jobService.ImportUsersForAdminAsync(file);
+                var dataResponse = await _userService.ImportUsersForAdminAsync(file);
 
                 // Kiểm tra kết quả trả về từ service
                 if (dataResponse == null)
@@ -565,7 +565,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         {
             try
             {
-                var dataResponse = await _jobService.GenerateUserTemplateForAdminAsync();
+                var dataResponse = await _userService.GenerateUserTemplateForAdminAsync();
 
                 if (dataResponse == null)
                 {
@@ -613,7 +613,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         {
             try
             {
-                var dataResponse = await _jobService.GetAllStatusesUserForAdminAsync();
+                var dataResponse = await _userService.GetAllStatusesUserForAdminAsync();
 
                 if (dataResponse == null)
                 {
@@ -662,7 +662,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
 
-                var dataResponse = await _jobService.GetAllUsersStoredForAdmin(name, roleId, actualPageNumber, actualPageSize);
+                var dataResponse = await _userService.GetAllUsersStoredForAdmin(name, roleId, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
@@ -716,7 +716,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     });
                 }
 
-                var dataResponse = await _jobService.GetUserStoredDetailByIdForAdminAsync(userId.Value);
+                var dataResponse = await _userService.GetUserStoredDetailByIdForAdminAsync(userId.Value);
 
                 if (dataResponse == null)
                 {
@@ -777,7 +777,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 };
 
                 // Gọi dịch vụ để xóa người dùng
-                var dataResponse = await _jobService.RestoreUserForAdminAsync(userDto);
+                var dataResponse = await _userService.RestoreUserForAdminAsync(userDto);
 
                 if (dataResponse == null)
                 {
@@ -838,7 +838,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 };
 
                 // Gọi dịch vụ để xóa người dùng
-                var dataResponse = await _jobService.HardDeleteUserStoredForAdminAsync(userDto);
+                var dataResponse = await _userService.HardDeleteUserStoredForAdminAsync(userDto);
 
                 if (dataResponse == null)
                 {
@@ -893,7 +893,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 var actualPageNumber = pageNumber ?? 1;
                 var actualPageSize = pageSize ?? 15;
 
-                var response = await _jobService.GetAllDeansAsync(
+                var response = await _userService.GetAllDeansAsync(
                     userCode,
                     name,
                     departmentName,
@@ -946,7 +946,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 var actualStudentPageNumber = studentPageNumber ?? 1;
                 var actualStudentPageSize = studentPageSize ?? 15;
 
-                var response = await _jobService.GetDeanDetailsAsync(
+                var response = await _userService.GetDeanDetailsAsync(
                     deanId,
                     actualPageNumber,
                     actualPageSize,
@@ -987,7 +987,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         {
             try
             {
-                var response = await _jobService.AssignDepartmentToDeanAsync(deanId, departmentId);
+                var response = await _userService.AssignDepartmentToDeanAsync(deanId, departmentId);
 
                 if (response.StatusCode != 200)
                 {
@@ -1019,7 +1019,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         {
             try
             {
-                var response = await _jobService.AssignMajorToLecturerAsync(lecturerId, majorId);
+                var response = await _userService.AssignMajorToLecturerAsync(lecturerId, majorId);
 
                 if (response.StatusCode != 200)
                 {
@@ -1049,7 +1049,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AssignLecturersToDeanForAdmin([FromBody] AssignLecturersToDeanDto assignLecturersDto)
         {
-            var response = await _jobService.AssignLecturersToDeanAsync(assignLecturersDto);
+            var response = await _userService.AssignLecturersToDeanAsync(assignLecturersDto);
             if (response.Data == null)
             {
                 return StatusCode(response.StatusCode, new ApiResponse<object>
@@ -1082,7 +1082,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 var actualPageNumber = pageNumber ?? 1;
                 var actualPageSize = pageSize ?? 15;
 
-                var response = await _jobService.GetAllLecturersAsync(
+                var response = await _userService.GetAllLecturersAsync(
                     userCode,
                     name,
                     majorName,
@@ -1133,7 +1133,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 var actualPageNumber = pageNumber ?? 1;
                 var actualPageSize = pageSize ?? 15;
 
-                var response = await _jobService.GetLecturerDetailsAsync(
+                var response = await _userService.GetLecturerDetailsAsync(
                     lecturerId,
                     studentName,
                     lecturerName,

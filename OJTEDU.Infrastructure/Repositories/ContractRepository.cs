@@ -54,7 +54,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserId == mentor.ForCompany);
 
                 // Create file name format internshipId_timestamp_filename
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                 var newFileName = fileName != null ? $"{internshipId}_{timestamp}_{fileName}" : null;
 
                 var filePath = newFileName != null ? Path.Combine(_contractDirectory, newFileName) : null;
@@ -78,8 +78,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     Name = info?.Name,
                     ContractFile = filePath?.Replace("wwwroot", ""),
                     Status = "1",
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime()
                 };
 
                 await _context.Contracts.AddAsync(contract);
@@ -87,7 +87,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 // Assign for internship 
                 internshipExists.ContractId = contract.ContractId;
-                internshipExists.UpdatedAt = DateTime.Now;
+                internshipExists.UpdatedAt = GetVietnamTime();
 
                 await _context.SaveChangesAsync();
 
@@ -97,6 +97,11 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
+        }
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

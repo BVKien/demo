@@ -44,8 +44,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         MentorId = groupChatInfo.MentorId,
                         IsAdmin = true,
                         Status = "1",
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     _context.GroupChats.Add(groupChatMentor);
@@ -56,12 +56,12 @@ namespace OJTEDU.Infrastructure.Repositories
                     {
                         GroupChatId = groupChatMentor.GroupChatId,
                         MentorId = groupChatInfo.MentorId,
-                        JoinAt = DateTime.Now,
+                        JoinAt = GetVietnamTime(),
                         IsAdmin = true,
                         IsRead = false,
                         Status = "1",
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     _context.MessageGroups.Add(memberInfo);
@@ -96,8 +96,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     UniversityId = groupChatInfo.UniversityId,
                     IsAdmin = true,
                     Status = "1",
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime(),
                 };
 
                 _context.GroupChats.Add(groupChat);
@@ -108,12 +108,12 @@ namespace OJTEDU.Infrastructure.Repositories
                 {
                     GroupChatId = groupChat.GroupChatId,
                     UniversityId = groupChat.UniversityId,
-                    JoinAt = DateTime.Now,
+                    JoinAt = GetVietnamTime(),
                     IsAdmin = true,
                     IsRead = false,
                     Status = "1",
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime(),
                 };
 
                 _context.MessageGroups.Add(uniMemberInfo);
@@ -243,7 +243,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 // Update 
                 groupChatExists.GroupName = groupChatInfo?.GroupName;
-                groupChatExists.UpdatedAt = DateTime.Now;
+                groupChatExists.UpdatedAt = GetVietnamTime();
 
                 await _context.SaveChangesAsync();
 
@@ -304,6 +304,11 @@ namespace OJTEDU.Infrastructure.Repositories
         public Task<GroupChat> ClearMessageHistoryGroupChatAsync(int? groupChatId)
         {
             throw new NotImplementedException();
+        }
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }
