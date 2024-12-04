@@ -770,5 +770,273 @@ namespace OJTEDU.UnitTests.ApplicationServices.Services
             stream.Position = 0;
             return new FormFile(stream, 0, stream.Length, "file", "test.xlsx");
         }
+
+        // Service - User Stored Management - User Stored List
+
+        [Test]
+        public async Task GetAllUsersStoredForAdmin_ShouldReturnPagedUsers_WhenUsersExist()
+        {
+            // Arrange
+            var mockUsers = new List<User>
+            {
+                new User { UserId = 1, Email = "user1@example.com", Name = "User One", RoleId = 2, Status = "Deleted" },
+                new User { UserId = 2, Email = "user2@example.com", Name = "User Two", RoleId = 2, Status = "Deleted" },
+                new User { UserId = 3, Email = "user3@example.com", Name = "User Three", RoleId = 3, Status = "Deleted" }
+            };
+
+            _userRepoMock.Setup(repo => repo.GetAllUsersStoredAsync(null, null))
+                .ReturnsAsync(mockUsers);
+
+            var mockUserDtos = new List<UserListForAdminDTO>
+            {
+                new UserListForAdminDTO { UserId = 1, Email = "user1@example.com", Name = "User One", Role = "Student", Status = "Deleted" },
+                new UserListForAdminDTO { UserId = 2, Email = "user2@example.com", Name = "User Two", Role = "Student", Status = "Deleted" },
+                new UserListForAdminDTO { UserId = 3, Email = "user3@example.com", Name = "User Three", Role = "Company", Status = "Deleted" }
+            };
+
+            _mapperMock.Setup(mapper => mapper.Map<List<UserListForAdminDTO>>(mockUsers))
+                .Returns(mockUserDtos);
+
+            // Act
+            var result = await _service.GetAllUsersStoredForAdmin(null, null, 1, 2);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+            Assert.AreEqual(2, result.Data.Items.Count);
+            Assert.AreEqual(3, result.Data.TotalCount);
+            Assert.AreEqual(1, result.Data.CurrentPage);
+            Assert.AreEqual(2, result.Data.PageSize);
+            Assert.AreEqual(2, result.Data.TotalPages);
+        }
+
+        [Test]
+        public async Task GetAllUsersStoredForAdmin_ShouldReturnPagedUsers_WhenUsersExistFilterByNameAndRoleAndStatus()
+        {
+            // Arrange
+            var mockUsers = new List<User>
+            {
+                new User { UserId = 1, Email = "user1@example.com", Name = "Alice", RoleId = 1, Status = "Deleted" },
+                new User { UserId = 2, Email = "user2@example.com", Name = "Bob", RoleId = 2, Status = "Deleted" }
+            };
+
+            _userRepoMock.Setup(repo => repo.GetAllUsersStoredAsync("Alice", 1))
+                .ReturnsAsync(mockUsers.Where(u => u.Name.ToLower().Contains("alice") && u.RoleId == 1 && u.Status == "Deleted").ToList());
+
+            var mockUserDtos = new List<UserListForAdminDTO>
+            {
+                new UserListForAdminDTO { UserId = 1, Email = "user1@example.com", Name = "Alice", Role = "Admin", Status = "Deleted" }
+            };
+
+            _mapperMock.Setup(mapper => mapper.Map<List<UserListForAdminDTO>>(It.IsAny<List<User>>()))
+                .Returns(mockUserDtos);
+
+            // Act
+            var result = await _service.GetAllUsersStoredForAdmin("Alice", 1, 1, 2);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+            Assert.AreEqual(1, result.Data.Items.Count);
+            Assert.AreEqual(1, result.Data.TotalCount);
+            Assert.AreEqual(1, result.Data.CurrentPage);
+            Assert.AreEqual(2, result.Data.PageSize);
+            Assert.AreEqual(1, result.Data.TotalPages);
+            Assert.AreEqual("Alice", result.Data.Items.First().Name);
+        }
+
+        [Test]
+        public async Task GetAllUsersStoredForAdmin_ShouldReturnEmpty_WhenNoUsersExist()
+        {
+            // Arrange
+            _userRepoMock.Setup(repo => repo.GetAllUsersStoredAsync(null, null))
+                .ReturnsAsync(new List<User>());
+
+            // Act
+            var result = await _service.GetAllUsersStoredForAdmin(null, null, 1, 2);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+            Assert.IsEmpty(result.Data.Items);
+            Assert.AreEqual(0, result.Data.TotalCount);
+            Assert.AreEqual(1, result.Data.CurrentPage);
+            Assert.AreEqual(2, result.Data.PageSize);
+            Assert.AreEqual(1, result.Data.TotalPages);
+        }
+
+        [Test]
+        public async Task GetAllUsersStoredForAdmin_ShouldHandleKeyNotFoundException()
+        {
+            // Arrange
+            _userRepoMock.Setup(repo => repo.GetAllUsersStoredAsync(It.IsAny<string>(), It.IsAny<int?>()))
+                .ThrowsAsync(new KeyNotFoundException("Users not found"));
+
+            // Act
+            var result = await _service.GetAllUsersStoredForAdmin(null, null, 1, 2);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(404, result.StatusCode);
+            Assert.AreEqual("Users not found", result.Message);
+        }
+
+        // Service - User Stored Management - User Stored Detail
+
+        [Test]
+        public async Task GetUserStoredDetailByIdForAdminAsync_ShouldReturnUser_WhenUserExists()
+        {
+            // Arrange
+            var user = new User
+            {
+                UserId = 1,
+                Email = "test@example.com",
+                Name = "Test User",
+                Role = new Role { Name = "DOET" },
+                Status = "Deleted",
+                Information = "Some info"
+            };
+
+            _userRepoMock.Setup(repo => repo.GetAllUsersStoredAsync(null, null))
+                         .ReturnsAsync(new List<User> { user });
+
+            _userRepoMock.Setup(repo => repo.GetUserStoredByIdForAdminAsync(1))
+                         .ReturnsAsync(user);
+
+            _mapperMock.Setup(mapper => mapper.Map<UserDetailForAdminDTO>(user))
+                       .Returns(new UserDetailForAdminDTO
+                       {
+                           UserId = 1,
+                           Email = "test@example.com",
+                           Name = "Test User",
+                           Role = "DOET",
+                           Status = "Deleted",
+                           Information = "Some info"
+                       });
+
+            // Act
+            var result = await _service.GetUserStoredDetailByIdForAdminAsync(1);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+            Assert.AreEqual("Test User", result.Data.Name);
+        }
+
+
+        [Test]
+        public async Task GetUserStoredDetailByIdForAdminAsync_ShouldReturnNotFound_WhenUserIsDeleted()
+        {
+            // Arrange
+            _userRepoMock.Setup(repo => repo.GetUserStoredByIdForAdminAsync(1))
+                         .ReturnsAsync(new User { Status = "Active" });
+
+            // Act
+            var result = await _service.GetUserStoredDetailByIdForAdminAsync(1);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(404, result.StatusCode);
+            Assert.AreEqual("User is not in the stored list.", result.Message);
+        }
+
+        // Service - User Stored Management - Restore User 
+
+        [Test]
+        public async Task RestoreUserForAdminAsync_ShouldReturnSuccess_WhenUserRestoredSuccessfully()
+        {
+            // Arrange
+            var userId = 1;
+            var deletedUsers = new List<User>
+            {
+                new User { UserId = userId, Status = "Deleted" }
+            };
+            var restoredUser = new User
+            {
+                UserId = userId,
+                Status = "Active"
+            };
+
+            _userRepoMock.Setup(x => x.GetAllUsersStoredAsync(null, null))
+                               .ReturnsAsync(deletedUsers);
+            _userRepoMock.Setup(x => x.RestoreUserStoredAsync(userId))
+                               .ReturnsAsync(restoredUser);
+            _mapperMock.Setup(m => m.Map<RestoreUserForAdminDTO>(restoredUser))
+                       .Returns(new RestoreUserForAdminDTO { UserId = userId });
+
+            // Act
+            var result = await _service.RestoreUserForAdminAsync(new RestoreUserForAdminDTO { UserId = userId });
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+            Assert.AreEqual("User Stored has been restored successfully.", result.Message);
+            Assert.AreEqual(userId, result.Data.UserId);
+        }
+
+        [Test]
+        public async Task RestoreUserForAdminAsync_ShouldReturnNotFound_WhenUserNotInStoredList()
+        {
+            // Arrange
+            var userId = 99;
+            var deletedUsers = new List<User>(); // Empty list simulating no users in the stored list
+
+            _userRepoMock.Setup(x => x.GetAllUsersStoredAsync(null, null))
+                               .ReturnsAsync(deletedUsers);
+
+            // Act
+            var result = await _service.RestoreUserForAdminAsync(new RestoreUserForAdminDTO { UserId = userId });
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(404, result.StatusCode);
+            Assert.AreEqual("User is not in the stored list.", result.Message);
+            Assert.IsNull(result.Data);
+        }
+
+        // Service - User Stored Management - Hard Delete User 
+
+        [Test]
+        public async Task HardDeleteUserStoredForAdminAsync_ShouldReturnSuccess_WhenUserIsDeleted()
+        {
+            // Arrange
+            int userId = 1;
+            var user = new User { UserId = userId, Status = "Deleted" };
+
+            _userRepoMock.Setup(repo => repo.GetAllUsersStoredAsync(null, null))
+                         .ReturnsAsync(new List<User> { user });
+
+            _userRepoMock.Setup(repo => repo.HardDeleteUserStoredAsync(userId))
+                         .ReturnsAsync(user);
+
+            _mapperMock.Setup(mapper => mapper.Map<DeleteUserForAdminDTO>(user))
+                       .Returns(new DeleteUserForAdminDTO { UserId = userId });
+
+            // Act
+            var result = await _service.HardDeleteUserStoredForAdminAsync(new DeleteUserForAdminDTO { UserId = userId });
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+            Assert.AreEqual("User Stored has been permanently deleted successfully.", result.Message);
+        }
+
+        [Test]
+        public async Task HardDeleteUserStoredForAdminAsync_ShouldReturnNotFound_WhenUserIsNotStored()
+        {
+            // Arrange
+            int userId = 1;
+            _userRepoMock.Setup(repo => repo.GetAllUsersStoredAsync(null, null))
+                         .ReturnsAsync(new List<User>()); // Empty list
+
+            // Act
+            var result = await _service.HardDeleteUserStoredForAdminAsync(new DeleteUserForAdminDTO { UserId = userId });
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(404, result.StatusCode);
+            Assert.AreEqual("User is not in the stored list.", result.Message);
+        }
+
     }
 }

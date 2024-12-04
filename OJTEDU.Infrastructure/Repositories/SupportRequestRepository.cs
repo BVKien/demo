@@ -107,8 +107,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     UniversityId = doet.UserId,
                     RequestContent = info?.RequestContent,
                     Status = "1",
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime(),
                 };
 
                 await _context.SupportRequests.AddAsync(supportRequest);
@@ -147,7 +147,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Not found support request.");
                 }
 
-                if (DateTime.Now - supportRequest.CreatedAt >= TimeSpan.FromHours(24))
+                if (GetVietnamTime() - supportRequest.CreatedAt >= TimeSpan.FromHours(24))
                 {
                     throw new Exception($"Cannot delete support request. The valid time is out of 24 hours.");
                 }
@@ -170,8 +170,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 // Stored 
                 supportRequest.Status = "0";
-                supportRequest.UpdatedAt = DateTime.Now;
-                supportRequest.DeletedAt = DateTime.Now;
+                supportRequest.UpdatedAt = GetVietnamTime();
+                supportRequest.DeletedAt = GetVietnamTime();
 
                 await _context.SaveChangesAsync();
 
@@ -270,7 +270,7 @@ namespace OJTEDU.Infrastructure.Repositories
             supportRequest.FeedbackContent = feedbackContent;
             supportRequest.Status = status.ToString();
             supportRequest.UniversityId = universityUserId; // Update university ID
-            supportRequest.UpdatedAt = DateTime.Now;
+            supportRequest.UpdatedAt = GetVietnamTime();
 
             _context.SupportRequests.Update(supportRequest);
             await _context.SaveChangesAsync();
@@ -304,6 +304,10 @@ namespace OJTEDU.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
+        }
     }
 }

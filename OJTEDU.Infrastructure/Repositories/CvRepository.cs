@@ -38,7 +38,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Create file name format studentId_timestamp_filename
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                 var newFileName = $"{student.StudentId}_{timestamp}_{fileName}";
                 var filePath = Path.Combine(_cvDirectory, newFileName);
 
@@ -52,8 +52,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     Name = fileName,
                     CvFile = filePath?.Replace("wwwroot", ""),
                     Status = "0",
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime()
                 };
                 _context.Cvs.Add(newCv);
                 await _context.SaveChangesAsync();
@@ -98,7 +98,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 // set primary cv
                 selectedCv.Status = "1";
-                selectedCv.UpdatedAt = DateTime.Now;
+                selectedCv.UpdatedAt = GetVietnamTime();
                 await _context.SaveChangesAsync();
 
                 return true;
@@ -157,7 +157,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 selectedCv.Status = "2";
-                selectedCv.UpdatedAt = DateTime.Now;
+                selectedCv.UpdatedAt = GetVietnamTime();
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -198,6 +198,11 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
+        }
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

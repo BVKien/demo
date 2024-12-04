@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using OJTEDU.Application.ApplicationServices.Interfaces;
@@ -100,7 +99,7 @@ namespace OJTEDU.Api.Configuration
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowSpecificOrigin", builder =>
+                options.AddDefaultPolicy(builder =>
                 {
                     builder.WithOrigins(origin)
                            .AllowAnyMethod()
@@ -110,22 +109,6 @@ namespace OJTEDU.Api.Configuration
                 });
             });
         }
-
-        //AllowSpecificOrigin
-        //public static void ConfigureCors(this IServiceCollection services)
-        //{
-        //    services.AddCors(options =>
-        //    {
-        //        options.AddPolicy("AllowSpecificOrigin", builder =>
-        //        {
-        //            builder.WithOrigins("https://www.ojtedu.site")
-        //                   .AllowAnyMethod()
-        //                   .AllowAnyHeader()
-        //                   .AllowCredentials()
-        //                   .WithExposedHeaders("Content-Disposition");
-        //        });
-        //    });
-        //}
 
         public static void ConfigureSwagger(this IServiceCollection services)
         {

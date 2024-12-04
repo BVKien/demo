@@ -77,12 +77,12 @@ namespace OJTEDU.Infrastructure.Repositories
                         {
                             GroupChatId = messageGroupInfo?.GroupChatId,
                             UniversityId = universityId,
-                            JoinAt = DateTime.Now,
+                            JoinAt = GetVietnamTime(),
                             IsAdmin = false,
                             IsRead = false,
                             Status = "1",
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
+                            CreatedAt = GetVietnamTime(),
+                            UpdatedAt = GetVietnamTime(),
                         };
 
                         _context.MessageGroups.Add(uniMemberInfo);
@@ -126,12 +126,12 @@ namespace OJTEDU.Infrastructure.Repositories
                         {
                             GroupChatId = messageGroupInfo?.GroupChatId,
                             UniversityId = universityId,
-                            JoinAt = DateTime.Now,
+                            JoinAt = GetVietnamTime(),
                             IsAdmin = false,
                             IsRead = false,
                             Status = "1",
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
+                            CreatedAt = GetVietnamTime(),
+                            UpdatedAt = GetVietnamTime(),
                         };
 
                         _context.MessageGroups.Add(uniMemberInfo);
@@ -175,12 +175,12 @@ namespace OJTEDU.Infrastructure.Repositories
                         {
                             GroupChatId = messageGroupInfo?.GroupChatId,
                             UniversityId = universityId,
-                            JoinAt = DateTime.Now,
+                            JoinAt = GetVietnamTime(),
                             IsAdmin = false,
                             IsRead = false,
                             Status = "1",
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
+                            CreatedAt = GetVietnamTime(),
+                            UpdatedAt = GetVietnamTime(),
                         };
 
                         _context.MessageGroups.Add(uniMemberInfo);
@@ -225,12 +225,12 @@ namespace OJTEDU.Infrastructure.Repositories
                         {
                             GroupChatId = messageGroupInfo?.GroupChatId,
                             StudentId = studentId,
-                            JoinAt = DateTime.Now,
+                            JoinAt = GetVietnamTime(),
                             IsAdmin = false,
                             IsRead = false,
                             Status = "1",
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
+                            CreatedAt = GetVietnamTime(),
+                            UpdatedAt = GetVietnamTime(),
                         };
 
                         _context.MessageGroups.Add(studentMemberInfo);
@@ -271,12 +271,12 @@ namespace OJTEDU.Infrastructure.Repositories
                 {
                     GroupChatId = messageGroupInfo?.GroupChatId,
                     StudentId = studentValidId,
-                    JoinAt = DateTime.Now,
+                    JoinAt = GetVietnamTime(),
                     IsAdmin = false,
                     IsRead = false,
                     Status = "1",
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime(),
                 };
 
                 _context.MessageGroups.Add(studentMemberValidInfo);
@@ -341,9 +341,9 @@ namespace OJTEDU.Infrastructure.Repositories
                         // Update meber infomation
                         var member = await _context.MessageGroups.FirstOrDefaultAsync(m => m.UniversityId == memberId && m.JoinAt != null);
 
-                        member.OutAt = DateTime.Now;
+                        member.OutAt = GetVietnamTime();
                         member.Status = "0";
-                        member.UpdatedAt = DateTime.Now;
+                        member.UpdatedAt = GetVietnamTime();
 
                         await _context.SaveChangesAsync();
 
@@ -384,9 +384,9 @@ namespace OJTEDU.Infrastructure.Repositories
                         // Update meber infomation
                         var member = await _context.MessageGroups.FirstOrDefaultAsync(m => m.UniversityId == memberId && m.JoinAt != null);
 
-                        member.OutAt = DateTime.Now;
+                        member.OutAt = GetVietnamTime();
                         member.Status = "0";
-                        member.UpdatedAt = DateTime.Now;
+                        member.UpdatedAt = GetVietnamTime();
 
                         await _context.SaveChangesAsync();
 
@@ -427,9 +427,9 @@ namespace OJTEDU.Infrastructure.Repositories
                         // Update meber infomation
                         var member = await _context.MessageGroups.FirstOrDefaultAsync(m => m.UniversityId == memberId && m.JoinAt != null);
 
-                        member.OutAt = DateTime.Now;
+                        member.OutAt = GetVietnamTime();
                         member.Status = "0";
-                        member.UpdatedAt = DateTime.Now;
+                        member.UpdatedAt = GetVietnamTime();
 
                         await _context.SaveChangesAsync();
 
@@ -470,9 +470,9 @@ namespace OJTEDU.Infrastructure.Repositories
                         // Update meber infomation
                         var member = await _context.MessageGroups.FirstOrDefaultAsync(m => m.StudentId == memberId && m.JoinAt != null);
 
-                        member.OutAt = DateTime.Now;
+                        member.OutAt = GetVietnamTime();
                         member.Status = "0";
-                        member.UpdatedAt = DateTime.Now;
+                        member.UpdatedAt = GetVietnamTime();
 
                         await _context.SaveChangesAsync();
 
@@ -508,9 +508,9 @@ namespace OJTEDU.Infrastructure.Repositories
                 // Update meber infomation
                 var memberValid = await _context.MessageGroups.FirstOrDefaultAsync(m => m.StudentId == memberId && m.JoinAt != null);
 
-                memberValid.OutAt = DateTime.Now;
+                memberValid.OutAt = GetVietnamTime();
                 memberValid.Status = "0";
-                memberValid.UpdatedAt = DateTime.Now;
+                memberValid.UpdatedAt = GetVietnamTime();
 
                 await _context.SaveChangesAsync();
 
@@ -1112,7 +1112,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     // Set admin permission 
                     member.IsAdmin = true;
-                    member.UpdatedAt = DateTime.Now;
+                    member.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -1157,7 +1157,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     // Set admin permission 
                     member.IsAdmin = true;
-                    member.UpdatedAt = DateTime.Now;
+                    member.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -1202,7 +1202,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     // Set admin permission 
                     member.IsAdmin = true;
-                    member.UpdatedAt = DateTime.Now;
+                    member.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -1250,7 +1250,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     // Set admin permission 
                     member.IsAdmin = true;
-                    member.UpdatedAt = DateTime.Now;
+                    member.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -1300,7 +1300,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     // Set admin permission 
                     member.IsAdmin = true;
-                    member.UpdatedAt = DateTime.Now;
+                    member.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -1370,9 +1370,9 @@ namespace OJTEDU.Infrastructure.Repositories
                         .FirstOrDefaultAsync();
 
                     // Update leave message group 
-                    admin.OutAt = DateTime.Now;
+                    admin.OutAt = GetVietnamTime();
                     admin.Status = "0";
-                    admin.UpdatedAt = DateTime.Now;
+                    admin.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -1419,9 +1419,9 @@ namespace OJTEDU.Infrastructure.Repositories
                         .FirstOrDefaultAsync();
 
                     // Update leave message group 
-                    doet.OutAt = DateTime.Now;
+                    doet.OutAt = GetVietnamTime();
                     doet.Status = "0";
-                    doet.UpdatedAt = DateTime.Now;
+                    doet.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -1468,9 +1468,9 @@ namespace OJTEDU.Infrastructure.Repositories
                         .FirstOrDefaultAsync();
 
                     // Update leave message group 
-                    dean.OutAt = DateTime.Now;
+                    dean.OutAt = GetVietnamTime();
                     dean.Status = "0";
-                    dean.UpdatedAt = DateTime.Now;
+                    dean.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -1517,9 +1517,9 @@ namespace OJTEDU.Infrastructure.Repositories
                         .FirstOrDefaultAsync();
 
                     // Update leave message group 
-                    lecturer.OutAt = DateTime.Now;
+                    lecturer.OutAt = GetVietnamTime();
                     lecturer.Status = "0";
-                    lecturer.UpdatedAt = DateTime.Now;
+                    lecturer.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -1568,9 +1568,9 @@ namespace OJTEDU.Infrastructure.Repositories
                         .FirstOrDefaultAsync();
 
                     // Update leave message group 
-                    mentor.OutAt = DateTime.Now;
+                    mentor.OutAt = GetVietnamTime();
                     mentor.Status = "0";
-                    mentor.UpdatedAt = DateTime.Now;
+                    mentor.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -1604,9 +1604,9 @@ namespace OJTEDU.Infrastructure.Repositories
                     .FirstOrDefaultAsync();
 
                 // Update leave message group 
-                student.OutAt = DateTime.Now;
+                student.OutAt = GetVietnamTime();
                 student.Status = "0";
-                student.UpdatedAt = DateTime.Now;
+                student.UpdatedAt = GetVietnamTime();
 
                 await _context.SaveChangesAsync();
 
@@ -1678,7 +1678,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 if (userExists?.Role?.Name == "Admin" || userExists?.Role?.Name == "DOET" || userExists?.Role?.Name == "Dean" || userExists?.Role?.Name == "Lecturer")
                 {
                     // Create file name format userId_timestamp_filename
-                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                     var newMessageFileName = messageFileName != null ? $"{userId}_{timestamp}_{messageFileName}" : null;
                     var newImageFileName = imageFileName != null ? $"{userId}_{timestamp}_{imageFileName}" : null;
 
@@ -1716,8 +1716,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         Image = imageFilePath?.Replace("wwwroot", ""),
                         UniversityId = userId,
                         IsRead = false,
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     _context.MessageGroups.Add(uniMemberInfo);
@@ -1732,7 +1732,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     var mentor = await _context.Companies.Include(c => c.User).ThenInclude(c => c.Role).FirstOrDefaultAsync(c => c.UserId == userId);
 
                     // Create file name format companyId_timestamp_filename
-                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                     var newMessageFileName = messageFileName != null ? $"{mentor.CompanyId}_{timestamp}_{messageFileName}" : null;
                     var newImageFileName = imageFileName != null ? $"{mentor.CompanyId}_{timestamp}_{imageFileName}" : null;
 
@@ -1770,8 +1770,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         Image = imageFilePath,
                         MentorId = mentor.CompanyId,
                         IsRead = false,
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     _context.MessageGroups.Add(mentorMemberInfo);
@@ -1784,7 +1784,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 var student = await _context.Students.Include(s => s.User).ThenInclude(s => s.Role).FirstOrDefaultAsync(s => s.UserId == userId);
 
                 // Create file name format studentId_timestamp_filename
-                var timestampStu = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                var timestampStu = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                 var newMessageFileNameStu = messageFileName != null ? $"{student.StudentId}_{timestampStu}_{messageFileName}" : null;
                 var newImageFileNameStu = imageFileName != null ? $"{student.StudentId}_{timestampStu}_{imageFileName}" : null;
 
@@ -1822,8 +1822,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     Image = imageFilePathStu,
                     StudentId = student.StudentId,
                     IsRead = false,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime(),
                 };
 
                 _context.MessageGroups.Add(studentMemberInfo);
@@ -1835,6 +1835,11 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
+        }
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

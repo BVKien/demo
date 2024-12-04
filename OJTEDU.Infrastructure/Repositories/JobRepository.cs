@@ -302,8 +302,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         DistrictId = addressInfo?.DistrictId,
                         ProvinceId = addressInfo?.ProvinceId,
                         Status = "1",
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     await _context.Addresses.AddAsync(address);
@@ -323,8 +323,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         Status = "1",
                         MajorId = info?.MajorId,
                         Addressed = address.AddressId,
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     await _context.Jobs.AddAsync(jobValid);
@@ -332,7 +332,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                     // Test file 
                     // Create file name format jobId_timestamp_filename
-                    var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    var timestampValid = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                     var newFileNameValid = fileName != null ? $"{jobValid.JobId}_{timestampValid}_{fileName}" : null;
 
                     var filePathValid = newFileNameValid != null ? Path.Combine(_testFileDirectory, newFileNameValid) : null;
@@ -380,8 +380,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     Status = "1",
                     MajorId = info?.MajorId,
                     Addressed = info?.Addressed,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime(),
                 };
 
                 await _context.Jobs.AddAsync(job);
@@ -389,7 +389,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 // Test file 
                 // Create file name format jobId_timestamp_filename
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                 var newFileName = fileName != null ? $"{job.JobId}_{timestamp}_{fileName}" : null;
 
                 var filePath = newFileName != null ? Path.Combine(_testFileDirectory, newFileName) : null;
@@ -453,7 +453,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 // Test file 
                 // Create file name format jobId_timestamp_filename
-                var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                var timestampValid = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                 var newFileNameValid = fileName != null ? $"{job.JobId}_{timestampValid}_{fileName}" : null;
 
                 var filePathValid = newFileNameValid != null ? Path.Combine(_testFileDirectory, newFileNameValid) : null;
@@ -490,8 +490,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         DistrictId = addressInfo?.DistrictId,
                         ProvinceId = addressInfo?.ProvinceId,
                         Status = "1",
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     await _context.Addresses.AddAsync(newAddress);
@@ -510,7 +510,7 @@ namespace OJTEDU.Infrastructure.Repositories
                         job.Deadline = info?.Deadline;
                         job.MajorId = info?.MajorId;
                         job.Addressed = newAddress.AddressId;
-                        job.UpdatedAt = DateTime.Now;
+                        job.UpdatedAt = GetVietnamTime();
 
                         await _context.SaveChangesAsync();
 
@@ -529,7 +529,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     job.Deadline = info?.Deadline;
                     job.MajorId = info?.MajorId;
                     job.Addressed = newAddress.AddressId;
-                    job.UpdatedAt = DateTime.Now;
+                    job.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -558,7 +558,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 updateAddress.DistrictId = addressInfo?.DistrictId;
                 updateAddress.ProvinceId = addressInfo?.ProvinceId;
                 updateAddress.Status = "1";
-                updateAddress.UpdatedAt = DateTime.Now;
+                updateAddress.UpdatedAt = GetVietnamTime();
 
                 if (filePath == null)
                 {
@@ -572,7 +572,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     job.WorkingHours = info?.WorkingHours;
                     job.Deadline = info?.Deadline;
                     job.MajorId = info?.MajorId;
-                    job.UpdatedAt = DateTime.Now;
+                    job.UpdatedAt = GetVietnamTime();
 
                     await _context.SaveChangesAsync();
 
@@ -590,7 +590,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 job.WorkingHours = info?.WorkingHours;
                 job.Deadline = info?.Deadline;
                 job.MajorId = info?.MajorId;
-                job.UpdatedAt = DateTime.Now;
+                job.UpdatedAt = GetVietnamTime();
 
                 await _context.SaveChangesAsync();
 
@@ -600,6 +600,11 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
+        }
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }
