@@ -42,7 +42,7 @@ builder.Services.ConfigureRepositories();
 
 // Configure CORS for ReactJS default port
 logger.LogInformation("Configuring CORS for ReactJS.");
-builder.Services.ConfigureCors("https://localhost:3000");
+builder.Services.ConfigureCors("https://www.ojtedu.site");
 
 // Configure Http Context Accessor
 logger.LogInformation("Configuring HttpContextAccessor.");
