@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using OJTEDU.Application.ApplicationServices.Interfaces;
 using OJTEDU.Domain.Entities;
 using System;
+using System.ComponentModel;
 
 namespace OJTEDU.Application.ApplicationServices.Services
 {
@@ -58,9 +59,27 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
             }
         }
+
         private DateTime GetVietnamTime()
         {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            TimeZoneInfo vietnamTimeZone;
+            try
+            {
+                if (OperatingSystem.IsWindows())
+                {
+                    vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"); // Windows
+                }
+                else
+                {
+                    vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh"); // Linux/macOS
+                }
+            }
+            catch (TimeZoneNotFoundException)
+            {
+                Console.WriteLine("Không tìm thấy múi giờ, sử dụng UTC làm mặc định.");
+                vietnamTimeZone = TimeZoneInfo.Utc; // Fallback nếu không tìm thấy múi giờ
+            }
+
             return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
