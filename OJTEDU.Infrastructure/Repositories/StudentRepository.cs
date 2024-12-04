@@ -78,7 +78,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 // Update Student information
                 // TBL User
                 user.Image = updateUser.Image ?? user.Image;
-                user.UpdatedAt = DateTime.Now; // Update the timestamp
+                user.UpdatedAt = GetVietnamTime(); // Update the timestamp
 
                 // TBL Student
                 student.AlternativeEmail = updateInformation.AlternativeEmail ?? student.AlternativeEmail;
@@ -101,10 +101,10 @@ namespace OJTEDU.Infrastructure.Repositories
                     address.WardId = updateAddress.WardId ?? address.WardId;
                     address.DistrictId = updateAddress.DistrictId ?? address.DistrictId;
                     address.ProvinceId = updateAddress.ProvinceId ?? address.ProvinceId;
-                    address.UpdatedAt = DateTime.Now; // Update the timestamp
+                    address.UpdatedAt = GetVietnamTime(); // Update the timestamp
                 }
 
-                student.UpdatedAt = DateTime.Now; // Update the timestamp
+                student.UpdatedAt = GetVietnamTime(); // Update the timestamp
 
                 // Save all changes to the database
                 await _context.SaveChangesAsync();
@@ -373,6 +373,11 @@ namespace OJTEDU.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
+        }
         //End
     }
 }

@@ -101,8 +101,8 @@ namespace OJTEDU.Infrastructure.Repositories
                 throw new InvalidOperationException("A role with the same name already exists.");
             }
 
-            role.CreatedAt = DateTime.Now;
-            role.UpdatedAt = DateTime.Now;
+            role.CreatedAt = GetVietnamTime();
+            role.UpdatedAt = GetVietnamTime();
             role.Status = "Active";
             await _context.Roles.AddAsync(role);
             await _context.SaveChangesAsync();
@@ -131,7 +131,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingRole.Name = role.Name ?? existingRole.Name;
             existingRole.Status = role.Status ?? existingRole.Status;
             existingRole.Description = role.Description ?? existingRole.Description;
-            existingRole.UpdatedAt = DateTime.Now;
+            existingRole.UpdatedAt = GetVietnamTime();
 
             _context.Roles.Update(existingRole);
             await _context.SaveChangesAsync();
@@ -156,6 +156,12 @@ namespace OJTEDU.Infrastructure.Repositories
         {
             bool hasUsers = await _context.Users.AnyAsync(e => e.RoleId == roleId);
             return hasUsers;
+        }
+
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

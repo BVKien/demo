@@ -65,7 +65,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 if (userExists?.Role.Name == "Admin" || userExists?.Role.Name == "DOET" || userExists?.Role.Name == "Dean" || userExists?.Role.Name == "Lecturer")
                 {
                     // Create file name format userId_timestamp_filename
-                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                     var newMessageFileName = messageFileName != null ? $"{userId}_{timestamp}_{messageFileName}" : null;
                     var newImageFileName = imageFileName != null ? $"{userId}_{timestamp}_{imageFileName}" : null;
 
@@ -115,8 +115,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         UniversiryId = userId,
                         IsRead = false,
                         Status = "1",
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     await _context.Messages.AddAsync(message);
@@ -134,8 +134,8 @@ namespace OJTEDU.Infrastructure.Repositories
                             UniversiryId = receiverId,
                             IsRead = false,
                             Status = "1",
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
+                            CreatedAt = GetVietnamTime(),
+                            UpdatedAt = GetVietnamTime(),
                         };
 
                         await _context.Messages.AddAsync(messageUniReceiver);
@@ -170,8 +170,8 @@ namespace OJTEDU.Infrastructure.Repositories
                             CompanyId = company.CompanyId,
                             IsRead = false,
                             Status = "1",
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
+                            CreatedAt = GetVietnamTime(),
+                            UpdatedAt = GetVietnamTime(),
                         };
 
                         await _context.Messages.AddAsync(messageUniReceiver);
@@ -206,8 +206,8 @@ namespace OJTEDU.Infrastructure.Repositories
                             StudentId = studentInfo.StudentId,
                             IsRead = false,
                             Status = "1",
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
+                            CreatedAt = GetVietnamTime(),
+                            UpdatedAt = GetVietnamTime(),
                         };
 
                         await _context.Messages.AddAsync(messageUniReceiver);
@@ -237,7 +237,7 @@ namespace OJTEDU.Infrastructure.Repositories
                         .FirstOrDefaultAsync();
 
                     // Create file name format companyId_timestamp_filename
-                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                     var newMessageFileName = messageFileName != null ? $"{company.CompanyId}_{timestamp}_{messageFileName}" : null;
                     var newImageFileName = imageFileName != null ? $"{company.CompanyId}_{timestamp}_{imageFileName}" : null;
 
@@ -287,8 +287,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         CompanyId = company.CompanyId,
                         IsRead = false,
                         Status = "1",
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     await _context.Messages.AddAsync(message);
@@ -306,8 +306,8 @@ namespace OJTEDU.Infrastructure.Repositories
                             UniversiryId = receiverId,
                             IsRead = false,
                             Status = "1",
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
+                            CreatedAt = GetVietnamTime(),
+                            UpdatedAt = GetVietnamTime(),
                         };
 
                         await _context.Messages.AddAsync(messageCompanyReceiver);
@@ -342,8 +342,8 @@ namespace OJTEDU.Infrastructure.Repositories
                             CompanyId = companyReceiver.CompanyId,
                             IsRead = false,
                             Status = "1",
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
+                            CreatedAt = GetVietnamTime(),
+                            UpdatedAt = GetVietnamTime(),
                         };
 
                         await _context.Messages.AddAsync(messageCompanyReceiver);
@@ -378,8 +378,8 @@ namespace OJTEDU.Infrastructure.Repositories
                             StudentId = studentInfo.StudentId,
                             IsRead = false,
                             Status = "1",
-                            CreatedAt = DateTime.Now,
-                            UpdatedAt = DateTime.Now,
+                            CreatedAt = GetVietnamTime(),
+                            UpdatedAt = GetVietnamTime(),
                         };
 
                         await _context.Messages.AddAsync(messageCompanyReceiver);
@@ -412,7 +412,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Create file name format studentId_timestamp_filename
-                var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                var timestampValid = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                 var newMessageFileNameValid = messageFileName != null ? $"{student.StudentId}_{timestampValid}_{messageFileName}" : null;
                 var newImageFileNameValid = imageFileName != null ? $"{student.StudentId}_{timestampValid}_{imageFileName}" : null;
 
@@ -462,8 +462,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     StudentId = student.StudentId,
                     IsRead = false,
                     Status = "1",
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime(),
                 };
 
                 await _context.Messages.AddAsync(messageValid);
@@ -481,8 +481,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         UniversiryId = receiverId,
                         IsRead = false,
                         Status = "1",
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     await _context.Messages.AddAsync(messageStudentReceiver);
@@ -517,8 +517,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         CompanyId = companyReceiver.CompanyId,
                         IsRead = false,
                         Status = "1",
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     await _context.Messages.AddAsync(messageStudentReceiver);
@@ -553,8 +553,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         StudentId = studentInfo.StudentId,
                         IsRead = false,
                         Status = "1",
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     await _context.Messages.AddAsync(messageStudentReceiver);
@@ -603,7 +603,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 if (userExists?.Role.Name == "Admin" || userExists?.Role.Name == "DOET" || userExists?.Role.Name == "Dean" || userExists?.Role.Name == "Lecturer")
                 {
                     // Create file name format userId_timestamp_filename
-                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                     var newMessageFileName = messageFileName != null ? $"{userId}_{timestamp}_{messageFileName}" : null;
                     var newImageFileName = imageFileName != null ? $"{userId}_{timestamp}_{imageFileName}" : null;
 
@@ -641,8 +641,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         UniversiryId = userId,
                         IsRead = false,
                         Status = "1",
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     await _context.Messages.AddAsync(message);
@@ -659,7 +659,7 @@ namespace OJTEDU.Infrastructure.Repositories
                         .FirstOrDefaultAsync();
 
                     // Create file name format companyId_timestamp_filename
-                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                     var newMessageFileName = messageFileName != null ? $"{company.CompanyId}_{timestamp}_{messageFileName}" : null;
                     var newImageFileName = imageFileName != null ? $"{company.CompanyId}_{timestamp}_{imageFileName}" : null;
 
@@ -697,8 +697,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         CompanyId = company.CompanyId,
                         IsRead = false,
                         Status = "1",
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
+                        CreatedAt = GetVietnamTime(),
+                        UpdatedAt = GetVietnamTime(),
                     };
 
                     await _context.Messages.AddAsync(message);
@@ -718,7 +718,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Create file name format studentId_timestamp_filename
-                var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                var timestampValid = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
                 var newMessageFileNameValid = messageFileName != null ? $"{student.StudentId}_{timestampValid}_{messageFileName}" : null;
                 var newImageFileNameValid = imageFileName != null ? $"{student.StudentId}_{timestampValid}_{imageFileName}" : null;
 
@@ -756,8 +756,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     StudentId = student.StudentId,
                     IsRead = false,
                     Status = "1",
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime(),
                 };
 
                 await _context.Messages.AddAsync(messageValid);
@@ -801,6 +801,11 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
+        }
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }
