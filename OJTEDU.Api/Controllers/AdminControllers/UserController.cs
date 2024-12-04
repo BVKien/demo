@@ -15,11 +15,6 @@ namespace OJTEDU.Api.Controllers.AdminControllers
     {
         private readonly IJobService _jobService;
 
-        public UserController(IJobService jobService)
-        {
-            _jobService = jobService;
-        }
-
         [HttpGet("list")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsersForAdmin(string? name, int? roleId, string? status, int? pageNumber, int? pageSize)
