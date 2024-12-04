@@ -14,11 +14,10 @@ namespace OJTEDU.Api.Controllers.Company
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
-
-        public UserController(IUserService userService)
+        private readonly IJobService _jobService;
+        public UserController(IJobService jobService)
         {
-            _userService = userService;
+            _jobService = jobService;
         }
 
         [HttpGet("list")]
@@ -32,7 +31,7 @@ namespace OJTEDU.Api.Controllers.Company
 
                 var companyId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                var dataResponse = await _userService.GetAllUsersForCompanyAsync(int.Parse(companyId), name, roleId, status, actualPageNumber, actualPageSize);
+                var dataResponse = await _jobService.GetAllUsersForCompanyAsync(int.Parse(companyId), name, roleId, status, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
@@ -88,7 +87,7 @@ namespace OJTEDU.Api.Controllers.Company
 
                 var companyId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                var dataResponse = await _userService.GetUserDetailByIdForCompanyAsync(int.Parse(companyId), userId.Value);
+                var dataResponse = await _jobService.GetUserDetailByIdForCompanyAsync(int.Parse(companyId), userId.Value);
 
                 if (dataResponse == null)
                 {
@@ -172,7 +171,7 @@ namespace OJTEDU.Api.Controllers.Company
 
                 var companyId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                var dataResponse = await _userService.AddUserForCompanyAsync(int.Parse(companyId), userDto);
+                var dataResponse = await _jobService.AddUserForCompanyAsync(int.Parse(companyId), userDto);
 
                 if (dataResponse == null)
                 {
@@ -280,7 +279,7 @@ namespace OJTEDU.Api.Controllers.Company
                 var companyId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 // Gọi dịch vụ để cập nhật người dùng
-                var dataResponse = await _userService.UpdateUserForCompanyAsync(int.Parse(companyId), userDto);
+                var dataResponse = await _jobService.UpdateUserForCompanyAsync(int.Parse(companyId), userDto);
 
                 if (dataResponse == null)
                 {
@@ -343,7 +342,7 @@ namespace OJTEDU.Api.Controllers.Company
                 var companyId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 // Gọi dịch vụ để xóa người dùng
-                var dataResponse = await _userService.SoftDeleteUserForCompanyAsync(int.Parse(companyId), userDto);
+                var dataResponse = await _jobService.SoftDeleteUserForCompanyAsync(int.Parse(companyId), userDto);
 
                 if (dataResponse == null)
                 {
@@ -417,7 +416,7 @@ namespace OJTEDU.Api.Controllers.Company
                 var companyId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 // Gọi dịch vụ để cập nhật người dùng
-                var dataResponse = await _userService.UpdateUserStatusForCompanyAsync(int.Parse(companyId), userDto);
+                var dataResponse = await _jobService.UpdateUserStatusForCompanyAsync(int.Parse(companyId), userDto);
 
                 if (dataResponse == null)
                 {
@@ -463,7 +462,7 @@ namespace OJTEDU.Api.Controllers.Company
         {
             try
             {
-                var dataResponse = await _userService.GetAllStatusesUserForCompanyAsync();
+                var dataResponse = await _jobService.GetAllStatusesUserForCompanyAsync();
 
                 if (dataResponse == null)
                 {

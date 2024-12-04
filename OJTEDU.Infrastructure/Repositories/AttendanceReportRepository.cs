@@ -55,7 +55,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 mentor.CheckInTime = info?.CheckInTime;
                 mentor.CheckOutTime = info?.CheckOutTime;
-                mentor.UpdatedAt = GetVietnamTime();
+                mentor.UpdatedAt = DateTime.Now;
 
                 await _context.SaveChangesAsync();
 
@@ -103,7 +103,7 @@ namespace OJTEDU.Infrastructure.Repositories
                         .OrderByDescending(ar => ar.Date)
                         .FirstOrDefaultAsync();
 
-                    DateTime currentDate = GetVietnamTime().Date;
+                    DateTime currentDate = DateTime.Now.Date;
 
                     // Determine new day
                     DateTime newDate = (latestAttendance == null)
@@ -126,8 +126,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         Status = "1",
                         EarlyLeave = false,
                         Late = false,
-                        CreatedAt = GetVietnamTime(),
-                        UpdatedAt = GetVietnamTime()
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
                     };
 
                     newAttendanceReports.Add(newAttendanceReport);
@@ -167,7 +167,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 attendanceReport.Status = info?.Status;
                 attendanceReport.EarlyLeave = info?.EarlyLeave;
                 attendanceReport.Late = info?.Late;
-                attendanceReport.UpdatedAt = GetVietnamTime();
+                attendanceReport.UpdatedAt = DateTime.Now;
 
                 await _context.SaveChangesAsync();
 
@@ -191,7 +191,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Create new file name with format mentorId_timestamp_filename
-                var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
+                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var newFileName = $"{mentor.CompanyId}_{timestamp}_{fileName}";
                 var filePath = Path.Combine(_attendanceReportDirectory, newFileName);
 
@@ -217,8 +217,8 @@ namespace OJTEDU.Infrastructure.Repositories
                                 Status = worksheet.Cells[row, 7].GetValue<string>(),
                                 Late = worksheet.Cells[row, 8].GetValue<bool>(),
                                 EarlyLeave = worksheet.Cells[row, 9].GetValue<bool>(),
-                                CreatedAt = GetVietnamTime(),
-                                UpdatedAt = GetVietnamTime()
+                                CreatedAt = DateTime.Now,
+                                UpdatedAt = DateTime.Now
                             };
 
                             // Find internship based on code
@@ -291,7 +291,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Create new file name with format mentorId_timestamp_filename
-                var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
+                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var newFileName = $"{mentor.CompanyId}_{timestamp}_{fileName}";
                 var filePath = Path.Combine(_attendanceReportDirectory, newFileName);
 
@@ -444,11 +444,6 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
-        }
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

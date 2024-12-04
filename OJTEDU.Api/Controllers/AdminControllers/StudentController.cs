@@ -74,7 +74,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
             }
         }
 
-        [HttpGet("details/{studentId}")]
+        [HttpGet("student/{studentId}")]
         public async Task<IActionResult> GetStudentDetails(int studentId)
         {
             var dataResponse = await _stuService.GetStudentDetailsAsync(studentId);

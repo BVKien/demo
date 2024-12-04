@@ -64,8 +64,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
         public async Task<InternshipProcess> AddInternshipProcessAsync(InternshipProcess internshipProcess)
         {
-            internshipProcess.CreatedAt = GetVietnamTime();
-            internshipProcess.UpdatedAt = GetVietnamTime();
+            internshipProcess.CreatedAt = DateTime.Now;
+            internshipProcess.UpdatedAt = DateTime.Now;
             internshipProcess.IsVisible = false; 
             await _context.InternshipProcesses.AddAsync(internshipProcess);
             await _context.SaveChangesAsync();
@@ -85,7 +85,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingIntershipProcess.FilePath = internshipProcess.FilePath ?? existingIntershipProcess.FilePath;
             existingIntershipProcess.CreatedBy = internshipProcess.CreatedBy ?? existingIntershipProcess.CreatedBy;
             existingIntershipProcess.IsVisible = internshipProcess.IsVisible ?? existingIntershipProcess.IsVisible;
-            existingIntershipProcess.UpdatedAt = GetVietnamTime();
+            existingIntershipProcess.UpdatedAt = DateTime.Now;
             _context.InternshipProcesses.Update(internshipProcess);
             await _context.SaveChangesAsync();
 
@@ -114,12 +114,6 @@ namespace OJTEDU.Infrastructure.Repositories
                 throw new KeyNotFoundException("No Internship Process is currently set to be visible.");
             }
             return internshipProcess;
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

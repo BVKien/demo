@@ -127,8 +127,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 var province = _mapper.Map<Province>(addProvinceForAdminDTO);
-                province.CreatedAt = GetVietnamTime();
-                province.UpdatedAt = GetVietnamTime();
+                province.CreatedAt = DateTime.Now;
+                province.UpdatedAt = DateTime.Now;
                 province.Status = "Active";
                 await _addressRepository.AddProvinceAsync(province);
 
@@ -180,7 +180,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 province.Name = updateProvinceForAdminDTO.ProvinceName ?? province.Name;
-                province.UpdatedAt = GetVietnamTime();
+                province.UpdatedAt = DateTime.Now;
 
                 await _addressRepository.UpdateProvinceAsync(province);
 
@@ -221,7 +221,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 province.Status = updateProvinceStatusForAdminDTO.Status ?? province.Status;
-                province.UpdatedAt = GetVietnamTime();
+                province.UpdatedAt = DateTime.Now;
                 await _addressRepository.UpdateProvinceAsync(province);
 
                 // Lấy tất cả các District liên kết với Province này
@@ -229,7 +229,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 foreach (var district in districts)
                 {
                     district.Status = province.Status;
-                    district.UpdatedAt = GetVietnamTime();
+                    district.UpdatedAt = DateTime.Now;
                     await _addressRepository.UpdateDistrictAsync(district);
 
                     // Lấy tất cả các Ward liên kết với District này và cập nhật trạng thái
@@ -237,7 +237,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     foreach (var ward in wards)
                     {
                         ward.Status = district.Status;
-                        ward.UpdatedAt = GetVietnamTime();
+                        ward.UpdatedAt = DateTime.Now;
                         await _addressRepository.UpdateWardAsync(ward);
                     }
                 }
@@ -285,7 +285,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     // Đổi trạng thái thành 'Unactive' thay vì xóa
                     province.Status = "Unactive";
-                    province.UpdatedAt = GetVietnamTime();
+                    province.UpdatedAt = DateTime.Now;
                     await _addressRepository.UpdateProvinceAsync(province);
 
                     // Lấy tất cả các District liên kết với Province này
@@ -293,7 +293,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     foreach (var district in districts)
                     {
                         district.Status = "Unactive";
-                        district.UpdatedAt = GetVietnamTime();
+                        district.UpdatedAt = DateTime.Now;
                         await _addressRepository.UpdateDistrictAsync(district);
 
                         // Lấy tất cả các Ward liên kết với District này và cập nhật trạng thái
@@ -301,7 +301,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                         foreach (var ward in wards)
                         {
                             ward.Status = "Unactive";
-                            ward.UpdatedAt = GetVietnamTime();
+                            ward.UpdatedAt = DateTime.Now;
                             await _addressRepository.UpdateWardAsync(ward);
                         }
                     }
@@ -443,8 +443,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 var district = _mapper.Map<District>(addDistrictForAdminDTO);
-                district.CreatedAt = GetVietnamTime();
-                district.UpdatedAt = GetVietnamTime();
+                district.CreatedAt = DateTime.Now;
+                district.UpdatedAt = DateTime.Now;
                 district.Status = "Active";
                 await _addressRepository.AddDistrictAsync(district);
 
@@ -496,7 +496,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 district.Name = updateDistrictForAdminDTO.DistrictName ?? district.Name;
-                district.UpdatedAt = GetVietnamTime();
+                district.UpdatedAt = DateTime.Now;
 
                 await _addressRepository.UpdateDistrictAsync(district);
 
@@ -560,7 +560,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 district.Status = updateDistrictStatusForAdminDTO.Status ?? district.Status;
-                district.UpdatedAt = GetVietnamTime();
+                district.UpdatedAt = DateTime.Now;
                 await _addressRepository.UpdateDistrictAsync(district);
 
                 // Cập nhật trạng thái của tất cả các Ward liên kết với District này
@@ -568,7 +568,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 foreach (var ward in wards)
                 {
                     ward.Status = district.Status;
-                    ward.UpdatedAt = GetVietnamTime();
+                    ward.UpdatedAt = DateTime.Now;
                     await _addressRepository.UpdateWardAsync(ward);
                 }
 
@@ -615,14 +615,14 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     // Đổi trạng thái thành 'Unactive' thay vì xóa
                     district.Status = "Unactive";
-                    district.UpdatedAt = GetVietnamTime();
+                    district.UpdatedAt = DateTime.Now;
                     await _addressRepository.UpdateDistrictAsync(district);
 
                     var wards = await _addressRepository.GetAllWardByDistrictIdAsync(district.DistrictId, null);
                     foreach (var ward in wards)
                     {
                         ward.Status = "Unactive";
-                        ward.UpdatedAt = GetVietnamTime();
+                        ward.UpdatedAt = DateTime.Now;
                         await _addressRepository.UpdateWardAsync(ward);
                     }
 
@@ -763,8 +763,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 var ward = _mapper.Map<Ward>(addWardForAdminDTO);
-                ward.CreatedAt = GetVietnamTime();
-                ward.UpdatedAt = GetVietnamTime();
+                ward.CreatedAt = DateTime.Now;
+                ward.UpdatedAt = DateTime.Now;
                 ward.Status = "Active";
                 await _addressRepository.AddWardAsync(ward);
 
@@ -816,7 +816,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 ward.Name = updateWardForAdminDTO.WardName ?? ward.Name;
-                ward.UpdatedAt = GetVietnamTime();
+                ward.UpdatedAt = DateTime.Now;
 
                 await _addressRepository.UpdateWardAsync(ward);
 
@@ -878,7 +878,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 ward.Status = updateWardStatusForAdminDTO.Status ?? ward.Status;
-                ward.UpdatedAt = GetVietnamTime();
+                ward.UpdatedAt = DateTime.Now;
                 await _addressRepository.UpdateWardAsync(ward);
 
                 var updatedDto = _mapper.Map<UpdateWardStatusForAdminDTO>(ward);
@@ -924,7 +924,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     // Đổi trạng thái thành 'Unactive' thay vì xóa
                     ward.Status = "Unactive";
-                    ward.UpdatedAt = GetVietnamTime();
+                    ward.UpdatedAt = DateTime.Now;
                     await _addressRepository.UpdateWardAsync(ward);
 
                     return new DataResponse<DeleteWardForAdminDTO>
@@ -997,12 +997,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     StatusCode = 500 // Lỗi server
                 };
             }
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }
