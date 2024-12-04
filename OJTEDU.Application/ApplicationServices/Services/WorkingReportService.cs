@@ -211,7 +211,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 // If year is not provided, default to current year in Vietnam time
                 if (!year.HasValue)
                 {
-                    TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                    TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
                     DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
                     year = currentVietnamTime.Year;
                 }
@@ -276,7 +276,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 // Nếu không có tuần được chọn, sử dụng tuần hiện tại
                 if (string.IsNullOrEmpty(week))
                 {
-                    TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                    TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
                     DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
                     DateTime currentWeekStart = currentVietnamTime.AddDays(-(int)currentVietnamTime.DayOfWeek + (int)DayOfWeek.Monday);
                     DateTime currentWeekEnd = currentWeekStart.AddDays(6);

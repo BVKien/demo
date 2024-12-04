@@ -338,7 +338,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 // Lấy múi giờ Việt Nam
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
                 DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
 
                 // Nếu không có năm, mặc định lấy năm hiện tại

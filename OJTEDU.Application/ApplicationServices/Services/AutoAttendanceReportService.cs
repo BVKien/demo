@@ -67,7 +67,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             {
                 if (OperatingSystem.IsWindows())
                 {
-                    vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"); // Windows
+                    vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh"); // Windows
                 }
                 else
                 {

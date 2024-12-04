@@ -236,7 +236,7 @@ namespace OJTEDU.Infrastructure.Repositories
             // Nếu năm không được cung cấp, mặc định là năm hiện tại theo giờ Việt Nam
             if (!year.HasValue)
             {
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
                 DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
                 year = currentVietnamTime.Year;
             }
@@ -367,7 +367,7 @@ namespace OJTEDU.Infrastructure.Repositories
             // Nếu năm không được cung cấp, mặc định là năm hiện tại theo giờ Việt Nam
             if (!year.HasValue)
             {
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
                 DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
                 year = currentVietnamTime.Year;
             }
@@ -375,7 +375,7 @@ namespace OJTEDU.Infrastructure.Repositories
             // Mặc định lấy tuần hiện tại nếu không có tuần nào được chọn
             if (string.IsNullOrEmpty(week))
             {
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
                 DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
 
                 DateTime currentWeekStart = currentVietnamTime.AddDays(-(int)currentVietnamTime.DayOfWeek + (int)DayOfWeek.Monday);
@@ -533,7 +533,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
         private DateTime GetVietnamTime()
         {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
             return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
