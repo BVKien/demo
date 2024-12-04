@@ -7,9 +7,7 @@ using OJTEDU.Application.ApplicationServices.Interfaces;
 using OJTEDU.Application.ApplicationServices.Services;
 using OJTEDU.Domain.Entities;
 using System.Security.Claims;
-using static OJTEDU.Api.Input.CommonControllers.AuthenticationController;
 using static OJTEDU.Application.DTOs.JobDTO;
-using static OJTEDU.Application.DTOs.UserDTO;
 
 namespace OJTEDU.Api.Controllers.GuestControllers
 {
@@ -28,33 +26,6 @@ namespace OJTEDU.Api.Controllers.GuestControllers
             _cvService = cvService;
             _httpClientFactory = httpClientFactory;
             _logger = logger;
-        }
-
-        [HttpPost("testok")]
-        public async Task<IActionResult> LoginWithGoogle([FromForm] LoginRequest request)
-        {
-            try
-            {
-                _logger.LogInformation("LoginWithGoogle method started.");
-                var dataResponse = await _jobService.LoginWithGoogleAsync(request.AuthorizeCode);
-                _logger.LogInformation("Login successful with Google.");
-                var apiResponse = new ApiResponse<UserReadForAuthDTO>()
-                {
-                    Data = dataResponse.Data,
-                    Message = dataResponse.Message
-                };
-
-                return Ok(apiResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error occurred in LoginWithGoogle method: {ex.Message}");
-                return StatusCode(500, new ApiResponse<string>
-                {
-                    Data = null,
-                    Message = $"Internal Server Error: {ex.Message}"
-                });
-            }
         }
 
         [Authorize(Roles = "Student")]
@@ -105,7 +76,7 @@ namespace OJTEDU.Api.Controllers.GuestControllers
                 var errorResponse = new ApiResponse<string>
                 {
                     Message = $"An error occurred while get job list by company.",
-                    Data = ex.Message
+                    Data = ex.Message 
                 };
 
                 return StatusCode(500, errorResponse);

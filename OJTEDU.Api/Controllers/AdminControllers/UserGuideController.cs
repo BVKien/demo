@@ -175,7 +175,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
 
                 // Tạo tên file duy nhất
                 string fileName = request.UserGuideFile.FileName;
-                string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now:yyyyMMddHHmmssfff}_{Path.GetFileNameWithoutExtension(fileName)}.pdf";
+                string uniqueFileName = $"{createdByUniversityId}_{GetVietnamTime():yyyyMMddHHmmssfff}_{Path.GetFileNameWithoutExtension(fileName)}.pdf";
 
                 // Lấy đường dẫn đến thư mục wwwroot/documents
                 string userguidesPath = Path.Combine(_webHostEnvironment.WebRootPath, "userguides");
@@ -326,7 +326,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 if (request.UserGuideFile != null && request.UserGuideFile.Length > 0)
                 {
                     // Tạo file mới
-                    string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now:yyyyMMddHHmmssfff}_{Path.GetFileNameWithoutExtension(request.UserGuideFile.FileName)}.pdf";
+                    string uniqueFileName = $"{createdByUniversityId}_{GetVietnamTime():yyyyMMddHHmmssfff}_{Path.GetFileNameWithoutExtension(request.UserGuideFile.FileName)}.pdf";
                     string userGuidesPath = Path.Combine(_webHostEnvironment.WebRootPath, "userguides");
 
                     if (!Directory.Exists(userGuidesPath))
@@ -655,6 +655,12 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     Message = $"Internal Server Error: {ex.Message}"
                 });
             }
+        }
+
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

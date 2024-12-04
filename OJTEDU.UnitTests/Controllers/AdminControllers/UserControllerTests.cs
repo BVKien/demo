@@ -1188,5 +1188,559 @@ namespace OJTEDU.UnitTests.Controllers.AdminControllers
             Assert.IsNotNull(apiResponse);
             Assert.AreEqual("Error occurred while importing users: Unexpected error occurred.", apiResponse.Message);
         }
+
+
+
+        // Controller - User Stored Management - User List
+
+        [Test]
+        public async Task GetAllUsersStoredForAdmin_ShouldReturnOk_WhenDataIsAvailable()
+        {
+            // Arrange
+            var mockResponse = new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
+            {
+                Data = new PagedResponse<List<UserListForAdminDTO>>
+                {
+                    Items = new List<UserListForAdminDTO>
+                    {
+                        new UserListForAdminDTO
+                        {
+                            UserId = 1,
+                            Email = "datnthe163935@fpt.edu.vn",
+                            Status = "Deleted",
+                            Role = "DOET",
+                            Name = "Nguyen Tien Dat",
+                            UserCode = "DOET",
+                            Image = "https://example.com/image1.png",
+                            Information = null
+                        },
+                        new UserListForAdminDTO
+                        {
+                            UserId = 3,
+                            Email = "tiendat288966@gmail.com",
+                            Status = "Deleted",
+                            Role = "Company",
+                            Name = "Cong Ty FPT",
+                            UserCode = "COMPANY",
+                            Image = "https://example.com/image2.png",
+                            Information = null
+                        }
+                    },
+                    TotalCount = 2,
+                    CurrentPage = 1,
+                    PageSize = 15
+                },
+                Message = "User stored list retrieved successfully!",
+                StatusCode = 200
+            };
+
+            _userServiceMock.Setup(x => x.GetAllUsersStoredForAdmin(It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>()))
+                            .ReturnsAsync(mockResponse);
+
+            // Act
+            var result = await _controller.GetAllUsersStoredForAdmin(null, null, null, null);
+
+            // Assert
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+
+            var apiResponse = okResult.Value as ApiResponse<PagedResponse<List<UserListForAdminDTO>>>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("User stored list retrieved successfully!", apiResponse.Message);
+            Assert.IsNotNull(apiResponse.Data);
+            Assert.AreEqual(2, apiResponse.Data.Items.Count);
+            Assert.AreEqual(1, apiResponse.Data.CurrentPage);
+            Assert.AreEqual(15, apiResponse.Data.PageSize);
+        }
+
+        [Test]
+        public async Task GetAllUsersStoredForAdmin_ShouldReturnFilteredUsers_ByName()
+        {
+            // Arrange
+            var mockResponse = new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
+            {
+                Data = new PagedResponse<List<UserListForAdminDTO>>
+                {
+                    Items = new List<UserListForAdminDTO>
+                    {
+                        new UserListForAdminDTO
+                        {
+                            UserId = 1,
+                            Email = "datnthe163935@fpt.edu.vn",
+                            Status = "Deleted",
+                            Role = "DOET",
+                            Name = "Nguyen Tien Dat",
+                            UserCode = "DOET",
+                            Image = "https://example.com/image1.png",
+                            Information = null
+                        }
+                    },
+                    TotalCount = 1,
+                    CurrentPage = 1,
+                    PageSize = 15
+                },
+                Message = "User stored list retrieved successfully!",
+                StatusCode = 200
+            };
+
+            _userServiceMock.Setup(x => x.GetAllUsersStoredForAdmin("Nguyen", null, 1, 15))
+                            .ReturnsAsync(mockResponse);
+
+            // Act
+            var result = await _controller.GetAllUsersStoredForAdmin("Nguyen", null, 1, 15);
+
+            // Assert
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+
+            var apiResponse = okResult.Value as ApiResponse<PagedResponse<List<UserListForAdminDTO>>>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("User stored list retrieved successfully!", apiResponse.Message);
+            Assert.AreEqual(1, apiResponse.Data.TotalCount);
+            Assert.AreEqual("Nguyen Tien Dat", apiResponse.Data.Items.First().Name);
+        }
+
+        [Test]
+        public async Task GetAllUsersStoredForAdmin_ShouldReturnFilteredUsers_ByRoleId()
+        {
+            // Arrange
+            var mockResponse = new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
+            {
+                Data = new PagedResponse<List<UserListForAdminDTO>>
+                {
+                    Items = new List<UserListForAdminDTO>
+                    {
+                        new UserListForAdminDTO
+                        {
+                            UserId = 2,
+                            Email = "tiendat320@gmail.com",
+                            Status = "Unactive",
+                            Role = "DOET",
+                            Name = "Nguyen Van Dat",
+                            UserCode = "DOET",
+                            Image = "https://example.com/image2.png",
+                            Information = null
+                        }
+                    },
+                    TotalCount = 1,
+                    CurrentPage = 1,
+                    PageSize = 15
+                },
+                Message = "User stored list retrieved successfully!",
+                StatusCode = 200
+            };
+
+            _userServiceMock.Setup(x => x.GetAllUsersStoredForAdmin(null, 2, 1, 15))
+                            .ReturnsAsync(mockResponse);
+
+            // Act
+            var result = await _controller.GetAllUsersStoredForAdmin(null, 2, 1, 15);
+
+            // Assert
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+
+            var apiResponse = okResult.Value as ApiResponse<PagedResponse<List<UserListForAdminDTO>>>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("User stored list retrieved successfully!", apiResponse.Message);
+            Assert.AreEqual(1, apiResponse.Data.TotalCount);
+            Assert.AreEqual("Nguyen Van Dat", apiResponse.Data.Items.First().Name);
+        }
+
+
+        [Test]
+        public async Task GetAllUsersStoredForAdmin_ShouldReturnError_WhenDataResponseIsNull()
+        {
+            // Arrange
+            _userServiceMock.Setup(x => x.GetAllUsersStoredForAdmin(It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>()))
+                            .ReturnsAsync((DataResponse<PagedResponse<List<UserListForAdminDTO>>>)null);
+
+            // Act
+            var result = await _controller.GetAllUsersStoredForAdmin(null, null, null, null);
+
+            // Assert
+            var objectResult = result as ObjectResult;
+            Assert.IsNotNull(objectResult);
+            Assert.AreEqual(500, objectResult.StatusCode);
+
+            var apiResponse = objectResult.Value as ApiResponse<object>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("Unexpected error occurred.", apiResponse.Message);
+            Assert.IsNull(apiResponse.Data);
+        }
+
+        [Test]
+        public async Task GetAllUsersStoredForAdmin_ShouldReturnNotFound_WhenDataIsEmpty()
+        {
+            // Arrange
+            var mockResponse = new DataResponse<PagedResponse<List<UserListForAdminDTO>>>
+            {
+                Data = null,
+                Message = "Users Stored not found.",
+                StatusCode = 404
+            };
+
+            _userServiceMock.Setup(x => x.GetAllUsersStoredForAdmin(It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>()))
+                            .ReturnsAsync(mockResponse);
+
+            // Act
+            var result = await _controller.GetAllUsersStoredForAdmin(null, null, null, null);
+
+            // Assert
+            var objectResult = result as ObjectResult;
+            Assert.IsNotNull(objectResult);
+            Assert.AreEqual(404, objectResult.StatusCode);
+
+            var apiResponse = objectResult.Value as ApiResponse<object>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("Users Stored not found.", apiResponse.Message);
+            Assert.IsNull(apiResponse.Data);
+        }
+
+        [Test]
+        public async Task GetAllUsersStoredForAdmin_ShouldReturnInternalServerError_WhenExceptionIsThrown()
+        {
+            // Arrange
+            _userServiceMock.Setup(x => x.GetAllUsersStoredForAdmin(It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int>(), It.IsAny<int>()))
+                            .ThrowsAsync(new System.Exception("Internal server error."));
+
+            // Act
+            var result = await _controller.GetAllUsersStoredForAdmin(null, null, null, null);
+
+            // Assert
+            var objectResult = result as ObjectResult;
+            Assert.IsNotNull(objectResult);
+            Assert.AreEqual(500, objectResult.StatusCode);
+
+            var apiResponse = objectResult.Value as ApiResponse<object>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("Internal Server Error: Internal server error.", apiResponse.Message);
+            Assert.IsNull(apiResponse.Data);
+        }
+
+        // Controller - User Stored Management - User Stored Detail
+
+        [Test]
+        public async Task GetUserStoredDetailForAdmin_ShouldReturnOk_WhenUserExists()
+        {
+            // Arrange
+            var mockResponse = new DataResponse<UserDetailForAdminDTO>
+            {
+                Data = new UserDetailForAdminDTO
+                {
+                    UserId = 1,
+                    Email = "test@example.com",
+                    Name = "Test User",
+                    Role = "DOET",
+                    Status = "Deleted",
+                    Information = "Some info"
+                },
+                Message = "User Stored details retrieved successfully!",
+                StatusCode = 200
+            };
+
+            _userServiceMock.Setup(x => x.GetUserStoredDetailByIdForAdminAsync(1))
+                            .ReturnsAsync(mockResponse);
+
+            // Act
+            var result = await _controller.GetUserStoredDetailForAdmin(1);
+
+            // Assert
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+
+            var apiResponse = okResult.Value as ApiResponse<UserDetailForAdminDTO>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("User Stored details retrieved successfully!", apiResponse.Message);
+            Assert.AreEqual("Test User", apiResponse.Data.Name);
+        }
+
+        [Test]
+        public async Task GetUserStoredDetailForAdmin_ShouldReturnBadRequest_WhenIdIsNull()
+        {
+            // Act
+            var result = await _controller.GetUserStoredDetailForAdmin(null);
+
+            // Assert
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual(400, badRequestResult.StatusCode);
+
+            var apiResponse = badRequestResult.Value as ApiResponse<object>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("Id is required.", apiResponse.Message);
+        }
+
+        [Test]
+        public async Task GetUserStoredDetailForAdmin_ShouldReturnNotFound_WhenUserDoesNotExist()
+        {
+            // Arrange
+            var mockResponse = new DataResponse<UserDetailForAdminDTO>
+            {
+                Data = null,
+                Message = "User not found.",
+                StatusCode = 404
+            };
+
+            _userServiceMock.Setup(x => x.GetUserStoredDetailByIdForAdminAsync(99))
+                            .ReturnsAsync(mockResponse);
+
+            // Act
+            var result = await _controller.GetUserStoredDetailForAdmin(99);
+
+            // Assert
+            var notFoundResult = result as ObjectResult;
+            Assert.IsNotNull(notFoundResult);
+            Assert.AreEqual(404, notFoundResult.StatusCode);
+
+            var apiResponse = notFoundResult.Value as ApiResponse<object>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("User not found.", apiResponse.Message);
+        }
+
+        [Test]
+        public async Task GetUserStoredDetailForAdmin_ShouldReturnInternalServerError_WhenExceptionIsThrown()
+        {
+            // Arrange
+            _userServiceMock.Setup(x => x.GetUserStoredDetailByIdForAdminAsync(It.IsAny<int>()))
+                            .ThrowsAsync(new Exception("Unexpected error"));
+
+            // Act
+            var result = await _controller.GetUserStoredDetailForAdmin(1);
+
+            // Assert
+            var internalServerErrorResult = result as ObjectResult;
+            Assert.IsNotNull(internalServerErrorResult);
+            Assert.AreEqual(500, internalServerErrorResult.StatusCode);
+
+            var apiResponse = internalServerErrorResult.Value as ApiResponse<object>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("Internal Server Error: Unexpected error", apiResponse.Message);
+            Assert.IsNull(apiResponse.Data);
+        }
+
+        // Controller - User Stored Management - Restore User
+
+        [Test]
+        public async Task RestoreUserForAdmin_ShouldReturnBadRequest_WhenUserIdIsNull()
+        {
+            // Act
+            var result = await _controller.RestoreUserForAdmin(null);
+
+            // Assert
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual(400, badRequestResult.StatusCode);
+
+            var apiResponse = badRequestResult.Value as ApiResponse<object>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("Id is required.", apiResponse.Message);
+        }
+
+        [Test]
+        public async Task RestoreUserForAdmin_ShouldReturnNotFound_WhenUserNotInStoredList()
+        {
+            // Arrange
+            var userId = 99;
+            _userServiceMock.Setup(x => x.RestoreUserForAdminAsync(It.IsAny<RestoreUserForAdminDTO>()))
+                            .ReturnsAsync(new DataResponse<RestoreUserForAdminDTO>
+                            {
+                                Data = null,
+                                Message = "User is not in the stored list.",
+                                StatusCode = 404
+                            });
+
+            // Act
+            var result = await _controller.RestoreUserForAdmin(userId);
+
+            // Assert
+            var notFoundResult = result as ObjectResult;
+            Assert.IsNotNull(notFoundResult);
+            Assert.AreEqual(404, notFoundResult.StatusCode);
+
+            var apiResponse = notFoundResult.Value as ApiResponse<object>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("User is not in the stored list.", apiResponse.Message);
+        }
+
+        [Test]
+        public async Task RestoreUserForAdmin_ShouldReturnBadRequest_WhenUserStatusIsNotDeleted()
+        {
+            // Arrange
+            var userId = 99;
+            _userServiceMock.Setup(x => x.RestoreUserForAdminAsync(It.IsAny<RestoreUserForAdminDTO>()))
+                            .ReturnsAsync(new DataResponse<RestoreUserForAdminDTO>
+                            {
+                                Data = null,
+                                Message = "Cannot restore the user because it does not exist in the stored user list.",
+                                StatusCode = 400
+                            });
+
+            // Act
+            var result = await _controller.RestoreUserForAdmin(userId);
+
+            // Assert
+            var badRequestResult = result as ObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual(400, badRequestResult.StatusCode);
+
+            var apiResponse = badRequestResult.Value as ApiResponse<object>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("Cannot restore the user because it does not exist in the stored user list.", apiResponse.Message);
+        }
+
+        [Test]
+        public async Task RestoreUserForAdmin_ShouldReturnOk_WhenUserRestoredSuccessfully()
+        {
+            // Arrange
+            var userId = 1;
+            var mockResponse = new DataResponse<RestoreUserForAdminDTO>
+            {
+                Data = new RestoreUserForAdminDTO
+                {
+                    UserId = userId,
+                    Email = "updated@example.com",
+                    Name = "Updated User",
+                    UserCode = "UPDATED123",
+                    Status = "Active",
+                    Information = "Updated Information"
+                },
+                Message = "User Stored has been restored successfully.",
+                StatusCode = 200
+            };
+
+            _userServiceMock.Setup(x => x.RestoreUserForAdminAsync(It.IsAny<RestoreUserForAdminDTO>()))
+                            .ReturnsAsync(mockResponse);
+
+            // Act
+            var result = await _controller.RestoreUserForAdmin(userId);
+
+            // Assert
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+
+            var apiResponse = okResult.Value as ApiResponse<RestoreUserForAdminDTO>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("User Stored has been restored successfully.", apiResponse.Message);
+            Assert.AreEqual(userId, apiResponse.Data.UserId);
+            Assert.AreEqual("Active", apiResponse.Data.Status);
+        }
+
+        [Test]
+        public async Task RestoreUserForAdmin_ShouldReturnInternalServerError_WhenUnexpectedErrorOccurs()
+        {
+            // Arrange
+            var userId = 1;
+            _userServiceMock.Setup(x => x.RestoreUserForAdminAsync(It.IsAny<RestoreUserForAdminDTO>()))
+                            .ThrowsAsync(new Exception("Unexpected error occurred."));
+
+            // Act
+            var result = await _controller.RestoreUserForAdmin(userId);
+
+            // Assert
+            var serverErrorResult = result as ObjectResult;
+            Assert.IsNotNull(serverErrorResult);
+            Assert.AreEqual(500, serverErrorResult.StatusCode);
+
+            var apiResponse = serverErrorResult.Value as ApiResponse<object>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("Internal Server Error: Unexpected error occurred.", apiResponse.Message);
+        }
+
+        // Controller - User Stored Management - Restore User
+
+        [Test]
+        public async Task HardDeleteUserForAdmin_ShouldReturnOk_WhenDeletionIsSuccessful()
+        {
+            // Arrange
+            int userId = 1;
+            var mockResponse = new DataResponse<DeleteUserForAdminDTO>
+            {
+                Data = new DeleteUserForAdminDTO { UserId = userId },
+                Message = "User Stored has been permanently deleted successfully.",
+                StatusCode = 200
+            };
+
+            _userServiceMock.Setup(service => service.HardDeleteUserStoredForAdminAsync(It.IsAny<DeleteUserForAdminDTO>()))
+                            .ReturnsAsync(mockResponse);
+
+            // Act
+            var result = await _controller.HardDeleteUserForAdmin(userId);
+
+            // Assert
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+
+            var apiResponse = okResult.Value as ApiResponse<DeleteUserForAdminDTO>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("User Stored has been permanently deleted successfully.", apiResponse.Message);
+            Assert.AreEqual(userId, apiResponse.Data.UserId);
+        }
+
+        [Test]
+        public async Task HardDeleteUserForAdmin_ShouldReturnBadRequest_WhenUserIdIsMissing()
+        {
+            // Act
+            var result = await _controller.HardDeleteUserForAdmin(null);
+
+            // Assert
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual(400, badRequestResult.StatusCode);
+
+            var apiResponse = badRequestResult.Value as ApiResponse<object>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("Id is required.", apiResponse.Message);
+        }
+
+        [Test]
+        public async Task HardDeleteUserForAdmin_ShouldReturnNotFound_WhenUserDoesNotExist()
+        {
+            // Arrange
+            int userId = 99;
+            _userServiceMock.Setup(service => service.HardDeleteUserStoredForAdminAsync(It.IsAny<DeleteUserForAdminDTO>()))
+                            .ReturnsAsync(new DataResponse<DeleteUserForAdminDTO>
+                            {
+                                Data = null,
+                                Message = "User is not in the stored list.",
+                                StatusCode = 404
+                            });
+
+            // Act
+            var result = await _controller.HardDeleteUserForAdmin(userId);
+
+            // Assert
+            var notFoundResult = result as ObjectResult;
+            Assert.IsNotNull(notFoundResult);
+            Assert.AreEqual(404, notFoundResult.StatusCode);
+        }
+
+        [Test]
+        public async Task HardDeleteUserForAdmin_ShouldReturnInternalServerError_WhenUnexpectedExceptionOccurs()
+        {
+            // Arrange
+            int userId = 1;
+            _userServiceMock.Setup(service => service.HardDeleteUserStoredForAdminAsync(It.IsAny<DeleteUserForAdminDTO>()))
+                            .ThrowsAsync(new Exception("Unexpected error occurred."));
+
+            // Act
+            var result = await _controller.HardDeleteUserForAdmin(userId);
+
+            // Assert
+            var objectResult = result as ObjectResult;
+            Assert.IsNotNull(objectResult);
+            Assert.AreEqual(500, objectResult.StatusCode);
+
+            var apiResponse = objectResult.Value as ApiResponse<object>;
+            Assert.IsNotNull(apiResponse);
+            Assert.AreEqual("Internal Server Error: Unexpected error occurred.", apiResponse.Message);
+            Assert.IsNull(apiResponse.Data);
+        }
     }
 }

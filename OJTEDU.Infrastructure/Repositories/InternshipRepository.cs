@@ -241,8 +241,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     Status = "1",
                     SemesterId = student.SemesterId,
                     MajorId = student.MajorId,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime()
                 };
 
                 await _context.Internships.AddAsync(internship);
@@ -390,6 +390,10 @@ namespace OJTEDU.Infrastructure.Repositories
 
             return (internship, workingReports);
         }
-
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
+        }
     }
 }

@@ -200,7 +200,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 // Tạo tên file duy nhất
                 string fileName = request.Image.FileName;
-                string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{fileName}";
+                string uniqueFileName = $"{createdByUserId}_{GetVietnamTime().ToString("yyyyMMddHHmmssfff")}_{fileName}";
 
                 string newsPath = Path.Combine(_webHostEnvironment.WebRootPath, "news");
 
@@ -409,7 +409,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                         });
                     }
 
-                    string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
+                    string uniqueFileName = $"{createdByUserId}_{GetVietnamTime().ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
                     string newsPath = Path.Combine(_webHostEnvironment.WebRootPath, "news");
 
                     if (!Directory.Exists(newsPath))
@@ -850,7 +850,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 // Tạo tên file duy nhất
                 string fileName = request.Image.FileName;
-                string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{fileName}";
+                string uniqueFileName = $"{createdByUserId}_{GetVietnamTime().ToString("yyyyMMddHHmmssfff")}_{fileName}";
 
                 string newsPath = Path.Combine(_webHostEnvironment.WebRootPath, "news");
 
@@ -1022,7 +1022,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                         });
                     }
 
-                    string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
+                    string uniqueFileName = $"{createdByUserId}_{GetVietnamTime().ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
                     string newsPath = Path.Combine(_webHostEnvironment.WebRootPath, "news");
 
                     if (!Directory.Exists(newsPath))
@@ -1415,7 +1415,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 // Tạo tên file duy nhất
                 string fileName = request.Image.FileName;
-                string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{fileName}";
+                string uniqueFileName = $"{createdByUserId}_{GetVietnamTime().ToString("yyyyMMddHHmmssfff")}_{fileName}";
 
                 string faqPath = Path.Combine(_webHostEnvironment.WebRootPath, "faqs");
 
@@ -1623,7 +1623,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                         });
                     }
 
-                    string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
+                    string uniqueFileName = $"{createdByUserId}_{GetVietnamTime().ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
                     string faqPath = Path.Combine(_webHostEnvironment.WebRootPath, "faqs");
 
                     if (!Directory.Exists(faqPath))
@@ -2064,7 +2064,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 // Tạo tên file duy nhất
                 string fileName = request.Image.FileName;
-                string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{fileName}";
+                string uniqueFileName = $"{createdByUserId}_{GetVietnamTime().ToString("yyyyMMddHHmmssfff")}_{fileName}";
 
                 string faqPath = Path.Combine(_webHostEnvironment.WebRootPath, "faqs");
 
@@ -2236,7 +2236,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                         });
                     }
 
-                    string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
+                    string uniqueFileName = $"{createdByUserId}_{GetVietnamTime().ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
                     string faqPath = Path.Combine(_webHostEnvironment.WebRootPath, "faqs");
 
                     if (!Directory.Exists(faqPath))
@@ -2450,6 +2450,12 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     Message = $"Internal Server Error: {ex.Message}"
                 });
             }
+        }
+
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

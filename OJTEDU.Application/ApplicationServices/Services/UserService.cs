@@ -1005,8 +1005,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 RoleId = roleId,
                                 Information = information,
                                 Status = "Active",
-                                CreatedAt = DateTime.Now,
-                                UpdatedAt = DateTime.Now
+                                CreatedAt = GetVietnamTime(),
+                                UpdatedAt = GetVietnamTime()
                             };
 
                             users.Add(user);
@@ -1044,11 +1044,11 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 if (addedUser.RoleId == 2) // RoleId = 2 là Student
                                 {
                                     var majorId = majorMapping[user.Email]; // Lấy MajorId từ dictionary
-                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
+                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = GetVietnamTime(), UpdatedAt = GetVietnamTime() });
                                 }
                                 else if (addedUser.RoleId == 3) // RoleId = 3 là Company
                                 {
-                                    companyUsers.Add(new Company { UserId = addedUser.UserId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
+                                    companyUsers.Add(new Company { UserId = addedUser.UserId, CreatedAt = GetVietnamTime(), UpdatedAt = GetVietnamTime() });
                                 }
                             }
                         }
@@ -2080,8 +2080,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 RoleId = roleId,
                                 Information = information,
                                 Status = "Active",
-                                CreatedAt = DateTime.Now,
-                                UpdatedAt = DateTime.Now
+                                CreatedAt = GetVietnamTime(),
+                                UpdatedAt = GetVietnamTime()
                             };
 
                             users.Add(user);
@@ -2119,11 +2119,11 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 if (addedUser.RoleId == 2) // RoleId = 2 là Student
                                 {
                                     var majorId = majorMapping[user.Email]; // Lấy MajorId từ dictionary
-                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
+                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = GetVietnamTime(), UpdatedAt = GetVietnamTime() });
                                 }
                                 else if (addedUser.RoleId == 3) // RoleId = 3 là Company
                                 {
-                                    companyUsers.Add(new Company { UserId = addedUser.UserId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
+                                    companyUsers.Add(new Company { UserId = addedUser.UserId, CreatedAt = GetVietnamTime(), UpdatedAt = GetVietnamTime() });
                                 }
                             }
                         }
@@ -2712,7 +2712,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
                 user.Name = dto.Name;
                 user.Information = dto.Information;
-                user.UpdatedAt = DateTime.Now;
+                user.UpdatedAt = GetVietnamTime();
 
                 if (role == "Dean")
                 {
@@ -2777,8 +2777,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     RoleId = roleId,
                     Status = "Active",
                     AssignForId = assignForId,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime()
                 };
 
                 await _userRepository.CreateLecturerForDeanAsync(newLecturer);
@@ -3211,7 +3211,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 else
                 {
                     lecturer.AssignForId = dto.DeanId;
-                    lecturer.UpdatedAt = DateTime.Now;
+                    lecturer.UpdatedAt = GetVietnamTime();
                 }
             }
 
@@ -3409,6 +3409,12 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     StatusCode = 500
                 };
             }
+        }
+
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

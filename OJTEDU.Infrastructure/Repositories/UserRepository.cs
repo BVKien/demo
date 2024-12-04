@@ -124,8 +124,8 @@ namespace OJTEDU.Infrastructure.Repositories
             }
 
             // Nếu cả email và user code chưa tồn tại, tiếp tục thêm người dùng mới
-            user.CreatedAt = DateTime.Now;
-            user.UpdatedAt = DateTime.Now;
+            user.CreatedAt = GetVietnamTime();
+            user.UpdatedAt = GetVietnamTime();
             user.Status = "Active"; // Set trạng thái mặc định là Active
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
@@ -136,8 +136,8 @@ namespace OJTEDU.Infrastructure.Repositories
                 var student = new Student
                 {
                     UserId = user.UserId,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime()
 
                 };
                 await _context.Students.AddAsync(student);
@@ -148,8 +148,8 @@ namespace OJTEDU.Infrastructure.Repositories
                 var company = new Company
                 {
                     UserId = user.UserId,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime()
                 };
                 await _context.Companies.AddAsync(company);
             }
@@ -220,7 +220,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingUser.UserCode = user.UserCode ?? existingUser.UserCode;
             existingUser.Image = user.Image ?? existingUser.Image;
             existingUser.Information = user.Information ?? existingUser.Information;
-            existingUser.UpdatedAt = DateTime.Now;
+            existingUser.UpdatedAt = GetVietnamTime();
 
             _context.Users.Update(existingUser);
             await _context.SaveChangesAsync();
@@ -238,7 +238,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
 
             user.Status = "Deleted"; // Cập nhật trạng thái thành "Deleted"
-            user.DeletedAt = DateTime.Now; // Cập nhật thời gian xóa
+            user.DeletedAt = GetVietnamTime(); // Cập nhật thời gian xóa
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
@@ -338,7 +338,7 @@ namespace OJTEDU.Infrastructure.Repositories
             _context.CompanyProposals.RemoveRange(companyProposals);
             _context.InternshipProcesses.RemoveRange(internshipProcesses);
 
-            user.DeletedAt = DateTime.Now; // Cập nhật thời gian xóa
+            user.DeletedAt = GetVietnamTime(); // Cập nhật thời gian xóa
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
@@ -359,7 +359,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
             user.Status = "Active";
             user.DeletedAt = null;
-            user.UpdatedAt = DateTime.Now;
+            user.UpdatedAt = GetVietnamTime();
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
@@ -452,7 +452,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
 
             // Nếu cả email và user code chưa tồn tại, tiếp tục thêm người dùng mới
-            user.CreatedAt = DateTime.Now;
+            user.CreatedAt = GetVietnamTime();
             user.Status = "Active"; // Set trạng thái mặc định là Active
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
@@ -463,8 +463,8 @@ namespace OJTEDU.Infrastructure.Repositories
                 var student = new Student
                 {
                     UserId = user.UserId,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime()
 
                 };
                 await _context.Students.AddAsync(student);
@@ -475,8 +475,8 @@ namespace OJTEDU.Infrastructure.Repositories
                 var company = new Company
                 {
                     UserId = user.UserId,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now
+                    CreatedAt = GetVietnamTime(),
+                    UpdatedAt = GetVietnamTime()
                 };
                 await _context.Companies.AddAsync(company);
 
@@ -550,7 +550,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingUser.UserCode = user.UserCode ?? existingUser.UserCode;
             existingUser.Image = user.Image ?? existingUser.Image;
             existingUser.Information = user.Information ?? existingUser.Information;
-            existingUser.UpdatedAt = DateTime.Now;
+            existingUser.UpdatedAt = GetVietnamTime();
 
             _context.Users.Update(existingUser);
             await _context.SaveChangesAsync();
@@ -580,7 +580,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
             // Cập nhật trạng thái thành "Deleted" và thời gian xóa
             user.Status = "Deleted";
-            user.DeletedAt = DateTime.Now;
+            user.DeletedAt = GetVietnamTime();
 
             // Cập nhật người dùng trong cơ sở dữ liệu
             _context.Users.Update(user);
@@ -666,8 +666,8 @@ namespace OJTEDU.Infrastructure.Repositories
             }
 
             // Nếu cả email và user code chưa tồn tại, tiếp tục thêm người dùng mới
-            user.CreatedAt = DateTime.Now;
-            user.UpdatedAt = DateTime.Now;
+            user.CreatedAt = GetVietnamTime();
+            user.UpdatedAt = GetVietnamTime();
             user.Status = "Active"; // Set trạng thái mặc định là Active
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
@@ -684,8 +684,8 @@ namespace OJTEDU.Infrastructure.Repositories
             var company = new Company
             {
                 UserId = addedUserId, // Gán UserId của Mentor cho Company
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                CreatedAt = GetVietnamTime(),
+                UpdatedAt = GetVietnamTime()
             };
             await _context.Companies.AddAsync(company);
             await _context.SaveChangesAsync(); // Lưu thay đổi vào cơ sở dữ liệu
@@ -725,7 +725,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingUser.UserCode = user.UserCode ?? existingUser.UserCode;
             existingUser.Image = user.Image ?? existingUser.Image;
             existingUser.Information = user.Information ?? existingUser.Information;
-            existingUser.UpdatedAt = DateTime.Now;
+            existingUser.UpdatedAt = GetVietnamTime();
 
             _context.Users.Update(existingUser);
             await _context.SaveChangesAsync();
@@ -753,7 +753,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
             // Cập nhật trạng thái thành "Deleted" và thời gian xóa
             user.Status = "Deleted";
-            user.DeletedAt = DateTime.Now;
+            user.DeletedAt = GetVietnamTime();
 
             // Cập nhật người dùng trong cơ sở dữ liệu
             _context.Users.Update(user);
@@ -1150,7 +1150,7 @@ namespace OJTEDU.Infrastructure.Repositories
             _context.Users.Update(lecturer);
             await _context.SaveChangesAsync();
         }
-        public DateTime GetVietnamTime()
+        private DateTime GetVietnamTime()
         {
             TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
             return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);

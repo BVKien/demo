@@ -22,7 +22,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             {
                 try
                 {
-                    var now = DateTime.Now;
+                    var now = GetVietnamTime();
                     var nextRun = now.Date.AddDays(1).AddHours(2);
                     var delay = nextRun - now;
                     Console.WriteLine($"Next execution scheduled at: {nextRun}");
@@ -57,6 +57,11 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     Console.WriteLine($"Error in AutoAttendanceReportService: {ex.Message}");
                 }
             }
+        }
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

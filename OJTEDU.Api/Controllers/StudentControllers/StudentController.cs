@@ -7,8 +7,6 @@ using static OJTEDU.Api.Input.StudentControllers.StudentController;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using OJTEDU.Application.DTOs;
-using static OJTEDU.Api.Input.CommonControllers.AuthenticationController;
-using static OJTEDU.Application.DTOs.UserDTO;
 
 namespace OJTEDU.Api.Controllers.StudentControllers
 {
