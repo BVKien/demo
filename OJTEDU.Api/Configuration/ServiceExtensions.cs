@@ -96,44 +96,13 @@ namespace OJTEDU.Api.Configuration
             services.AddHostedService<AutoAttendanceReportService>();
         }
 
-        //public static void ConfigureCors(this IServiceCollection services, string origin)
-        //{
-        //    services.AddCors(options =>
-        //    {
-        //        options.AddDefaultPolicy(builder =>
-        //        {
-        //            builder.WithOrigins(origin)
-        //                   .AllowAnyMethod()
-        //                   .AllowAnyHeader()
-        //                   .AllowCredentials()
-        //                   .WithExposedHeaders("Content-Disposition");
-        //        });
-        //    });
-        //}
-
-        //public static void ConfigureCors(this IServiceCollection services, string origin)
-        //{
-        //    services.AddCors(options =>
-        //    {
-        //        options.AddPolicy("AllowSpecificOrigin", builder =>
-        //        {
-        //            builder.WithOrigins(origin)
-        //                   .AllowAnyMethod()
-        //                   .AllowAnyHeader()
-        //                   .AllowCredentials()
-        //                   .WithExposedHeaders("Content-Disposition");
-        //        });
-        //    });
-        //}
-
-        //AllowSpecificOrigin
-        public static void ConfigureCors(this IServiceCollection services)
+        public static void ConfigureCors(this IServiceCollection services, string origin)
         {
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowSpecificOrigin", builder =>
                 {
-                    builder.WithOrigins("https://ojtedubdomain.site/api/Authentication/login-google")
+                    builder.WithOrigins(origin)
                            .AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials()
@@ -141,6 +110,22 @@ namespace OJTEDU.Api.Configuration
                 });
             });
         }
+
+        //AllowSpecificOrigin
+        //public static void ConfigureCors(this IServiceCollection services)
+        //{
+        //    services.AddCors(options =>
+        //    {
+        //        options.AddPolicy("AllowSpecificOrigin", builder =>
+        //        {
+        //            builder.WithOrigins("https://www.ojtedu.site")
+        //                   .AllowAnyMethod()
+        //                   .AllowAnyHeader()
+        //                   .AllowCredentials()
+        //                   .WithExposedHeaders("Content-Disposition");
+        //        });
+        //    });
+        //}
 
         public static void ConfigureSwagger(this IServiceCollection services)
         {
