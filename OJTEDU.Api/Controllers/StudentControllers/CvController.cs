@@ -20,13 +20,15 @@ namespace OJTEDU.Api.Controllers.StudentControllers
             _cvService = cvService;
         }
 
-        [Authorize(Roles = "Student")]
+        //[Authorize(Roles = "Student")]
         [HttpPost("upload")]
         public async Task<IActionResult> UploadCv(IFormFile file)
         {
             try
             {
-                int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                //int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+                int userId = 21;
 
                 if (file == null || file.Length == 0)
                     return BadRequest("No file uploaded.");
