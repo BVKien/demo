@@ -59,7 +59,6 @@ namespace OJTEDU.Api.Controllers.StudentControllers
         //    }
         //}
 
-        //[Authorize(Roles = "Student")]
         [HttpPost("upload")]
         public async Task<IActionResult> UploadCv(IFormFile file)
         {
@@ -74,6 +73,13 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                 {
                     _logger.LogWarning("No file uploaded.");
                     return BadRequest("No file uploaded.");
+                }
+
+                // Check file type
+                if (file.ContentType != "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
+                    file.ContentType != "application/pdf")
+                {
+                    return BadRequest("Invalid file type. Only Word and PDF files are allowed.");
                 }
 
                 _logger.LogInformation("Reading file content.");
@@ -134,6 +140,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                 _logger.LogInformation("UploadCv action completed.");
             }
         }
+
 
         [Authorize(Roles = "Student")]
         [HttpPut("set-primary")]
