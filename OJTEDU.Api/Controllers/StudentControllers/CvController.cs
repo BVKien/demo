@@ -89,6 +89,33 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                 var response = await _cvService.UploadCvAsync(userId, file.FileName, fileData);
                 _logger.LogInformation("CV uploaded successfully for UserId {UserId}", userId);
 
+                if (response.StatusCode == 404)
+                {
+                    return BadRequest(new ApiResponse<string>
+                    {
+                        Message = response.Message,
+                        Data = null
+                    });
+                }
+
+                if (response.StatusCode == 400)
+                {
+                    return BadRequest(new ApiResponse<string>
+                    {
+                        Message = response.Message,
+                        Data = null
+                    });
+                }
+
+                if (response.StatusCode == 500)
+                {
+                    return StatusCode(500, new ApiResponse<string>
+                    {
+                        Message = response.Message,
+                        Data = null
+                    });
+                }
+
                 var apiResponse = new ApiResponse<string>
                 {
                     Message = response.Message,
