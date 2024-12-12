@@ -44,7 +44,8 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<UpdateUserStatusForAdminDTO>> UpdateUserStatusForAdminAsync(UpdateUserStatusForAdminDTO updateUserStatusForAdminDTO);
         Task<DataResponse<DeleteUserForAdminDTO>> SoftDeleteUserForAdminAsync(DeleteUserForAdminDTO deleteUserForAdminDTO);
         Task<DataResponse<MemoryStream>> GenerateUserTemplateForAdminAsync();
-        Task<DataResponse<object>> ImportUsersForAdminAsync(IFormFile file);
+        //Task<DataResponse<object>> ImportUsersForAdminAsync(IFormFile file);
+        Task<DataResponse<object>> ImportUsersForAdminAsync(string? file);
         Task<DataResponse<List<StatusUserListForAdminDTO>>> GetAllStatusesUserForAdminAsync();
 
 

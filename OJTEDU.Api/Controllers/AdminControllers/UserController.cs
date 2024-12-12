@@ -490,9 +490,78 @@ namespace OJTEDU.Api.Controllers.AdminControllers
             }
         }
 
+        //[HttpPost("import-file")]
+        //[Authorize(Roles = "Admin")]
+        //public async Task<IActionResult> ImportUsersForAdmin([FromForm] IFormFile file)
+        //{
+        //    try
+        //    {
+        //        // Kiểm tra file đầu vào
+        //        if (file == null || file.Length == 0)
+        //        {
+        //            return BadRequest(new ApiResponse<object>
+        //            {
+        //                Data = null,
+        //                Message = "The uploaded file is empty or missing. Please ensure you provide a valid Excel file. If you're unsure of the required format, download the template and follow the instructions provided in the User Guide."
+        //            });
+        //        }
+
+        //        // Kiểm tra định dạng file (chỉ chấp nhận .xlsx hoặc .xls)
+        //        string fileExtension = Path.GetExtension(file.FileName).ToLower();
+        //        if (fileExtension != ".xlsx" && fileExtension != ".xls")
+        //        {
+        //            return BadRequest(new ApiResponse<object>
+        //            {
+        //                Data = null,
+        //                Message = "Invalid file format. Only Excel files (.xlsx, .xls) are accepted. Please download the template to prepare your data correctly and follow the instructions in the User Guide."
+        //            });
+        //        }
+
+        //        // Gọi service để thực hiện import
+        //        var dataResponse = await _jobService.ImportUsersForAdminAsync(file);
+
+        //        // Kiểm tra kết quả trả về từ service
+        //        if (dataResponse == null)
+        //        {
+        //            return StatusCode(500, new ApiResponse<object>
+        //            {
+        //                Data = null,
+        //                Message = "Unexpected error occurred during the import process."
+        //            });
+        //        }
+
+        //        // Trả về lỗi nếu có
+        //        if (dataResponse.StatusCode != 200)
+        //        {
+        //            return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
+        //            {
+        //                Data = dataResponse.Data,
+        //                Message = dataResponse.Message
+        //            });
+        //        }
+
+        //        // Trả về kết quả import thành công
+        //        return Ok(new ApiResponse<object>
+        //        {
+        //            Data = dataResponse.Data,
+        //            Message = dataResponse.Message
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Xử lý lỗi nếu có
+        //        return StatusCode(500, new ApiResponse<object>
+        //        {
+        //            Data = null,
+        //            Message = $"Error occurred while importing users: {ex.Message}"
+        //        });
+        //    }
+        //}
+
+
         [HttpPost("import-file")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ImportUsersForAdmin([FromForm] IFormFile file)
+        public async Task<IActionResult> ImportUsersForAdmin([FromForm] string file)
         {
             try
             {
@@ -506,16 +575,16 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     });
                 }
 
-                // Kiểm tra định dạng file (chỉ chấp nhận .xlsx hoặc .xls)
-                string fileExtension = Path.GetExtension(file.FileName).ToLower();
-                if (fileExtension != ".xlsx" && fileExtension != ".xls")
-                {
-                    return BadRequest(new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = "Invalid file format. Only Excel files (.xlsx, .xls) are accepted. Please download the template to prepare your data correctly and follow the instructions in the User Guide."
-                    });
-                }
+                //// Kiểm tra định dạng file (chỉ chấp nhận .xlsx hoặc .xls)
+                //string fileExtension = Path.GetExtension(file.FileName).ToLower();
+                //if (fileExtension != ".xlsx" && fileExtension != ".xls")
+                //{
+                //    return BadRequest(new ApiResponse<object>
+                //    {
+                //        Data = null,
+                //        Message = "Invalid file format. Only Excel files (.xlsx, .xls) are accepted. Please download the template to prepare your data correctly and follow the instructions in the User Guide."
+                //    });
+                //}
 
                 // Gọi service để thực hiện import
                 var dataResponse = await _jobService.ImportUsersForAdminAsync(file);
@@ -557,7 +626,6 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 });
             }
         }
-
 
         [HttpGet("download-file-template")]
         [Authorize(Roles = "Admin")]
