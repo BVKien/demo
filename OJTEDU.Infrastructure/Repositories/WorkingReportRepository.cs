@@ -95,7 +95,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Create file name format studentId_timestamp_filename
-                var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
+                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var newFileName = fileName != null ? $"{workingReportInfo.StudentId}_{timestamp}_{fileName}" : null;
 
                 var filePath = newFileName != null ? Path.Combine(_fileDirectory, newFileName) : null;
@@ -119,11 +119,11 @@ namespace OJTEDU.Infrastructure.Repositories
                     StudentId = studentExists.StudentId,
                     ReportTitle = workingReportInfo?.ReportTitle,
                     ReportContent = workingReportInfo?.ReportContent,
-                    ReportDate = GetVietnamTime(),
+                    ReportDate = DateTime.Now,
                     FileAttachment = filePath?.Replace("wwwroot", ""),
                     Status = "1",
-                    CreatedAt = GetVietnamTime(),
-                    UpdatedAt = GetVietnamTime(),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
                 };
 
                 _context.WorkingReports.Add(workingReport);
@@ -151,7 +151,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Create file name format studentId_timestamp_filename
-                var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
+                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var newFileName = fileName != null ? $"{workingReport.StudentId}_{timestamp}_{fileName}" : null;
 
                 var filePath = newFileName != null ? Path.Combine(_fileDirectory, newFileName) : null;
@@ -172,7 +172,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 workingReport.ReportTitle = workingReportInfo?.ReportTitle;
                 workingReport.ReportContent = workingReportInfo?.ReportContent;
                 workingReport.FileAttachment = filePath?.Replace("wwwroot", "");
-                workingReport.UpdatedAt = GetVietnamTime();
+                workingReport.UpdatedAt = DateTime.Now;
 
                 _context.WorkingReports.Update(workingReport);
                 await _context.SaveChangesAsync();
@@ -456,7 +456,7 @@ namespace OJTEDU.Infrastructure.Repositories
             if (!string.IsNullOrEmpty(feedback)) workingReport.FeedbackFromLecturer = feedback;
             if (score.HasValue) workingReport.LecturerScore = score != null ? Math.Round(score.Value, 2) : 0;
 
-            workingReport.UpdatedAt = GetVietnamTime();
+            workingReport.UpdatedAt = DateTime.Now;
             _context.WorkingReports.Update(workingReport);
             await _context.SaveChangesAsync();
             return true;
@@ -520,7 +520,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 workingReport.FeedbackFromMentor = info?.FeedbackFromMentor;
                 // Round MentorScore to 2 decimal places
                 workingReport.MentorScore = info?.MentorScore != null ? Math.Round(info.MentorScore.Value, 2) : 0;
-                workingReport.UpdatedAt = GetVietnamTime();
+                workingReport.UpdatedAt = DateTime.Now;
 
                 await _context.SaveChangesAsync();
 
@@ -530,12 +530,6 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

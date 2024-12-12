@@ -106,7 +106,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Create file name format studentId_timestamp_filename
-                var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
+                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var newFileName = fileName != null ? $"{studentExists.StudentId}_{timestamp}_{fileName}" : null;
 
                 var filePath = newFileName != null ? Path.Combine(_fileDirectory, newFileName) : null;
@@ -129,11 +129,11 @@ namespace OJTEDU.Infrastructure.Repositories
                     UniversityId = companyProposalInfo?.UniversityId,
                     ProposalTitle = companyProposalInfo?.ProposalTitle,
                     ProposalContent = companyProposalInfo?.ProposalContent,
-                    ProposalDate = GetVietnamTime(),
+                    ProposalDate = DateTime.Now,
                     Contract = filePath?.Replace("wwwroot", ""),
                     Status = "1",
-                    CreatedAt = GetVietnamTime(),
-                    UpdatedAt = GetVietnamTime()
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
                 };
 
                 _context.CompanyProposals.Add(companyProposal);
@@ -158,11 +158,6 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
-        }
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

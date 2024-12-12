@@ -88,8 +88,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
             try
             {
-                policy.CreatedAt = GetVietnamTime();
-                policy.UpdatedAt = GetVietnamTime();
+                policy.CreatedAt = DateTime.Now;
+                policy.UpdatedAt = DateTime.Now;
                 policy.Status = "Active"; // Set trạng thái mặc định là Active
                 await _context.Policies.AddAsync(policy);
                 await _context.SaveChangesAsync();
@@ -136,7 +136,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 existingParentPolicy.PolicyContent = policy.PolicyContent ?? existingParentPolicy.PolicyContent;
                 existingParentPolicy.UserId = policy.UserId ?? existingParentPolicy.UserId;
                 existingParentPolicy.Status = policy.Status ?? existingParentPolicy.Status;
-                existingParentPolicy.UpdatedAt = GetVietnamTime();
+                existingParentPolicy.UpdatedAt = DateTime.Now;
 
                 // Cập nhật PolicyRoles cho Policy cha
                 if (newRoleIds != null && newRoleIds.Any())
@@ -178,7 +178,7 @@ namespace OJTEDU.Infrastructure.Repositories
                             await _context.PolicyRoles.AddAsync(childPolicyRole);
                         }
 
-                        childPolicy.UpdatedAt = GetVietnamTime();
+                        childPolicy.UpdatedAt = DateTime.Now;
                         _context.Policies.Update(childPolicy);
                     }
                 }
@@ -270,7 +270,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 foreach (var childPolicy in childPolicyList)
                 {
                     childPolicy.Status = policy.Status ?? childPolicy.Status;
-                    childPolicy.UpdatedAt = GetVietnamTime();
+                    childPolicy.UpdatedAt = DateTime.Now;
                 }
 
                 _context.Policies.UpdateRange(childPolicyList);
@@ -279,7 +279,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingParentPolicy.PolicyContent = policy.PolicyContent ?? existingParentPolicy.PolicyContent;
             existingParentPolicy.UserId = policy.UserId ?? existingParentPolicy.UserId;
             existingParentPolicy.Status = policy.Status ?? existingParentPolicy.Status;
-            existingParentPolicy.UpdatedAt = GetVietnamTime();
+            existingParentPolicy.UpdatedAt = DateTime.Now;
 
             _context.Policies.Update(existingParentPolicy);
             await _context.SaveChangesAsync();
@@ -367,8 +367,8 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Set thông tin Policy con
-                policy.CreatedAt = GetVietnamTime();
-                policy.UpdatedAt = GetVietnamTime();
+                policy.CreatedAt = DateTime.Now;
+                policy.UpdatedAt = DateTime.Now;
                 policy.Status = "Active"; // Set trạng thái mặc định là Active
 
                 // Thêm Policy con vào bảng Policies
@@ -423,7 +423,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingChildPolicy.UserId = policy.UserId ?? existingChildPolicy.UserId;
             existingChildPolicy.ParentId = policy.ParentId ?? existingChildPolicy.ParentId;
             existingChildPolicy.Status = policy.Status ?? existingChildPolicy.Status;
-            existingChildPolicy.UpdatedAt = GetVietnamTime();
+            existingChildPolicy.UpdatedAt = DateTime.Now;
 
             _context.Policies.Update(existingChildPolicy);
             await _context.SaveChangesAsync();
@@ -539,12 +539,6 @@ namespace OJTEDU.Infrastructure.Repositories
             var sortedPolicy = policyList.OrderBy(n => n.PolicyId).ToList();
 
             return sortedPolicy;
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

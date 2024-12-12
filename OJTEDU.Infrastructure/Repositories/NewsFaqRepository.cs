@@ -89,8 +89,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
             try
             {
-                newsFaq.CreatedAt = GetVietnamTime();
-                newsFaq.UpdatedAt = GetVietnamTime();
+                newsFaq.CreatedAt = DateTime.Now;
+                newsFaq.UpdatedAt = DateTime.Now;
                 newsFaq.Status = "Active"; // Set trạng thái mặc định là Active
                 newsFaq.IsNews = true;
                 await _context.NewsFaqs.AddAsync(newsFaq);
@@ -140,7 +140,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 existingParentNews.Image = newsFaq.Image ?? existingParentNews.Image;
                 existingParentNews.UserId = newsFaq.UserId ?? existingParentNews.UserId;
                 existingParentNews.Status = newsFaq.Status ?? existingParentNews.Status;
-                existingParentNews.UpdatedAt = GetVietnamTime();
+                existingParentNews.UpdatedAt = DateTime.Now;
 
                 // Cập nhật PolicyRoles cho Policy cha
                 if (newRoleIds != null && newRoleIds.Any())
@@ -182,7 +182,7 @@ namespace OJTEDU.Infrastructure.Repositories
                             await _context.NewsFaqroles.AddAsync(childNewsrole);
                         }
 
-                        childNew.UpdatedAt = GetVietnamTime();
+                        childNew.UpdatedAt = DateTime.Now;
                         _context.NewsFaqs.Update(childNew);
                     }
                 }
@@ -215,7 +215,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 foreach (var childNews in childNewsList)
                 {
                     childNews.Status = newsFaq.Status ?? childNews.Status;
-                    childNews.UpdatedAt = GetVietnamTime();
+                    childNews.UpdatedAt = DateTime.Now;
                 }
 
                 _context.NewsFaqs.UpdateRange(childNewsList);
@@ -226,7 +226,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingParentNews.Image = newsFaq.Image ?? existingParentNews.Image;
             existingParentNews.UserId = newsFaq.UserId ?? existingParentNews.UserId;
             existingParentNews.Status = newsFaq.Status ?? existingParentNews.Status;
-            existingParentNews.UpdatedAt = GetVietnamTime();
+            existingParentNews.UpdatedAt = DateTime.Now;
 
             _context.NewsFaqs.Update(existingParentNews);
             await _context.SaveChangesAsync();
@@ -373,8 +373,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Parent News not found.");
                 }
 
-                newsFaq.CreatedAt = GetVietnamTime();
-                newsFaq.UpdatedAt = GetVietnamTime();
+                newsFaq.CreatedAt = DateTime.Now;
+                newsFaq.UpdatedAt = DateTime.Now;
                 newsFaq.Status = "Active"; // Set trạng thái mặc định là Active
                 newsFaq.IsNews = true;
                 await _context.NewsFaqs.AddAsync(newsFaq);
@@ -428,7 +428,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingChildNews.UserId = newsFaq.UserId ?? existingChildNews.UserId;
             existingChildNews.ParentId = newsFaq.ParentId ?? existingChildNews.ParentId;
             existingChildNews.Status = newsFaq.Status ?? existingChildNews.Status;
-            existingChildNews.UpdatedAt = GetVietnamTime();
+            existingChildNews.UpdatedAt = DateTime.Now;
 
             _context.NewsFaqs.Update(existingChildNews);
             await _context.SaveChangesAsync();
@@ -450,7 +450,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 _context.NewsFaqroles.RemoveRange(newsRoles);
             }
 
-            childNews.DeletedAt = GetVietnamTime();
+            childNews.DeletedAt = DateTime.Now;
             _context.NewsFaqs.Remove(childNews);
             await _context.SaveChangesAsync();
 
@@ -526,8 +526,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
             try
             {
-                newsFaq.CreatedAt = GetVietnamTime();
-                newsFaq.UpdatedAt = GetVietnamTime();
+                newsFaq.CreatedAt = DateTime.Now;
+                newsFaq.UpdatedAt = DateTime.Now;
                 newsFaq.Status = "Active"; // Set trạng thái mặc định là Active
                 newsFaq.IsNews = false;
                 await _context.NewsFaqs.AddAsync(newsFaq);
@@ -577,7 +577,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 existingParentFaq.Image = newsFaq.Image ?? existingParentFaq.Image;
                 existingParentFaq.UserId = newsFaq.UserId ?? existingParentFaq.UserId;
                 existingParentFaq.Status = newsFaq.Status ?? existingParentFaq.Status;
-                existingParentFaq.UpdatedAt = GetVietnamTime();
+                existingParentFaq.UpdatedAt = DateTime.Now;
 
                 // Cập nhật PolicyRoles cho Policy cha
                 if (faqRoleIds != null && faqRoleIds.Any())
@@ -619,7 +619,7 @@ namespace OJTEDU.Infrastructure.Repositories
                             await _context.NewsFaqroles.AddAsync(childNewsrole);
                         }
 
-                        childFaq.UpdatedAt = GetVietnamTime();
+                        childFaq.UpdatedAt = DateTime.Now;
                         _context.NewsFaqs.Update(childFaq);
                     }
                 }
@@ -651,7 +651,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 foreach (var childFaq in childFaqList)
                 {
                     childFaq.Status = newsFaq.Status ?? childFaq.Status;
-                    childFaq.UpdatedAt = GetVietnamTime();
+                    childFaq.UpdatedAt = DateTime.Now;
                 }
 
                 _context.NewsFaqs.UpdateRange(childFaqList);
@@ -662,7 +662,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingParentFaq.Image = newsFaq.Image ?? existingParentFaq.Image;
             existingParentFaq.UserId = newsFaq.UserId ?? existingParentFaq.UserId;
             existingParentFaq.Status = newsFaq.Status ?? existingParentFaq.Status;
-            existingParentFaq.UpdatedAt = GetVietnamTime();
+            existingParentFaq.UpdatedAt = DateTime.Now;
 
             _context.NewsFaqs.Update(existingParentFaq);
             await _context.SaveChangesAsync();
@@ -807,8 +807,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Parent Faq not found.");
                 }
 
-                newsFaq.CreatedAt = GetVietnamTime();
-                newsFaq.UpdatedAt = GetVietnamTime();
+                newsFaq.CreatedAt = DateTime.Now;
+                newsFaq.UpdatedAt = DateTime.Now;
                 newsFaq.Status = "Active"; // Set trạng thái mặc định là Active
                 newsFaq.IsNews = false;
                 await _context.NewsFaqs.AddAsync(newsFaq);
@@ -862,7 +862,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingChildFaq.UserId = newsFaq.UserId ?? existingChildFaq.UserId;
             existingChildFaq.ParentId = newsFaq.ParentId ?? existingChildFaq.ParentId;
             existingChildFaq.Status = newsFaq.Status ?? existingChildFaq.Status;
-            existingChildFaq.UpdatedAt = GetVietnamTime();
+            existingChildFaq.UpdatedAt = DateTime.Now;
 
             _context.NewsFaqs.Update(existingChildFaq);
             await _context.SaveChangesAsync();
@@ -884,7 +884,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 _context.NewsFaqroles.RemoveRange(faqsRoles);
             }
 
-            childFaq.DeletedAt = GetVietnamTime();
+            childFaq.DeletedAt = DateTime.Now;
             _context.NewsFaqs.Remove(childFaq);
             await _context.SaveChangesAsync();
 
@@ -960,8 +960,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
             try
             {
-                newsFaq.CreatedAt = GetVietnamTime();
-                newsFaq.UpdatedAt = GetVietnamTime();
+                newsFaq.CreatedAt = DateTime.Now;
+                newsFaq.UpdatedAt = DateTime.Now;
                 newsFaq.Status = "Active"; // Set trạng thái mặc định là Active
                 newsFaq.IsNews = true;
                 await _context.NewsFaqs.AddAsync(newsFaq);
@@ -1011,7 +1011,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 existingParentNews.Image = newsFaq.Image ?? existingParentNews.Image;
                 existingParentNews.UserId = newsFaq.UserId ?? existingParentNews.UserId;
                 existingParentNews.Status = newsFaq.Status ?? existingParentNews.Status;
-                existingParentNews.UpdatedAt = GetVietnamTime();
+                existingParentNews.UpdatedAt = DateTime.Now;
 
                 // Cập nhật PolicyRoles cho Policy cha
                 if (newRoleIds != null && newRoleIds.Any())
@@ -1053,7 +1053,7 @@ namespace OJTEDU.Infrastructure.Repositories
                             await _context.NewsFaqroles.AddAsync(childNewsrole);
                         }
 
-                        childNew.UpdatedAt = GetVietnamTime();
+                        childNew.UpdatedAt = DateTime.Now;
                         _context.NewsFaqs.Update(childNew);
                     }
                 }
@@ -1086,7 +1086,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 foreach (var childNews in childNewsList)
                 {
                     childNews.Status = newsFaq.Status ?? childNews.Status;
-                    childNews.UpdatedAt = GetVietnamTime();
+                    childNews.UpdatedAt = DateTime.Now;
                 }
 
                 _context.NewsFaqs.UpdateRange(childNewsList);
@@ -1097,7 +1097,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingParentNews.Image = newsFaq.Image ?? existingParentNews.Image;
             existingParentNews.UserId = newsFaq.UserId ?? existingParentNews.UserId;
             existingParentNews.Status = newsFaq.Status ?? existingParentNews.Status;
-            existingParentNews.UpdatedAt = GetVietnamTime();
+            existingParentNews.UpdatedAt = DateTime.Now;
 
             _context.NewsFaqs.Update(existingParentNews);
             await _context.SaveChangesAsync();
@@ -1244,8 +1244,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Parent News not found.");
                 }
 
-                newsFaq.CreatedAt = GetVietnamTime();
-                newsFaq.UpdatedAt = GetVietnamTime();
+                newsFaq.CreatedAt = DateTime.Now;
+                newsFaq.UpdatedAt = DateTime.Now;
                 newsFaq.Status = "Active"; // Set trạng thái mặc định là Active
                 newsFaq.IsNews = true;
                 await _context.NewsFaqs.AddAsync(newsFaq);
@@ -1299,7 +1299,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingChildNews.UserId = newsFaq.UserId ?? existingChildNews.UserId;
             existingChildNews.ParentId = newsFaq.ParentId ?? existingChildNews.ParentId;
             existingChildNews.Status = newsFaq.Status ?? existingChildNews.Status;
-            existingChildNews.UpdatedAt = GetVietnamTime();
+            existingChildNews.UpdatedAt = DateTime.Now;
 
             _context.NewsFaqs.Update(existingChildNews);
             await _context.SaveChangesAsync();
@@ -1321,7 +1321,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 _context.NewsFaqroles.RemoveRange(newsRoles);
             }
 
-            childNews.DeletedAt = GetVietnamTime();
+            childNews.DeletedAt = DateTime.Now;
             _context.NewsFaqs.Remove(childNews);
             await _context.SaveChangesAsync();
 
@@ -1397,8 +1397,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
             try
             {
-                newsFaq.CreatedAt = GetVietnamTime();
-                newsFaq.UpdatedAt = GetVietnamTime();
+                newsFaq.CreatedAt = DateTime.Now;
+                newsFaq.UpdatedAt = DateTime.Now;
                 newsFaq.Status = "Active"; // Set trạng thái mặc định là Active
                 newsFaq.IsNews = false;
                 await _context.NewsFaqs.AddAsync(newsFaq);
@@ -1448,7 +1448,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 existingParentFaq.Image = newsFaq.Image ?? existingParentFaq.Image;
                 existingParentFaq.UserId = newsFaq.UserId ?? existingParentFaq.UserId;
                 existingParentFaq.Status = newsFaq.Status ?? existingParentFaq.Status;
-                existingParentFaq.UpdatedAt = GetVietnamTime();
+                existingParentFaq.UpdatedAt = DateTime.Now;
 
                 // Cập nhật PolicyRoles cho Policy cha
                 if (faqRoleIds != null && faqRoleIds.Any())
@@ -1490,7 +1490,7 @@ namespace OJTEDU.Infrastructure.Repositories
                             await _context.NewsFaqroles.AddAsync(childNewsrole);
                         }
 
-                        childFaq.UpdatedAt = GetVietnamTime();
+                        childFaq.UpdatedAt = DateTime.Now;
                         _context.NewsFaqs.Update(childFaq);
                     }
                 }
@@ -1522,7 +1522,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 foreach (var childFaq in childFaqList)
                 {
                     childFaq.Status = newsFaq.Status ?? childFaq.Status;
-                    childFaq.UpdatedAt = GetVietnamTime();
+                    childFaq.UpdatedAt = DateTime.Now;
                 }
 
                 _context.NewsFaqs.UpdateRange(childFaqList);
@@ -1533,7 +1533,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingParentFaq.Image = newsFaq.Image ?? existingParentFaq.Image;
             existingParentFaq.UserId = newsFaq.UserId ?? existingParentFaq.UserId;
             existingParentFaq.Status = newsFaq.Status ?? existingParentFaq.Status;
-            existingParentFaq.UpdatedAt = GetVietnamTime();
+            existingParentFaq.UpdatedAt = DateTime.Now;
 
             _context.NewsFaqs.Update(existingParentFaq);
             await _context.SaveChangesAsync();
@@ -1678,8 +1678,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Parent Faq not found.");
                 }
 
-                newsFaq.CreatedAt = GetVietnamTime();
-                newsFaq.UpdatedAt = GetVietnamTime();
+                newsFaq.CreatedAt = DateTime.Now;
+                newsFaq.UpdatedAt = DateTime.Now;
                 newsFaq.Status = "Active"; // Set trạng thái mặc định là Active
                 newsFaq.IsNews = false;
                 await _context.NewsFaqs.AddAsync(newsFaq);
@@ -1733,7 +1733,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingChildFaq.UserId = newsFaq.UserId ?? existingChildFaq.UserId;
             existingChildFaq.ParentId = newsFaq.ParentId ?? existingChildFaq.ParentId;
             existingChildFaq.Status = newsFaq.Status ?? existingChildFaq.Status;
-            existingChildFaq.UpdatedAt = GetVietnamTime();
+            existingChildFaq.UpdatedAt = DateTime.Now;
 
             _context.NewsFaqs.Update(existingChildFaq);
             await _context.SaveChangesAsync();
@@ -1755,7 +1755,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 _context.NewsFaqroles.RemoveRange(faqsRoles);
             }
 
-            childFaq.DeletedAt = GetVietnamTime();
+            childFaq.DeletedAt = DateTime.Now;
             _context.NewsFaqs.Remove(childFaq);
             await _context.SaveChangesAsync();
 
@@ -1940,12 +1940,6 @@ namespace OJTEDU.Infrastructure.Repositories
             var sortedNews = newsList.OrderBy(n => n.NewsFaqid).ToList();
 
             return sortedNews;
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

@@ -154,8 +154,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 var major = _mapper.Map<Major>(addMajorForAdminDoetDTO);
-                major.CreatedAt = GetVietnamTime();
-                major.UpdatedAt = GetVietnamTime();
+                major.CreatedAt = DateTime.Now;
+                major.UpdatedAt = DateTime.Now;
                 major.Status = "Active";
                 await _majorRepository.AddMajorAsync(major);
 
@@ -235,7 +235,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 major.Name = updateMajorForAdminDoetDTO.Name ?? major.Name;
                 major.Description = updateMajorForAdminDoetDTO.Description ?? major.Description;
                 major.DepartmentId = updateMajorForAdminDoetDTO.DepartmentId ?? major.DepartmentId;
-                major.UpdatedAt = GetVietnamTime();
+                major.UpdatedAt = DateTime.Now;
 
                 await _majorRepository.UpdateMajorAsync(major);
 
@@ -276,7 +276,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 major.Status = updateMajorStatusForAdminDoetDTO.Status ?? major.Status;
-                major.UpdatedAt = GetVietnamTime();
+                major.UpdatedAt = DateTime.Now;
                 await _majorRepository.UpdateMajorAsync(major);
 
                 var updatedMajorStatusDto = _mapper.Map<UpdateMajorStatusForAdminDoetDTO>(major);
@@ -322,7 +322,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     // Đổi trạng thái thành 'Unactive' thay vì xóa
                     major.Status = "Unactive";
-                    major.UpdatedAt = GetVietnamTime();
+                    major.UpdatedAt = DateTime.Now;
                     await _majorRepository.UpdateMajorAsync(major);
 
                     return new DataResponse<DeleteMajorForAdminDoetDTO>
@@ -456,12 +456,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     Data = null
                 };
             }
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

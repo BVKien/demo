@@ -76,8 +76,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         DeanScore = info?.DeanScore,
                         EvaluationScore = evaluationScore,
                         Status = "1",
-                        CreatedAt = GetVietnamTime(),
-                        UpdatedAt = GetVietnamTime()
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
                     };
 
                     await _context.Evaluations.AddAsync(evaluation);
@@ -100,8 +100,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         DeanScore = 0,
                         EvaluationScore = 0,
                         Status = "0",
-                        CreatedAt = GetVietnamTime(),
-                        UpdatedAt = GetVietnamTime()
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
                     };
 
                     await _context.Evaluations.AddAsync(evaluation);
@@ -186,7 +186,7 @@ namespace OJTEDU.Infrastructure.Repositories
         //                evaluationExist.Status = "1";
         //            }
 
-        //            evaluationExist.UpdatedAt = GetVietnamTime();
+        //            evaluationExist.UpdatedAt = DateTime.Now;
         //            await _context.SaveChangesAsync();
         //            return evaluationExist;
         //        }
@@ -220,8 +220,8 @@ namespace OJTEDU.Infrastructure.Repositories
         //                DeanScore = info.DeanScore,
         //                EvaluationScore = Math.Round(processScore + finalScore, 2),
         //                Status = "1",
-        //                CreatedAt = GetVietnamTime(),
-        //                UpdatedAt = GetVietnamTime()
+        //                CreatedAt = DateTime.Now,
+        //                UpdatedAt = DateTime.Now
         //            };
 
         //            await _context.Evaluations.AddAsync(evaluation);
@@ -244,8 +244,8 @@ namespace OJTEDU.Infrastructure.Repositories
         //                DeanScore = 0,
         //                EvaluationScore = 0,
         //                Status = "0",
-        //                CreatedAt = GetVietnamTime(),
-        //                UpdatedAt = GetVietnamTime()
+        //                CreatedAt = DateTime.Now,
+        //                UpdatedAt = DateTime.Now
         //            };
 
         //            await _context.Evaluations.AddAsync(evaluation);
@@ -324,13 +324,6 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new Exception(ex.Message);
                 }
             }
-        }
-
-        // VN tinme
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

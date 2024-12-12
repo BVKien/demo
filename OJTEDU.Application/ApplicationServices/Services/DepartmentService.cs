@@ -129,8 +129,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
                 // Thêm mới department
                 var department = _mapper.Map<Department>(addDepartmentForAdminDoetDTO);
-                department.CreatedAt = GetVietnamTime();
-                department.UpdatedAt = GetVietnamTime();
+                department.CreatedAt = DateTime.Now;
+                department.UpdatedAt = DateTime.Now;
                 department.Status = "Active";
                 await _departmentRepository.AddDepartmentAsync(department);
 
@@ -187,7 +187,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 department.DepartmentCode = updateDepartmentForAdminDoetDTO.DepartmentCode ?? department.DepartmentCode;
                 department.Name = updateDepartmentForAdminDoetDTO.Name ?? department.Name;
                 department.Detail = updateDepartmentForAdminDoetDTO.Detail ?? department.Detail;
-                department.UpdatedAt = GetVietnamTime();
+                department.UpdatedAt = DateTime.Now;
 
                 await _departmentRepository.UpdateDepartmentAsync(department);
 
@@ -230,7 +230,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
                 // Cập nhật trạng thái của Department
                 department.Status = updateDepartmentStatusForAdminDoetDTO.Status ?? department.Status;
-                department.UpdatedAt = GetVietnamTime();
+                department.UpdatedAt = DateTime.Now;
                 await _departmentRepository.UpdateDepartmentAsync(department);
 
                 var updatedDepartmentStatusDto = _mapper.Map<UpdateDepartmentStatusForAdminDoetDTO>(department);
@@ -276,7 +276,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     // Đổi trạng thái thành 'Unactive' thay vì xóa
                     department.Status = "Unactive";
-                    department.UpdatedAt = GetVietnamTime();
+                    department.UpdatedAt = DateTime.Now;
                     await _departmentRepository.UpdateDepartmentAsync(department);
 
                     return new DataResponse<DeleteDepartmentForAdminDoetDTO>
@@ -383,12 +383,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     StatusCode = 500
                 };
             }
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

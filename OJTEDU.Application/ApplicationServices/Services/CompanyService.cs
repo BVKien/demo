@@ -181,8 +181,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     address.WardId = wardId.Value;
                     address.Detail = addressDetail;
                     address.Status = "Active";
-                    address.CreatedAt = existingCompany.AddressId == null ? GetVietnamTime() : existingCompany.Address.CreatedAt;
-                    address.UpdatedAt = GetVietnamTime();
+                    address.CreatedAt = existingCompany.AddressId == null ? DateTime.Now : existingCompany.Address.CreatedAt;
+                    address.UpdatedAt = DateTime.Now;
 
                     // Lưu hoặc cập nhật Address
                     if (existingCompany.AddressId == null)
@@ -201,7 +201,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 existingCompany.Phone = updateCompanyForAdminDoetDTO.Phone ?? existingCompany.Phone;
                 existingCompany.Website = updateCompanyForAdminDoetDTO.Website;
                 existingCompany.Description = updateCompanyForAdminDoetDTO.Description;
-                existingCompany.UpdatedAt = GetVietnamTime();
+                existingCompany.UpdatedAt = DateTime.Now;
 
                 // Gọi repository để lưu cập nhật
                 await _companyRepository.UpdateCompanyForAdminDoetAsync(existingCompany);
@@ -443,12 +443,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     Data = null
                 };
             }
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

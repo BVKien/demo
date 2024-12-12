@@ -183,7 +183,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 foreach (var student in studentsToUpdate)
                 {
                     student.LecturerId = dto.LecturerId;
-                    student.UpdatedAt = GetVietnamTime();
+                    student.UpdatedAt = DateTime.Now;
                 }
 
                 // Lưu thay đổi vào repository
@@ -421,7 +421,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 // Cập nhật thời gian chỉnh sửa
-                student.UpdatedAt = GetVietnamTime();
+                student.UpdatedAt = DateTime.Now;
 
                 // Lưu thay đổi
                 await _studentRepository.UpdateStudentAsync(student);
@@ -442,12 +442,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     StatusCode = 500
                 };
             }
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

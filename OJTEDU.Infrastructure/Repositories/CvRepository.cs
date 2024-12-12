@@ -157,7 +157,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 selectedCv.Status = "2";
-                selectedCv.UpdatedAt = GetVietnamTime();
+                selectedCv.UpdatedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -198,10 +198,6 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
-        }
-        private DateTime GetVietnamTime()
-        {
-            return DateTime.UtcNow.AddHours(7);
         }
     }
 }

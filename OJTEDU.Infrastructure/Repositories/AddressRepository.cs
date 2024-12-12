@@ -247,7 +247,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingAddress.DistrictId = address.DistrictId;
             existingAddress.WardId = address.WardId;
             existingAddress.Detail = address.Detail;
-            existingAddress.UpdatedAt = GetVietnamTime();
+            existingAddress.UpdatedAt = DateTime.Now;
 
             _context.Addresses.Update(existingAddress);
             await _context.SaveChangesAsync();
@@ -310,12 +310,6 @@ namespace OJTEDU.Infrastructure.Repositories
         {
             return await _context.Wards
     .FirstOrDefaultAsync(w => w.Name == wardName && w.DistrictId == districtId);
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }
