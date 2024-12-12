@@ -236,7 +236,7 @@ namespace OJTEDU.Infrastructure.Repositories
             // Nếu năm không được cung cấp, mặc định là năm hiện tại theo giờ Việt Nam
             if (!year.HasValue)
             {
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
                 year = currentVietnamTime.Year;
             }
@@ -257,8 +257,9 @@ namespace OJTEDU.Infrastructure.Repositories
                 while (weekStart <= validEndDate)
                 {
                     DateTime weekEnd = weekStart.AddDays(6);
-                    if (weekStart >= validStartDate && weekEnd <= validEndDate)
+                    if (weekStart <= validEndDate && weekEnd >= validStartDate)
                     {
+                        // Week overlaps with the internship period
                         string weekRange = $"{weekStart:dd/MM} to {weekEnd:dd/MM}";
                         weeks.Add((weekStart, weekRange, y));
                     }
@@ -286,7 +287,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     .ThenInclude(a => a.Ward)
                 .Include(s => s.Address.District)
                 .Include(s => s.Address.Province)
-                .Where(s => s.StudentId == studentId && s.User.Status != "Deleted");
+                .Where(s => s.StudentId == studentId && s.User.Status != "Deleted" && s.Major.Status == "Active");
 
             // Logic cho Lecturer
             if (role == "Lecturer")
@@ -367,7 +368,7 @@ namespace OJTEDU.Infrastructure.Repositories
             // Nếu năm không được cung cấp, mặc định là năm hiện tại theo giờ Việt Nam
             if (!year.HasValue)
             {
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
                 year = currentVietnamTime.Year;
             }
@@ -375,7 +376,7 @@ namespace OJTEDU.Infrastructure.Repositories
             // Mặc định lấy tuần hiện tại nếu không có tuần nào được chọn
             if (string.IsNullOrEmpty(week))
             {
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
 
                 DateTime currentWeekStart = currentVietnamTime.AddDays(-(int)currentVietnamTime.DayOfWeek + (int)DayOfWeek.Monday);
@@ -533,7 +534,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
         private DateTime GetVietnamTime()
         {
-            return DateTime.UtcNow.AddHours(7);
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

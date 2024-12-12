@@ -447,7 +447,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
         private DateTime GetVietnamTime()
         {
-            return DateTime.UtcNow.AddHours(7);
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

@@ -295,13 +295,18 @@ namespace OJTEDU.Infrastructure.Repositories
         }
 
         // Admin - Child News Management
-        public async Task<IEnumerable<NewsFaq>> GetAllChildNewsForAdminAsync(int parentId, string? title, int? roleId, string? status)
+        public async Task<IEnumerable<NewsFaq>> GetAllChildNewsForAdminAsync(int? parentId, string? title, int? roleId, string? status)
         {
             IQueryable<NewsFaq> query = _context.NewsFaqs.Include(u => u.NewsFaqroles).ThenInclude(u => u.Role)
                                                    .Include(u => u.User)
-                                                   .Where(u => u.IsNews == true && u.ParentId == parentId && u.User.Role.Name.Equals("Admin"));
+                                                   .Where(u => u.IsNews == true && u.ParentId != null && u.User.Role.Name.Equals("Admin"));
 
             // Apply search filters if provided
+            if (parentId.HasValue)
+            {
+                query = query.Where(d => d.ParentId == parentId);
+            }
+
             if (!string.IsNullOrWhiteSpace(title))
             {
                 title = title.ToLower();
@@ -724,13 +729,18 @@ namespace OJTEDU.Infrastructure.Repositories
         }
 
         // Admin - Child News Management
-        public async Task<IEnumerable<NewsFaq>> GetAllChildFaqForAdminAsync(int parentId, string? title, int? roleId, string? status)
+        public async Task<IEnumerable<NewsFaq>> GetAllChildFaqForAdminAsync(int? parentId, string? title, int? roleId, string? status)
         {
             IQueryable<NewsFaq> query = _context.NewsFaqs.Include(u => u.NewsFaqroles).ThenInclude(u => u.Role)
                                        .Include(u => u.User)
-                                       .Where(u => u.IsNews == false && u.ParentId == parentId && u.User.Role.Name.Equals("Admin"));
+                                       .Where(u => u.IsNews == false && u.ParentId != null && u.User.Role.Name.Equals("Admin"));
 
             // Apply search filters if provided
+            if (parentId.HasValue)
+            {
+                query = query.Where(d => d.ParentId == parentId);
+            }
+
             if (!string.IsNullOrWhiteSpace(title))
             {
                 title = title.ToLower();
@@ -1156,13 +1166,18 @@ namespace OJTEDU.Infrastructure.Repositories
         }
 
         // Doet - Child News Management
-        public async Task<IEnumerable<NewsFaq>> GetAllChildNewsForDoetAsync(int parentId, string? title, int? roleId, string? status)
+        public async Task<IEnumerable<NewsFaq>> GetAllChildNewsForDoetAsync(int? parentId, string? title, int? roleId, string? status)
         {
             IQueryable<NewsFaq> query = _context.NewsFaqs.Include(u => u.NewsFaqroles).ThenInclude(u => u.Role)
                                                    .Include(u => u.User)
-                                                   .Where(u => u.IsNews == true && u.ParentId == parentId && u.User.Role.Name.Equals("DOET"));
+                                                   .Where(u => u.IsNews == true && u.ParentId != null && u.User.Role.Name.Equals("DOET"));
 
             // Apply search filters if provided
+            if (parentId.HasValue)
+            {
+                query = query.Where(d => d.ParentId == parentId);
+            }
+
             if (!string.IsNullOrWhiteSpace(title))
             {
                 title = title.ToLower();
@@ -1585,13 +1600,18 @@ namespace OJTEDU.Infrastructure.Repositories
         }
 
         // doet - Child News Management
-        public async Task<IEnumerable<NewsFaq>> GetAllChildFaqForDoetAsync(int parentId, string? title, int? roleId, string? status)
+        public async Task<IEnumerable<NewsFaq>> GetAllChildFaqForDoetAsync(int? parentId, string? title, int? roleId, string? status)
         {
             IQueryable<NewsFaq> query = _context.NewsFaqs.Include(u => u.NewsFaqroles).ThenInclude(u => u.Role)
                                        .Include(u => u.User)
-                                       .Where(u => u.IsNews == false && u.ParentId == parentId && u.User.Role.Name.Equals("DOET"));
+                                       .Where(u => u.IsNews == false && u.ParentId != null && u.User.Role.Name.Equals("DOET"));
 
             // Apply search filters if provided
+            if (parentId.HasValue)
+            {
+                query = query.Where(d => d.ParentId == parentId);
+            }
+
             if (!string.IsNullOrWhiteSpace(title))
             {
                 title = title.ToLower();
@@ -1924,7 +1944,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
         private DateTime GetVietnamTime()
         {
-            return DateTime.UtcNow.AddHours(7);
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

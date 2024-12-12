@@ -2824,7 +2824,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "No lecturers found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -2889,7 +2889,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "Lecturer not found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -3019,7 +3019,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "No deans found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -3084,7 +3084,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "Dean not found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -3195,7 +3195,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     Data = null,
                     Message = "Dean not found.",
-                    StatusCode = 404
+                    StatusCode = 204
                 };
             }
 
@@ -3204,7 +3204,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
             foreach (var lecturer in lecturers)
             {
-                if (lecturer.Major == null || lecturer.Major.DepartmentId != dean.DepartmentId)
+                if (lecturer.Major == null || lecturer.Major.DepartmentId != dean.DepartmentId || lecturer.Major.Status == "InActive")
                 {
                     invalidLecturers.Add(lecturer.Email);
                 }
@@ -3255,7 +3255,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "No lecturers found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -3332,7 +3332,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     Data = null,
                     Message = ex.Message,
-                    StatusCode = 404
+                    StatusCode = 204
                 };
             }
             catch (InvalidOperationException ex)
@@ -3388,7 +3388,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     Data = null,
                     Message = ex.Message,
-                    StatusCode = 404
+                    StatusCode = 204
                 };
             }
             catch (InvalidOperationException ex)
@@ -3413,7 +3413,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
         private DateTime GetVietnamTime()
         {
-            return DateTime.UtcNow.AddHours(7);
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

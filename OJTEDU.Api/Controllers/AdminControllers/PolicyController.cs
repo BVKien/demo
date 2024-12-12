@@ -505,25 +505,25 @@ namespace OJTEDU.Api.Controllers.AdminControllers
             }
         }
 
-        [HttpGet("child-policy/list/{parentId}")]
+        [HttpGet("child-policy/list")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllChildPolicyForAdmin(int? parentId, string? content, int? roleId, string? status, int? pageNumber, int? pageSize)
         {
             try
             {
-                if (!parentId.HasValue) // Sử dụng HasValue để kiểm tra Nullable
-                {
-                    return BadRequest(new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = "parentId is required."
-                    });
-                }
+                //if (!parentId.HasValue) // Sử dụng HasValue để kiểm tra Nullable
+                //{
+                //    return BadRequest(new ApiResponse<object>
+                //    {
+                //        Data = null,
+                //        Message = "parentId is required."
+                //    });
+                //}
 
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
 
-                var dataResponse = await _policyService.GetAllChildPolicyForAdminAsync(parentId.Value, content, roleId, status, actualPageNumber, actualPageSize);
+                var dataResponse = await _policyService.GetAllChildPolicyForAdminAsync(parentId, content, roleId, status, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {

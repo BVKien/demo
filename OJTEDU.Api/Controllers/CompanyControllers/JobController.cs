@@ -145,6 +145,11 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
                 if (file == null || file.Length == 0)
                     return BadRequest("No file uploaded.");
 
+                // Maximum 10MB validate
+                const long maxFileSize = 10 * 1024 * 1024;
+                if (file.Length > maxFileSize)
+                    return BadRequest("File size exceeds the 10MB limit.");
+
                 var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/jobs/files/");
                 if (!Directory.Exists(uploadPath))
                 {
@@ -171,10 +176,10 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
             }
             catch (Exception ex)
             {
-                var errorResponse = new ApiResponse<object>
+                var errorResponse = new ApiResponse<string>
                 {
-                    Message = $"An error occurred while uploading file: {ex.Message}. ",
-                    Data = new { Details = ex.Message }
+                    Message = "An error occurred while uploading file.",
+                    Data = ex.Message
                 };
 
                 return StatusCode(500, errorResponse);

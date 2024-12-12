@@ -138,6 +138,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
 
                 var supportRequestInfo = new CreateSupportRequestForStudentDTO
                 {
+                    RequestTitle = input?.RequestTitle,
                     RequestContent = input?.RequestContent,
                 };
 

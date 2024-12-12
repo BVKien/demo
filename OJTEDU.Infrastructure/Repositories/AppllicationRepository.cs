@@ -64,7 +64,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     .AnyAsync(a => a.StudentId == studentExists.StudentId && a.JobId == applyInfo.JobId);
                 if (applicationExists)
                 {
-                    throw new KeyNotFoundException("Application already exists.");
+                    throw new KeyNotFoundException("Application already exists for this job.");
                 }
 
                 // Create file name format studentId_timestamp_filename
@@ -334,7 +334,6 @@ namespace OJTEDU.Infrastructure.Repositories
                     {
                         StudentId = studentValid.StudentId,
                         JobId = application.JobId,
-                        LecturerId = studentValid.LecturerId,
                         StartDate = GetVietnamTime(),
                         EndDate = semester.EndDate,
                         Status = "1",
@@ -528,7 +527,8 @@ namespace OJTEDU.Infrastructure.Repositories
         }
         private DateTime GetVietnamTime()
         {
-            return DateTime.UtcNow.AddHours(7);
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

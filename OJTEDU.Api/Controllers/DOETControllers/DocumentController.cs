@@ -195,7 +195,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 // Tạo tên file duy nhất
                 string fileName = request.DocumentFile.FileName;
-                string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{fileName}";
+                string uniqueFileName = $"{createdByUniversityId}_{GetVietnamTime().ToString("yyyyMMddHHmmssfff")}_{fileName}";
 
                 // Lấy đường dẫn đến thư mục wwwroot/documents
                 string documentsPath = Path.Combine(_webHostEnvironment.WebRootPath, "documents");
@@ -398,7 +398,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                         });
                     }
 
-                    string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.DocumentFile.FileName}";
+                    string uniqueFileName = $"{createdByUniversityId}_{GetVietnamTime().ToString("yyyyMMddHHmmssfff")}_{request.DocumentFile.FileName}";
                     string documentsPath = Path.Combine(_webHostEnvironment.WebRootPath, "documents");
 
 
@@ -721,6 +721,12 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     Message = $"Internal Server Error: {ex.Message}"
                 });
             }
+        }
+
+        private DateTime GetVietnamTime()
+        {
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

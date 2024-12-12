@@ -1,4 +1,5 @@
-﻿using OJTEDU.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using OJTEDU.Domain.Entities;
 using OJTEDU.Domain.Interfaces;
 using OJTEDU.Infrastructure.Data;
 using System;
@@ -57,9 +58,97 @@ namespace OJTEDU.Infrastructure.Repositories
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<IEnumerable<Notification>> GetAllNotificationsByUserIdAsync(int? userId)
+        {
+            try
+            {
+                var user = await _context.Users
+                    .Include(u => u.Role)
+                    .FirstOrDefaultAsync(u => u.UserId == userId);
+
+                if (user == null)
+                {
+                    throw new Exception("Not found user.");
+                }
+
+                // Uni 
+                if (user?.Role?.Name == "Admin" || user?.Role?.Name == "DOET"
+                    || user?.Role?.Name == "Dean" || user?.Role?.Name == "Lecturer")
+                {
+                    var uniNotis = await _context.Notifications
+                        .Include(n => n.Student).ThenInclude(n => n.User).ThenInclude(n => n.Role)
+                        .Include(n => n.Company).ThenInclude(n => n.User).ThenInclude(n => n.Role)
+                        .Include(n => n.University).ThenInclude(n => n.Role)
+                        .Include(n => n.Application)
+                        .Include(n => n.SupportRequest)
+                        .Include(n => n.Feedback)
+                        .Include(n => n.Feedback)
+                        .Include(n => n.Message)
+                        .Include(n => n.MessageGroup)
+                        .Include(n => n.GroupChat)
+                        .Where(n => n.UniversityId == userId)
+                        .ToListAsync();
+
+                    return uniNotis;
+                }
+
+                // Company 
+                if (user?.Role?.Name == "Company" || user?.Role?.Name == "Mentor")
+                {
+                    var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserId == userId);
+
+                    var companyNotis = await _context.Notifications
+                        .Include(n => n.Student).ThenInclude(n => n.User).ThenInclude(n => n.Role)
+                        .Include(n => n.Company).ThenInclude(n => n.User).ThenInclude(n => n.Role)
+                        .Include(n => n.University).ThenInclude(n => n.Role)
+                        .Include(n => n.Application)
+                        .Include(n => n.SupportRequest)
+                        .Include(n => n.Feedback)
+                        .Include(n => n.Feedback)
+                        .Include(n => n.Message)
+                        .Include(n => n.MessageGroup)
+                        .Include(n => n.GroupChat)
+                        .Where(n => n.CompanyId == company.CompanyId)
+                        .ToListAsync();
+
+                    return companyNotis;
+                }
+
+                // Student 
+                if (user?.Role?.Name == "Student")
+                {
+                    var student = await _context.Students.FirstOrDefaultAsync(c => c.UserId == userId);
+
+                    var studentNotis = await _context.Notifications
+                        .Include(n => n.Student).ThenInclude(n => n.User).ThenInclude(n => n.Role)
+                        .Include(n => n.Company).ThenInclude(n => n.User).ThenInclude(n => n.Role)
+                        .Include(n => n.University).ThenInclude(n => n.Role)
+                        .Include(n => n.Application)
+                        .Include(n => n.SupportRequest)
+                        .Include(n => n.Feedback)
+                        .Include(n => n.Feedback)
+                        .Include(n => n.Message)
+                        .Include(n => n.MessageGroup)
+                        .Include(n => n.GroupChat)
+                        .Where(n => n.StudentId == student.StudentId)
+                        .ToListAsync();
+
+                    return studentNotis;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         private DateTime GetVietnamTime()
         {
-            return DateTime.UtcNow.AddHours(7);
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

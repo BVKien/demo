@@ -127,6 +127,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 {
                     StudentId = companyProposalInfo?.StudentId,
                     UniversityId = companyProposalInfo?.UniversityId,
+                    ProposalTitle = companyProposalInfo?.ProposalTitle,
                     ProposalContent = companyProposalInfo?.ProposalContent,
                     ProposalDate = GetVietnamTime(),
                     Contract = filePath?.Replace("wwwroot", ""),
@@ -160,7 +161,8 @@ namespace OJTEDU.Infrastructure.Repositories
         }
         private DateTime GetVietnamTime()
         {
-            return DateTime.UtcNow.AddHours(7);
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

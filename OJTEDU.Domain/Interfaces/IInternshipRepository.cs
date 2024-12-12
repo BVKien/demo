@@ -36,5 +36,7 @@ namespace OJTEDU.Domain.Interfaces
         string? sortBy,
         bool isDescending);
         Task<(Internship, List<WorkingReport>)> GetInternshipDetailsWithWorkingReportsAsync(int internshipId, int userId, string role);
+        Task<List<Internship>> GetInternshipsByIdsAsync(List<int> internshipIds);
+        Task UpdateInternshipsAsync(List<Internship> internships);
     }
 }

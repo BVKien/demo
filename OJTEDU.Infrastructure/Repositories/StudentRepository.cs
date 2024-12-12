@@ -139,14 +139,14 @@ namespace OJTEDU.Infrastructure.Repositories
                 .Include(s => s.Semester)
                 .Include(s => s.Major)
                 .Include(s => s.Lecturer)
-                .Where(s => s.User.Status != "Deleted");
+                .Where(s => s.User.Status != "Deleted" );
 
             if (role == "Dean")
             {
                 // Lấy thông tin Dean và kiểm tra hợp lệ
                 var dean = await _context.Users
                     .Include(u => u.Department) // Kết nối với bảng Department
-                    .FirstOrDefaultAsync(u => u.UserId == userId && u.Role.Name == "Dean" && u.Department.Status == "Active");
+                    .FirstOrDefaultAsync(u => u.UserId == userId && u.Role.Name == "Dean");
 
                 if (dean == null || !dean.DepartmentId.HasValue)
                 {
@@ -302,7 +302,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     .ThenInclude(a => a.Ward)
                 .Include(s => s.Address.District)
                 .Include(s => s.Address.Province)
-                .Where(s => s.StudentId == studentId && s.User.Status != "Deleted" && s.Major.Status == "Active");
+                .Where(s => s.StudentId == studentId && s.User.Status != "Deleted" );
 
             // Logic cho Lecturer
             if (role == "Lecturer")
@@ -348,22 +348,20 @@ namespace OJTEDU.Infrastructure.Repositories
             return student;
         }
 
-        public async Task<Major> GetMajorByNameAsync(string majorName)
+        public async Task<Major> GetMajorByIdAsync(int majorId)
         {
-            return await _context.Majors.FirstOrDefaultAsync(m => m.Name.ToLower() == majorName.ToLower() && m.Status == "Active");
+            return await _context.Majors.FirstOrDefaultAsync(m => m.MajorId == majorId);
         }
 
-        public async Task<Semester> GetSemesterByNameAsync(string semesterName)
+        public async Task<Semester> GetSemesterByIdAsync(int semesterId)
         {
-            return await _context.Semesters.FirstOrDefaultAsync(s => s.Name.ToLower() == semesterName.ToLower());
+            return await _context.Semesters.FirstOrDefaultAsync(s => s.SemesterId == semesterId);
         }
 
         public async Task<Student> GetStudentByIdAsync(int studentId)
         {
             return await _context.Students
                 .Include(s => s.User)
-                .Include(s => s.Major)
-                .Include(s => s.Semester)
                 .FirstOrDefaultAsync(s => s.StudentId == studentId);
         }
 
@@ -375,7 +373,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
         private DateTime GetVietnamTime()
         {
-            return DateTime.UtcNow.AddHours(7);
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
         //End
     }

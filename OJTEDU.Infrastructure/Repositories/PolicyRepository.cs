@@ -288,13 +288,18 @@ namespace OJTEDU.Infrastructure.Repositories
 
         // Admin - Child Policy Management
 
-        public async Task<IEnumerable<Policy>> GetAllChildPolicyForAdminAsync(int parentId, string? content, int? roleId, string? status)
+        public async Task<IEnumerable<Policy>> GetAllChildPolicyForAdminAsync(int? parentId, string? content, int? roleId, string? status)
         {
             IQueryable<Policy> query = _context.Policies.Include(u => u.PolicyRoles).ThenInclude(u => u.Role)
                                                    .Include(u => u.User)
-                                                   .Where(u => u.ParentId == parentId && u.User.Role.Name.Equals("Admin"));
+                                                   .Where(u => u.ParentId != null && u.User.Role.Name.Equals("Admin"));
 
             // Apply search filters if provided
+            if (parentId.HasValue)
+            {
+                query = query.Where(d => d.ParentId == parentId);
+            }
+
             if (!string.IsNullOrWhiteSpace(content))
             {
                 content = content.ToLower();
@@ -538,7 +543,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
         private DateTime GetVietnamTime()
         {
-            return DateTime.UtcNow.AddHours(7);
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

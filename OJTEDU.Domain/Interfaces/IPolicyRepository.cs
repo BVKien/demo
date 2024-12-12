@@ -19,7 +19,7 @@ namespace OJTEDU.Domain.Interfaces
 
         // Admin - Child Policy Management
         Task<IEnumerable<Policy>> GetAllChildPolicyByParentIdForAdminAsync(int? parentId);
-        Task<IEnumerable<Policy>> GetAllChildPolicyForAdminAsync(int parentId, string? content, int? roleId, string? status);
+        Task<IEnumerable<Policy>> GetAllChildPolicyForAdminAsync(int? parentId, string? content, int? roleId, string? status);
         Task<Policy> GetChildPolicyByIdForAdminAsync(int policyId);
         Task<Policy> AddChildPolicyForAdminAsync(Policy policy);
         Task<Policy> UpdateChildPolicyForAdminAsync(Policy policy);

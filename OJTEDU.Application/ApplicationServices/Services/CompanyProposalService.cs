@@ -113,6 +113,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
                 var companyProposal = new CompanyProposal
                 {
+                    ProposalTitle = companyProposalInfo?.ProposalTitle,
                     ProposalContent = companyProposalInfo?.ProposalContent,
                 };
 

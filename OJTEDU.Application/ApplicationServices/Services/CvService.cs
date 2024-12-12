@@ -53,7 +53,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 return new DataResponse<string>
                 {
                     StatusCode = 500,
-                    Message = $"An error occurred while uploading cv file.",
+                    Message = "An error occurred while uploading cv file.",
                     Data = ex.Message
                 };
             }

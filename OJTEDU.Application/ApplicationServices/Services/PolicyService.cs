@@ -340,7 +340,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
-        public async Task<DataResponse<PagedResponse<List<ChildPolicyListForAdminDTO>>>> GetAllChildPolicyForAdminAsync(int parentId, string? content, int? roleId, string? status, int pageNumber, int pageSize)
+        public async Task<DataResponse<PagedResponse<List<ChildPolicyListForAdminDTO>>>> GetAllChildPolicyForAdminAsync(int? parentId, string? content, int? roleId, string? status, int pageNumber, int pageSize)
         {
             try
             {

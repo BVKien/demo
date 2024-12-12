@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using OfficeOpenXml;
 using OJTEDU.Application.ApplicationServices.Interfaces;
 using OJTEDU.Application.DTOs;
 using OJTEDU.Domain.Entities;
@@ -339,7 +341,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
 
         // Admin - District Management
-        public async Task<DataResponse<PagedResponse<List<DistrictListForAdminDTO>>>> GetAllDistrictForAdminAsync(int provinceId, string? name, int pageNumber, int pageSize)
+        public async Task<DataResponse<PagedResponse<List<DistrictListForAdminDTO>>>> GetAllDistrictForAdminAsync(int? provinceId, string? name, int pageNumber, int pageSize)
         {
             try
             {
@@ -659,7 +661,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
 
         // Admin - Ward Management
-        public async Task<DataResponse<PagedResponse<List<WardListForAdminDTO>>>> GetAllWardForAdminAsync(int districtId, string? name, int pageNumber, int pageSize)
+        public async Task<DataResponse<PagedResponse<List<WardListForAdminDTO>>>> GetAllWardForAdminAsync(int? districtId, string? name, int pageNumber, int pageSize)
         {
             try
             {
@@ -999,9 +1001,270 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
+        public async Task<DataResponse<MemoryStream>> GenerateAddressTemplateAsync()
+        {
+            try
+            {
+                var memoryStream = new MemoryStream();
+                using (var package = new ExcelPackage(memoryStream))
+                {
+                    var worksheet = package.Workbook.Worksheets.Add("Address Template");
+
+                    // Add headers
+                    worksheet.Cells[1, 1].Value = "Province Name(*)";
+                    worksheet.Cells[1, 2].Value = "District Name(*)";
+                    worksheet.Cells[1, 3].Value = "Ward Name(*)";
+
+                    for (int col = 1; col <= 3; col++)
+                    {
+                        worksheet.Cells[1, col].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                        worksheet.Cells[1, col].Style.Font.Bold = true; // Đặt chữ in đậm
+                    }
+
+                    // Example rows
+                    worksheet.Cells[2, 1].Value = "Hà Nội";
+                    worksheet.Cells[2, 2].Value = "Ba Đình";
+                    worksheet.Cells[2, 3].Value = "Phúc Xá";
+
+                    worksheet.Cells[3, 1].Value = "Phú Thọ";
+                    worksheet.Cells[3, 2].Value = "Việt Trì";
+                    worksheet.Cells[3, 3].Value = "Thọ Sơn";
+
+                    // Căn giữa cho tất cả các ô
+                    for (int row = 2; row <= 1000; row++)
+                    {
+                        for (int col = 1; col <= 3; col++)
+                        {
+                            worksheet.Cells[row, col].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                        }
+                    }
+
+                    worksheet.Column(1).Width = 30;
+                    worksheet.Column(2).Width = 30;
+                    worksheet.Column(3).Width = 30;
+
+                    // Thêm ghi chú cho các trường
+                    worksheet.Cells[1, 5].Value = "Ghi chú:"; // Cột 6
+                    worksheet.Cells[2, 5].Value = "(*) : Bắt buộc điền."; // Cột 6
+                    worksheet.Cells[3, 5].Value = "Hãy xóa dữ liệu mẫu trước khi điền tránh trùng lặp."; // Cột 6
+
+                    for (int row = 1; row <= 3; row++)
+                    {
+                        worksheet.Cells[row, 5].Style.Font.Bold = true;
+                        worksheet.Cells[row, 5].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                    }
+
+                    package.Save();
+                }
+
+                memoryStream.Position = 0;
+                return new DataResponse<MemoryStream>
+                {
+                    Data = memoryStream,
+                    Message = "Template generated successfully.",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<MemoryStream>
+                {
+                    Data = null,
+                    Message = $"Error generating template: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+
+        public async Task<DataResponse<object>> ImportAddressFileAsync(IFormFile file)
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            if (file == null || file.Length == 0)
+            {
+                return new DataResponse<object>
+                {
+                    Data = null,
+                    Message = "File is empty or not provided.",
+                    StatusCode = 400
+                };
+            }
+
+            try
+            {
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+                        if (worksheet == null)
+                        {
+                            return new DataResponse<object>
+                            {
+                                Data = null,
+                                Message = "The uploaded file does not contain valid data.",
+                                StatusCode = 400
+                            };
+                        }
+
+                        var errorMessages = new List<string>();
+                        var rowTracker = new Dictionary<string, int>(); // Track duplicates in the file
+                        var validRows = new List<(string Province, string District, string Ward)>();
+                        int lastRow = 1;
+                        for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
+                        {
+                            bool hasDataInRange = false;
+                            for (int col = 1; col <= 3; col++) // Chỉ từ cột A đến E (1 đến 6)
+                            {
+                                if (!string.IsNullOrWhiteSpace(worksheet.Cells[row, col]?.Text))
+                                {
+                                    hasDataInRange = true;
+                                    break;
+                                }
+                            }
+                            if (hasDataInRange)
+                            {
+                                lastRow = row;
+                            }
+                        }
+
+                        // Step 1: Validate rows and check for duplicates in the file
+                        for (int row = 2; row <= lastRow; row++)
+                        {
+                            var provinceName = worksheet.Cells[row, 1]?.Text.Trim();
+                            var districtName = worksheet.Cells[row, 2]?.Text.Trim();
+                            var wardName = worksheet.Cells[row, 3]?.Text.Trim();
+
+                            // Validate required fields
+                            if (string.IsNullOrEmpty(provinceName) || string.IsNullOrEmpty(districtName) || string.IsNullOrEmpty(wardName))
+                            {
+                                errorMessages.Add($"Row {row}: Missing required data (Province, District, or Ward).");
+                                continue;
+                            }
+
+                            // Check for duplicate rows in the file
+                            var uniqueKey = $"{provinceName}|{districtName}|{wardName}";
+                            if (rowTracker.ContainsKey(uniqueKey))
+                            {
+                                var firstOccurrenceRow = rowTracker[uniqueKey];
+                                errorMessages.Add($"Row {row}: Duplicate entry in the file. Matches Row {firstOccurrenceRow} (Province: '{provinceName}', District: '{districtName}', Ward: '{wardName}').");
+                                continue;
+                            }
+                            else
+                            {
+                                rowTracker[uniqueKey] = row;
+                            }
+
+                            // Add to valid rows for database validation
+                            validRows.Add((provinceName, districtName, wardName));
+                        }
+
+                        // Step 2: Validate rows against the database
+                        foreach (var (provinceName, districtName, wardName) in validRows)
+                        {
+                            // Check if Province exists
+                            var provinceEntity = await _addressRepository.GetProvinceByNameAsync(provinceName);
+                            if (provinceEntity != null)
+                            {
+                                // Check if District exists under the Province
+                                var districtEntity = await _addressRepository.GetDistrictByNameAndProvinceIdAsync(districtName, provinceEntity.ProvinceId);
+                                if (districtEntity != null)
+                                {
+                                    // Check if Ward exists under the District
+                                    var wardEntity = await _addressRepository.GetWardByNameAndDistrictIdAsync(wardName, districtEntity.DistrictId);
+                                    if (wardEntity != null)
+                                    {
+                                        errorMessages.Add($"Row {rowTracker[$"{provinceName}|{districtName}|{wardName}"]}: Ward '{wardName}' already exists under District '{districtName}' in Province '{provinceName}'.");
+                                    }
+                                }
+                            }
+                        }
+
+                        // If there are any errors, return them and halt the process
+                        if (errorMessages.Any())
+                        {
+                            return new DataResponse<object>
+                            {
+                                Data = new
+                                {
+                                    SuccessCount = 0,
+                                    ErrorCount = errorMessages.Count,
+                                    Errors = errorMessages
+                                },
+                                Message = $"Import failed. There were {errorMessages.Count} errors. Please fix the reported errors to successfully add the file.",
+                                StatusCode = 400
+                            };
+                        }
+
+                        // Step 3: Process valid rows and add to the database
+                        int successCount = 0;
+                        foreach (var (provinceName, districtName, wardName) in validRows)
+                        {
+                            // Add Province if it doesn't exist
+                            var provinceEntity = await _addressRepository.GetProvinceByNameAsync(provinceName) ?? await _addressRepository.AddProvince1Async(new Province
+                            {
+                                Name = provinceName,
+                                Status = "Active",
+                                CreatedAt = GetVietnamTime(),
+                                UpdatedAt = GetVietnamTime()
+                            });
+
+                            // Add District if it doesn't exist
+                            var districtEntity = await _addressRepository.GetDistrictByNameAndProvinceIdAsync(districtName, provinceEntity.ProvinceId) ?? await _addressRepository.AddDistrict1Async(new District
+                            {
+                                Name = districtName,
+                                ProvinceId = provinceEntity.ProvinceId,
+                                Status = "Active",
+                                CreatedAt = GetVietnamTime(),
+                                UpdatedAt = GetVietnamTime()
+                            });
+
+                            // Add Ward if it doesn't exist
+                            await _addressRepository.AddWardAsync(new Ward
+                            {
+                                Name = wardName,
+                                DistrictId = districtEntity.DistrictId,
+                                Status = "Active",
+                                CreatedAt = GetVietnamTime(),
+                                UpdatedAt = GetVietnamTime()
+                            });
+
+                            successCount++;
+                        }
+
+                        return new DataResponse<object>
+                        {
+                            Data = new
+                            {
+                                SuccessCount = successCount,
+                                ErrorCount = 0,
+                                Errors = errorMessages
+                            },
+                            Message = $"Import completed. Successfully added {successCount} addresses.",
+                            StatusCode = 200
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<object>
+                {
+                    Data = null,
+                    Message = $"Error occurred during import: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+
         private DateTime GetVietnamTime()
         {
-            return DateTime.UtcNow.AddHours(7);
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

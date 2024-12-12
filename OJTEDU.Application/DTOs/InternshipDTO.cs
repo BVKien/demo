@@ -57,6 +57,7 @@ namespace OJTEDU.Application.DTOs
             public string? MajorCode { get; set; }
             public string? CreatedAt { get; set; }
             public string? UpdatedAt { get; set; }
+            public bool IsMajorActive { get; set; }
         }
 
         // Company 
@@ -118,6 +119,12 @@ namespace OJTEDU.Application.DTOs
             public List<WorkingReportDto> WorkingReports { get; set; }
         }
 
+        public class AssignLecturerForInternshipDto
+        {
+            public int? LecturerId { get; set; }
+            public List<int> InternshipIds { get; set; }
+            
+        }
 
     }
 }

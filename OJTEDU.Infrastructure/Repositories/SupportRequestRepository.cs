@@ -105,6 +105,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 {
                     StudentId = student.StudentId,
                     UniversityId = doet.UserId,
+                    RequestTitle = info?.RequestTitle,
                     RequestContent = info?.RequestContent,
                     Status = "1",
                     CreatedAt = GetVietnamTime(),
@@ -306,7 +307,8 @@ namespace OJTEDU.Infrastructure.Repositories
         }
         private DateTime GetVietnamTime()
         {
-            return DateTime.UtcNow.AddHours(7);
+            TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
         }
     }
 }

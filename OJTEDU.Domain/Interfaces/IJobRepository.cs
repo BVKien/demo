@@ -13,7 +13,7 @@ namespace OJTEDU.Domain.Interfaces
          + Job status: 
         0: Deleted
         1: Active 
-        2: Stored
+        2: Stored 
          */
 
         // Student

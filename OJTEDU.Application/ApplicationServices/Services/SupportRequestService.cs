@@ -111,6 +111,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
                 var supportRequestInfo = new SupportRequest
                 {
+                    RequestTitle = info?.RequestTitle,
                     RequestContent = info?.RequestContent,
                 };
 

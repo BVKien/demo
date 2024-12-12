@@ -28,8 +28,8 @@ namespace OJTEDU.Domain.Interfaces
         Task<Student> GetStudentDetailsByIdAsync(int studentId, int userId, string role);
         Task<IEnumerable<Student>> GetOjtStudentListAsync(int userId);
         Task<Student> GetStudentByIdAsync(int studentId);
-        Task<Semester> GetSemesterByNameAsync(string semesterName);
-        Task<Major> GetMajorByNameAsync(string majorName);
+        Task<Major> GetMajorByIdAsync(int majorId);
+        Task<Semester> GetSemesterByIdAsync(int semesterId);
         Task UpdateStudentAsync(Student student);
     }
 }

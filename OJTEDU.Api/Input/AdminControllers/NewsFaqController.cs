@@ -5,16 +5,12 @@
         public class AddParentNewsRequestForAdmin
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
-            public string? ParentNewscontent { get; set; }
             public string ForRoleIds { get; set; }
         }
 
         public class UpdateParentNewsRequestForAdmin
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
-            public string? ParentNewscontent { get; set; }
             public string ForRoleIds { get; set; }
         }
 
@@ -46,16 +42,12 @@
         public class AddParentFaqRequestForAdmin
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
-            public string? ParentFaqcontent { get; set; }
             public string ForRoleIds { get; set; }
         }
 
         public class UpdateParentFaqRequestForAdmin
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
-            public string? ParentFaqcontent { get; set; }
             public string ForRoleIds { get; set; }
         }
 

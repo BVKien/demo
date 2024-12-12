@@ -7,8 +7,6 @@ using static OJTEDU.Api.Input.StudentControllers.StudentController;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using OJTEDU.Application.DTOs;
-using static OJTEDU.Api.Input.CommonControllers.AuthenticationController;
-using static OJTEDU.Application.DTOs.UserDTO;
 
 namespace OJTEDU.Api.Controllers.StudentControllers
 {
@@ -23,7 +21,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
         }
 
         [Authorize(Roles = "Student")]
-        [HttpGet("student-detail/{userId}")]
+        [HttpGet("student-detail")]
         public async Task<IActionResult> GetStudentDetail()
         {
             try
@@ -80,7 +78,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
         }
 
         [Authorize(Roles = "Student")]
-        [HttpPut("update/{userId}")]
+        [HttpPut("update")]
         public async Task<IActionResult> UpdateStudent([FromBody] UpdateStudentInput? updateInformation)
         {
             try

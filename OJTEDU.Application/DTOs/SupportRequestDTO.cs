@@ -14,6 +14,7 @@ namespace OJTEDU.Application.DTOs
             public int SupportRequestId { get; set; }
             public int? StudentId { get; set; }
             public int? UniversityId { get; set; }
+            public string? RequestTitle { get; set; }
             public string? RequestContent { get; set; }
         }
 
@@ -23,6 +24,7 @@ namespace OJTEDU.Application.DTOs
             public string? StudentName { get; set; }
             public string? StudentCode { get; set; }
             public string? DOETName { get; set; }
+            public string? RequestTitle { get; set; }
             public string? RequestContent { get; set; }
             public string? FeedbackContent { get; set; }
             public string? Status { get; set; }
@@ -33,6 +35,7 @@ namespace OJTEDU.Application.DTOs
         {
             public int SupportRequestId { get; set; }
             public string? DOETName { get; set; }
+            public string? RequestTitle { get; set; }
             public string? RequestContent { get; set; }
             public string? Status { get; set; }
             public string? CreatedAt { get; set; }
@@ -41,6 +44,7 @@ namespace OJTEDU.Application.DTOs
         {
             public string StudentName { get; set; }
             public string DOETName { get; set; }
+            public string? RequestTitle { get; set; }
             public string RequestContent { get; set; }
             public string FeedbackContent { get; set; }
             public string Status { get; set; }

@@ -76,5 +76,45 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 });
             }
         }
+        [HttpGet("{internshipId}/details")]
+        public async Task<IActionResult> GetInternshipDetailsAsync(
+        int internshipId,
+        string? sortBy,
+        bool? isDescending,
+        string? week,
+        int? year)
+        {
+            try
+            {
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                var response = await _internshipService.GetInternshipDetailsAsync(
+                    internshipId, sortBy, isDescending, week, userId, role, year);
+
+                if (response.StatusCode != 200)
+                {
+                    return StatusCode(response.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = response.Message
+                    });
+                }
+
+                return Ok(new ApiResponse<InternshipDetailWithReportsDTO>
+                {
+                    Data = response.Data,
+                    Message = response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
     }
 }

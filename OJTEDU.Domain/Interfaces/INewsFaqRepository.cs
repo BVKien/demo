@@ -19,7 +19,7 @@ namespace OJTEDU.Domain.Interfaces
 
         // Admin - Child News Management
         Task<IEnumerable<NewsFaq>> GetAllChildNewsByParentIdForAdminAsync(int? parentId);
-        Task<IEnumerable<NewsFaq>> GetAllChildNewsForAdminAsync(int parentId, string? title, int? roleId, string? status);
+        Task<IEnumerable<NewsFaq>> GetAllChildNewsForAdminAsync(int? parentId, string? title, int? roleId, string? status);
         Task<NewsFaq> GetChildNewsByIdForAdminAsync(int newsId);
         Task<NewsFaq> AddChildNewsForAdminAsync(NewsFaq newsFaq);
         Task<NewsFaq> UpdateChildNewsForAdminAsync(NewsFaq newsFaq);
@@ -36,7 +36,7 @@ namespace OJTEDU.Domain.Interfaces
 
         // Admin - Child Faq Management
         Task<IEnumerable<NewsFaq>> GetAllChildFaqByParentIdForAdminAsync(int? parentId);
-        Task<IEnumerable<NewsFaq>> GetAllChildFaqForAdminAsync(int parentId, string? title, int? roleId, string? status);
+        Task<IEnumerable<NewsFaq>> GetAllChildFaqForAdminAsync(int? parentId, string? title, int? roleId, string? status);
         Task<NewsFaq> GetChildFaqByIdForAdminAsync(int faqId);
         Task<NewsFaq> AddChildFaqForAdminAsync(NewsFaq newsFaq);
         Task<NewsFaq> UpdateChildFaqForAdminAsync(NewsFaq newsFaq);
@@ -52,7 +52,7 @@ namespace OJTEDU.Domain.Interfaces
 
         // Doet - Child News Management
         Task<IEnumerable<NewsFaq>> GetAllChildNewsByParentIdForDoetAsync(int? parentId);
-        Task<IEnumerable<NewsFaq>> GetAllChildNewsForDoetAsync(int parentId, string? title, int? roleId, string? status);
+        Task<IEnumerable<NewsFaq>> GetAllChildNewsForDoetAsync(int? parentId, string? title, int? roleId, string? status);
         Task<NewsFaq> GetChildNewsByIdForDoetAsync(int newsId);
         Task<NewsFaq> AddChildNewsForDoetAsync(NewsFaq newsFaq);
         Task<NewsFaq> UpdateChildNewsForDoetAsync(NewsFaq newsFaq);
@@ -69,7 +69,7 @@ namespace OJTEDU.Domain.Interfaces
 
         // Doet - Child Faq Management
         Task<IEnumerable<NewsFaq>> GetAllChildFaqByParentIdForDoetAsync(int? parentId);
-        Task<IEnumerable<NewsFaq>> GetAllChildFaqForDoetAsync(int parentId, string? title, int? roleId, string? status);
+        Task<IEnumerable<NewsFaq>> GetAllChildFaqForDoetAsync(int? parentId, string? title, int? roleId, string? status);
         Task<NewsFaq> GetChildFaqByIdForDoetAsync(int faqId);
         Task<NewsFaq> AddChildFaqForDoetAsync(NewsFaq newsFaq);
         Task<NewsFaq> UpdateChildFaqForDoetAsync(NewsFaq newsFaq);

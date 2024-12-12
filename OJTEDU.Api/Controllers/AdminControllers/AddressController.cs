@@ -406,9 +406,9 @@ namespace OJTEDU.Api.Controllers.AdminControllers
 
         // Admin - District
 
-        [HttpGet("district/list/{provinceId}")]
+        [HttpGet("district/list")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAllDistrict(int provinceId, string? name, int? pageNumber, int? pageSize)
+        public async Task<IActionResult> GetAllDistrict(int? provinceId, string? name, int? pageNumber, int? pageSize)
         {
             try
             {
@@ -797,9 +797,9 @@ namespace OJTEDU.Api.Controllers.AdminControllers
 
         // Admin - Ward
 
-        [HttpGet("ward/list/{districtId}")]
+        [HttpGet("ward/list")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAllWard(int districtId, string? name, int? pageNumber, int? pageSize)
+        public async Task<IActionResult> GetAllWard(int? districtId, string? name, int? pageNumber, int? pageSize)
         {
             try
             {
@@ -1182,6 +1182,106 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 {
                     Data = null,
                     Message = $"Internal Server Error: {ex.Message}"
+                });
+            }
+        }
+
+        [HttpPost("import-file")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ImportAddressFile([FromForm] IFormFile file)
+        {
+            try
+            {
+                // Kiểm tra file đầu vào
+                if (file == null || file.Length == 0)
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "The uploaded file is empty or missing. Please ensure you provide a valid Excel file. If you're unsure of the required format, download the template and follow the instructions provided in the User Guide."
+                    });
+                }
+
+                // Kiểm tra định dạng file (chỉ chấp nhận .xlsx hoặc .xls)
+                string fileExtension = Path.GetExtension(file.FileName).ToLower();
+                if (fileExtension != ".xlsx" && fileExtension != ".xls")
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "Invalid file format. Only Excel files (.xlsx, .xls) are accepted. Please download the template to prepare your data correctly and follow the instructions in the User Guide."
+                    });
+                }
+
+                var dataResponse = await _addressService.ImportAddressFileAsync(file);
+
+                if (dataResponse == null)
+                {
+                    return StatusCode(500, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "Unexpected error occurred during the import process."
+                    });
+                }
+
+                // Trả về lỗi nếu có
+                if (dataResponse.StatusCode != 200)
+                {
+                    return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
+                    {
+                        Data = dataResponse.Data,
+                        Message = dataResponse.Message
+                    });
+                }
+
+                // Trả về kết quả import thành công
+                return Ok(new ApiResponse<object>
+                {
+                    Data = dataResponse.Data,
+                    Message = dataResponse.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Error occurred during the import: {ex.Message}"
+                });
+            }
+        }
+
+        [HttpGet("download-file-template")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DownloadAddressTemplate()
+        {
+            try
+            {
+                var templateResponse = await _addressService.GenerateAddressTemplateAsync();
+
+                if (templateResponse == null || templateResponse.Data == null)
+                {
+                    return StatusCode(500, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "Failed to generate the address template."
+                    });
+                }
+
+                var templateStream = templateResponse.Data;
+                templateStream.Position = 0;
+
+                return new FileStreamResult(templateStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                {
+                    FileDownloadName = "AddressTemplate.xlsx"
+                };
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Error occurred while generating the template: {ex.Message}"
                 });
             }
         }

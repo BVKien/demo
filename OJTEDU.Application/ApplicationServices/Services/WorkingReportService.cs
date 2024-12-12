@@ -121,7 +121,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 return new DataResponse<CreateWorkingReportForStudentDTO>
                 {
                     StatusCode = 500,
-                    Message = $"Error create working report jpb: {ex.Message}. ",
+                    Message = $"Error create working report: {ex.Message}. ",
                     Data = null
                 };
             }
@@ -211,7 +211,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 // If year is not provided, default to current year in Vietnam time
                 if (!year.HasValue)
                 {
-                    TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+                    TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                     DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
                     year = currentVietnamTime.Year;
                 }
@@ -276,7 +276,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 // Nếu không có tuần được chọn, sử dụng tuần hiện tại
                 if (string.IsNullOrEmpty(week))
                 {
-                    TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+                    TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                     DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
                     DateTime currentWeekStart = currentVietnamTime.AddDays(-(int)currentVietnamTime.DayOfWeek + (int)DayOfWeek.Monday);
                     DateTime currentWeekEnd = currentWeekStart.AddDays(6);
@@ -326,7 +326,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "Failed to update report. Working report not found or access denied.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -383,7 +383,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     return new DataResponse<List<WorkingReportListForMentorDTO>>
                     {
-                        StatusCode = 404,
+                        StatusCode = 204,
                         Message = "Not found student.",
                         Data = null
                     };
@@ -418,7 +418,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     return new DataResponse<CreateFeedbackWorkingReportForMentorDTO>
                     {
-                        StatusCode = 404,
+                        StatusCode = 204,
                         Message = "Not found working report.",
                         Data = null
                     };
@@ -459,7 +459,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     return new DataResponse<WorkingReportDetailForMentorDTO>
                     {
-                        StatusCode = 404,
+                        StatusCode = 204,
                         Message = "Not found working report.",
                         Data = null
                     };
