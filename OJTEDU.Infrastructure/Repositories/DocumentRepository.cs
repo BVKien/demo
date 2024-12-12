@@ -91,8 +91,8 @@ namespace OJTEDU.Infrastructure.Repositories
             try
             {
                 // Thêm tài liệu vào bảng Document
-                document.CreatedAt = GetVietnamTime();
-                document.UpdatedAt = GetVietnamTime();
+                document.CreatedAt = DateTime.Now;
+                document.UpdatedAt = DateTime.Now;
                 document.Status = "Active"; // Mặc định trạng thái là Active
                 await _context.Documents.AddAsync(document);
                 await _context.SaveChangesAsync();
@@ -167,7 +167,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingDocument.Description = document.Description ?? existingDocument.Description;
             existingDocument.UniversityId = document.UniversityId ?? existingDocument.UniversityId;
             existingDocument.Status = document.Status ?? existingDocument.Status;
-            existingDocument.UpdatedAt = GetVietnamTime();
+            existingDocument.UpdatedAt = DateTime.Now;
 
             _context.Documents.Update(existingDocument);
             await _context.SaveChangesAsync();
@@ -188,7 +188,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 _context.DocumentRoles.RemoveRange(documentRoles);
             }
 
-            document.DeletedAt = GetVietnamTime(); // Cập nhật thời gian xóa
+            document.DeletedAt = DateTime.Now; // Cập nhật thời gian xóa
 
             _context.Documents.Remove(document);
             await _context.SaveChangesAsync();
@@ -265,8 +265,8 @@ namespace OJTEDU.Infrastructure.Repositories
             try
             {
                 // Thêm tài liệu vào bảng Document
-                document.CreatedAt = GetVietnamTime();
-                document.UpdatedAt = GetVietnamTime();
+                document.CreatedAt = DateTime.Now;
+                document.UpdatedAt = DateTime.Now;
                 document.Status = "Active"; // Mặc định trạng thái là Active
                 await _context.Documents.AddAsync(document);
                 await _context.SaveChangesAsync();
@@ -310,7 +310,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingDocument.Description = document.Description ?? existingDocument.Description;
             existingDocument.UniversityId = document.UniversityId ?? existingDocument.UniversityId;
             existingDocument.Status = document.Status ?? existingDocument.Status;
-            existingDocument.UpdatedAt = GetVietnamTime();
+            existingDocument.UpdatedAt = DateTime.Now;
 
             _context.Documents.Update(existingDocument);
             await _context.SaveChangesAsync();
@@ -332,7 +332,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 _context.DocumentRoles.RemoveRange(documentRoles);
             }
 
-            document.DeletedAt = GetVietnamTime(); // Cập nhật thời gian xóa
+            document.DeletedAt = DateTime.Now; // Cập nhật thời gian xóa
 
             _context.Documents.Remove(document);
             await _context.SaveChangesAsync();
@@ -424,7 +424,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Create file name format userId_timestamp_filename
-                var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
+                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var newFileName = fileName != null ? $"{userId}_{timestamp}_{fileName}" : null;
 
                 var filePath = newFileName != null ? Path.Combine(_documentDirectory, newFileName) : null;
@@ -448,8 +448,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     DocumentFile = filePath?.Replace("wwwroot", ""),
                     Description = info?.Description,
                     Status = "Active",
-                    CreatedAt = GetVietnamTime(),
-                    UpdatedAt = GetVietnamTime()
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
                 };
 
                 await _context.Documents.AddAsync(document);
@@ -474,8 +474,8 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 document.Status = "Deleted";
-                document.UpdatedAt = GetVietnamTime();
-                document.DeletedAt = GetVietnamTime();
+                document.UpdatedAt = DateTime.Now;
+                document.DeletedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
 
                 return true;
@@ -518,7 +518,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Create file name format documentId_timestamp_filename
-                var timestampValid = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
+                var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var newFileNameValid = fileName != null ? $"{document.DocumentId}_{timestampValid}_{fileName}" : null;
 
                 var filePathValid = newFileNameValid != null ? Path.Combine(_documentDirectory, newFileNameValid) : null;
@@ -541,7 +541,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 {
                     document.Title = info?.Title;
                     document.Description = info?.Description;
-                    document.UpdatedAt = GetVietnamTime();
+                    document.UpdatedAt = DateTime.Now;
 
                     await _context.SaveChangesAsync();
 
@@ -552,7 +552,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 document.DocumentFile = filePath;
                 document.DocumentFile = info?.DocumentFile;
                 document.Description = info?.Description;
-                document.UpdatedAt = GetVietnamTime();
+                document.UpdatedAt = DateTime.Now;
 
                 await _context.SaveChangesAsync();
 
@@ -562,11 +562,6 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            return DateTime.UtcNow.AddHours(7);
         }
     }
 }

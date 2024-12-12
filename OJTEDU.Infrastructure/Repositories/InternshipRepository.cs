@@ -241,8 +241,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     Status = "1",
                     SemesterId = student.SemesterId,
                     MajorId = student.MajorId,
-                    CreatedAt = GetVietnamTime(),
-                    UpdatedAt = GetVietnamTime()
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
                 };
 
                 await _context.Internships.AddAsync(internship);
@@ -275,7 +275,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 .Include(i => i.Job)
                 .Include(i => i.Semester)
                 .Include(i => i.Major)
-                .Where(i => i.Student.User.Status != "Deleted" && i.Company.User.Status == "Active" && i.Job.Status == "Active" && i.Major.Status == "Active");
+                .Where(i => i.Student.User.Status != "Deleted" && i.Company.User.Status == "Active" && i.Job.Status == "Active" && i.Major.Status == "Active" && i.Semester.Status == "Active");
 
             // Access Control
             if (role == "Admin" || role == "DOET")
@@ -284,7 +284,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
             else if (role == "Lecturer" || role == "Dean")
             {
-                query = query.Where(i => i.Student.LecturerId == userId);
+                query = query.Where(i => i.LecturerId == userId);
             }
             else
             {
@@ -390,9 +390,20 @@ namespace OJTEDU.Infrastructure.Repositories
 
             return (internship, workingReports);
         }
-        private DateTime GetVietnamTime()
+
+        public async Task<List<Internship>> GetInternshipsByIdsAsync(List<int> internshipIds)
         {
-            return DateTime.UtcNow.AddHours(7);
+            return await _context.Internships
+                .Where(i => internshipIds.Contains(i.IntershipId))
+                .ToListAsync();
         }
+
+
+        public async Task UpdateInternshipsAsync(List<Internship> internships)
+        {
+            _context.Internships.UpdateRange(internships);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

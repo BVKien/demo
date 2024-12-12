@@ -80,22 +80,26 @@ namespace OJTEDU.Application.Profiles
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.Name));
 
             CreateMap<User, LecturerListDto>()
-                .ForMember(dest => dest.MajorName, opt => opt.MapFrom(src => src.Major.Name));
-               
+                .ForMember(dest => dest.MajorName, opt => opt.MapFrom(src => src.Major != null ? src.Major.Name : null))
+                .ForMember(dest => dest.IsMajorActive, opt => opt.MapFrom(src => src.Major != null && src.Major.Status == "Active"));
+
 
             CreateMap<User, LecturerDetailsDto>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.UserCode, opt => opt.MapFrom(src => src.UserCode))
                 .ForMember(dest => dest.MajorName, opt => opt.MapFrom(src => src.Major != null ? src.Major.Name : null))  // Đảm bảo ánh xạ đúng
+                .ForMember(dest => dest.IsMajorActive, opt => opt.MapFrom(src => src.Major != null && src.Major.Status == "Active"))
                 .ForMember(dest => dest.Students, opt => opt.Ignore());
 
             CreateMap<User, DeanListForAdminDOETDto>()
-                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Department.Name));
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Department.Name))
+                .ForMember(dest => dest.IsDepartmentActive, opt => opt.MapFrom(src => src.Department != null && src.Department.Status == "Active")); 
             
 
             CreateMap<User, DeanDetailsDto>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.IsDepartmentActive, opt => opt.MapFrom(src => src.Department != null && src.Department.Status == "Active"))
                 .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department.Name))
                 .ForMember(dest => dest.Lecturers, opt => opt.Ignore());
         }

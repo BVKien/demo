@@ -368,7 +368,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // Admin - Child News Management
-        public async Task<DataResponse<PagedResponse<List<ChildNewsListForAdminDTO>>>> GetAllChildNewsForAdminAsync(int parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize)
+        public async Task<DataResponse<PagedResponse<List<ChildNewsListForAdminDTO>>>> GetAllChildNewsForAdminAsync(int? parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize)
         {
             try
             {
@@ -386,6 +386,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                         User = doc.User?.Name,
                         Title = doc.Title,
                         Image = doc.Image,
+                        ParentId = doc.ParentId,
                         ChildNewscontent = doc.NewsFaqcontent,
                         Status = doc.Status,
                         ForRole = doc.NewsFaqroles != null && doc.NewsFaqroles.Any()
@@ -985,7 +986,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // Admin - Child Faq Management
-        public async Task<DataResponse<PagedResponse<List<ChildFaqListForAdminDTO>>>> GetAllChildFaqForAdminAsync(int parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize)
+        public async Task<DataResponse<PagedResponse<List<ChildFaqListForAdminDTO>>>> GetAllChildFaqForAdminAsync(int? parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize)
         {
             try
             {
@@ -1003,6 +1004,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                         User = doc.User?.Name,
                         Title = doc.Title,
                         Image = doc.Image,
+                        ParentId = doc.ParentId,
                         ChildFaqcontent = doc.NewsFaqcontent,
                         Status = doc.Status,
                         ForRole = doc.NewsFaqroles != null && doc.NewsFaqroles.Any()
@@ -1597,7 +1599,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // Doet - Child News Management
-        public async Task<DataResponse<PagedResponse<List<ChildNewsListForDoetDTO>>>> GetAllChildNewsForDoetAsync(int parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize)
+        public async Task<DataResponse<PagedResponse<List<ChildNewsListForDoetDTO>>>> GetAllChildNewsForDoetAsync(int? parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize)
         {
             try
             {
@@ -1615,6 +1617,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                         User = doc.User?.Name,
                         Title = doc.Title,
                         Image = doc.Image,
+                        ParentId = doc.ParentId,
                         ChildNewscontent = doc.NewsFaqcontent,
                         Status = doc.Status,
                         ForRole = doc.NewsFaqroles != null && doc.NewsFaqroles.Any()
@@ -2204,7 +2207,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // Doet - Child Faq Management
-        public async Task<DataResponse<PagedResponse<List<ChildFaqListForDoetDTO>>>> GetAllChildFaqForDoetAsync(int parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize)
+        public async Task<DataResponse<PagedResponse<List<ChildFaqListForDoetDTO>>>> GetAllChildFaqForDoetAsync(int? parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize)
         {
             try
             {
@@ -2222,6 +2225,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                         User = doc.User?.Name,
                         Title = doc.Title,
                         Image = doc.Image,
+                        ParentId = doc.ParentId,
                         ChildFaqcontent = doc.NewsFaqcontent,
                         Status = doc.Status,
                         ForRole = doc.NewsFaqroles != null && doc.NewsFaqroles.Any()

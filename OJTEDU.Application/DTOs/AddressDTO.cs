@@ -63,7 +63,7 @@ namespace OJTEDU.Application.DTOs
         // Admin - District
         public class DistrictListForAdminDTO
         {
-            public int DistrictId { get; set; }
+            public int? DistrictId { get; set; }
             public string? DistrictName { get; set; }
             public string? ParentProvinceName { get; set; }
             public string? Status { get; set; }
@@ -117,7 +117,7 @@ namespace OJTEDU.Application.DTOs
         // Admin - Ward
         public class WardListForAdminDTO
         {
-            public int WardId { get; set; }
+            public int? WardId { get; set; }
             public string? WardName { get; set; }
             public string? ParentDistrictName { get; set; }
             public string? Status { get; set; }

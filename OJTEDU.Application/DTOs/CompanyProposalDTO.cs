@@ -11,6 +11,7 @@ namespace OJTEDU.Application.DTOs
         public class CompanyProposalListForStudentDTO
         {
             public int CompanyProposalId { get; set; }
+            public string? ProposalTitle { get; set; }
             public string? ProposalContent { get; set; }
             public DateTime? ProposalDate { get; set; }
             public DateTime? CreatedAt { get; set; }
@@ -21,6 +22,7 @@ namespace OJTEDU.Application.DTOs
             public int CompanyProposalId { get; set; }
             public string? Student { get; set; }
             public string? University { get; set; }
+            public string? ProposalTitle { get; set; }
             public string? ProposalContent { get; set; }
             public string? ResponseContent { get; set; }
             public DateTime? ProposalDate { get; set; }
@@ -33,6 +35,7 @@ namespace OJTEDU.Application.DTOs
         {
             public int? StudentId { get; set; }
             public int? UniversityId { get; set; }
+            public string? ProposalTitle { get; set; }
             public string? ProposalContent { get; set; }
             public string? Contract { get; set; }
         }

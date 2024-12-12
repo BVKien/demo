@@ -59,10 +59,10 @@ namespace OJTEDU.Api.Controllers.StudentControllers
             }
             catch (Exception ex)
             {
-                var errorResponse = new ApiResponse<object>
+                var errorResponse = new ApiResponse<string>
                 {
-                    Message = $"An error occurred while uploading file: {ex.Message}. ",
-                    Data = new { Details = ex.Message }
+                    Message = "An error occurred while uploading file.",
+                    Data = ex.Message
                 };
 
                 return StatusCode(500, errorResponse);
@@ -151,10 +151,10 @@ namespace OJTEDU.Api.Controllers.StudentControllers
             }
             catch (Exception ex)
             {
-                var errorResponse = new ApiResponse<object>
+                var errorResponse = new ApiResponse<string>
                 {
-                    Message = $"An error occurred while applying for job: {ex.Message}.",
-                    Data = new { Details = ex.Message }
+                    Message = "An error occurred while applying for job.",
+                    Data = ex.Message
                 };
 
                 return StatusCode(500, errorResponse);

@@ -20,7 +20,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<List<StatusPolicyListForAdminDTO>>> GetAllStatusesPolicyForAdminAsync();
 
         // Admin - Child Policy Management
-        Task<DataResponse<PagedResponse<List<ChildPolicyListForAdminDTO>>>> GetAllChildPolicyForAdminAsync(int parentId, string? content, int? roleId, string? status, int pageNumber, int pageSize);
+        Task<DataResponse<PagedResponse<List<ChildPolicyListForAdminDTO>>>> GetAllChildPolicyForAdminAsync(int? parentId, string? content, int? roleId, string? status, int pageNumber, int pageSize);
         Task<DataResponse<ChildPolicyDetailForAdminDTO>> GetChildPolicyDetailByIdForAdminAsync(int policyId);
         Task<DataResponse<AddChildPolicyForAdminDTO>> AddChildPolicyForAdminAsync(AddChildPolicyForAdminDTO addChildPolicyForAdminDTO);
         Task<DataResponse<UpdateChildPolicyForAdminDTO>> UpdateChildPolicyForAdminAsync(UpdateChildPolicyForAdminDTO updateChildPolicyForAdminDTO);

@@ -15,6 +15,7 @@ namespace OJTEDU.Api.Controllers.Company
     public class UserController : ControllerBase
     {
         private readonly IJobService _jobService;
+
         public UserController(IJobService jobService)
         {
             _jobService = jobService;

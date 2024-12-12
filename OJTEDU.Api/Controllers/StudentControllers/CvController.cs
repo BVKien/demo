@@ -14,86 +14,35 @@ namespace OJTEDU.Api.Controllers.StudentControllers
     public class CvController : ControllerBase
     {
         private readonly ICvService _cvService;
-        private readonly ILogger<CvController> _logger;
 
-        public CvController(ICvService cvService, ILogger<CvController> logger)
+        public CvController(ICvService cvService)
         {
             _cvService = cvService;
-            _logger = logger;
         }
 
-        ////[Authorize(Roles = "Student")]
-        //[HttpPost("upload")]
-        //public async Task<IActionResult> UploadCv(IFormFile file)
-        //{
-        //    try
-        //    {
-        //        //int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
-        //        int userId = 21;
-
-        //        if (file == null || file.Length == 0)
-        //            return BadRequest("No file uploaded.");
-
-        //        // Read content file to byte[]
-        //        byte[] fileData;
-        //        using (var memoryStream = new MemoryStream())
-        //        {
-        //            await file.CopyToAsync(memoryStream);
-        //            fileData = memoryStream.ToArray();
-        //        }
-
-        //        var response = await _cvService.UploadCvAsync(userId, file.FileName, fileData);
-
-        //        var apiResponse = new ApiResponse<string>
-        //        {
-        //            Message = response.Message,
-        //            Data = response.Data
-        //        };
-
-        //        return Ok(apiResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new { Message = "An error occurred while uploading CV." + ex.Message });
-        //    }
-        //}
-
+        [Authorize(Roles = "Student")]
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadCv(IFormFile file)
+        public async Task<IActionResult> UploadCv(string? fileName, string? filePath)
         {
-            _logger.LogInformation("UploadCv action started.");
             try
             {
-                // Mocked userId for demonstration
-                int userId = 21;
-                _logger.LogDebug("UserId: {UserId}", userId);
+                int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                if (file == null || file.Length == 0)
-                {
-                    _logger.LogWarning("No file uploaded.");
+                if (file == null)
                     return BadRequest("No file uploaded.");
-                }
 
-                // Check file type
-                if (file.ContentType != "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
-                    file.ContentType != "application/pdf")
-                {
-                    return BadRequest("Invalid file type. Only Word and PDF files are allowed.");
-                }
+                //if (file == null || file.Length == 0)
+                //    return BadRequest("No file uploaded.");
 
-                _logger.LogInformation("Reading file content.");
-                byte[] fileData;
-                using (var memoryStream = new MemoryStream())
-                {
-                    await file.CopyToAsync(memoryStream);
-                    fileData = memoryStream.ToArray();
-                }
+                //// Read content file to byte[]
+                //byte[] fileData;
+                //using (var memoryStream = new MemoryStream())
+                //{
+                //    await file.CopyToAsync(memoryStream);
+                //    fileData = memoryStream.ToArray();
+                //}
 
-                _logger.LogDebug("File {FileName} uploaded with size {FileSize} bytes.", file.FileName, file.Length);
-
-                var response = await _cvService.UploadCvAsync(userId, file.FileName, fileData);
-                _logger.LogInformation("CV uploaded successfully for UserId {UserId}", userId);
+                var response = await _cvService.UploadCvAsync(userId, fileName, filePath);
 
                 if (response.StatusCode == 404)
                 {
@@ -132,15 +81,15 @@ namespace OJTEDU.Api.Controllers.StudentControllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while uploading CV.");
-                return StatusCode(500, new { Message = "An error occurred while uploading CV: " + ex.Message });
-            }
-            finally
-            {
-                _logger.LogInformation("UploadCv action completed.");
+                var errorResponse = new ApiResponse<string>
+                {
+                    Message = "An error occurred while upload CV.",
+                    Data = ex.Message
+                };
+
+                return StatusCode(500, errorResponse);
             }
         }
-
 
         [Authorize(Roles = "Student")]
         [HttpPut("set-primary")]

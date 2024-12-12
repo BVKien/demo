@@ -23,7 +23,8 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
-        // Student 
+        // Student
+        /*
         public async Task<string> UploadCvAsync(int? userId, string? fileName, byte[] fileData)
         {
             try
@@ -38,7 +39,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 // Create file name format studentId_timestamp_filename
-                var timestamp = GetVietnamTime().ToString("yyyyMMddHHmmssfff");
+                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var newFileName = $"{student.StudentId}_{timestamp}_{fileName}";
                 var filePath = Path.Combine(_cvDirectory, newFileName);
 
@@ -52,13 +53,48 @@ namespace OJTEDU.Infrastructure.Repositories
                     Name = fileName,
                     CvFile = filePath?.Replace("wwwroot", ""),
                     Status = "0",
-                    CreatedAt = GetVietnamTime(),
-                    UpdatedAt = GetVietnamTime()
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
                 };
                 _context.Cvs.Add(newCv);
                 await _context.SaveChangesAsync();
 
                 return filePath;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        */
+
+        public async Task<string> UploadCvAsync(int? userId, string? fileName, string? filePath)
+        {
+            try
+            {
+                var student = _context.Students.Include(s => s.User).ThenInclude(s => s.Role).FirstOrDefault(s => s.UserId == userId);
+
+                // Check if current amount of CVs is more than or equal to 3 and status is 0 or 1
+                var cvCount = await _context.Cvs.CountAsync(c => c.StudentId == student.StudentId && (c.Status == "0" || c.Status == "1"));
+                if (cvCount >= 3)
+                {
+                    throw new InvalidOperationException("Student already has 3 CV records, cannot add new.");
+                }
+
+                // Create a new CV record
+                var newCv = new Cv
+                {
+                    StudentId = student.StudentId,
+                    Name = fileName,
+                    CvFile = filePath,
+                    Status = "0",
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+                _context.Cvs.Add(newCv);
+                await _context.SaveChangesAsync();
+
+                return fileName;
             }
             catch (Exception ex)
             {
@@ -98,7 +134,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 // set primary cv
                 selectedCv.Status = "1";
-                selectedCv.UpdatedAt = GetVietnamTime();
+                selectedCv.UpdatedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
 
                 return true;
@@ -157,7 +193,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 }
 
                 selectedCv.Status = "2";
-                selectedCv.UpdatedAt = GetVietnamTime();
+                selectedCv.UpdatedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -198,10 +234,6 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 throw new Exception(ex.Message);
             }
-        }
-        private DateTime GetVietnamTime()
-        {
-            return DateTime.UtcNow.AddHours(7);
         }
     }
 }

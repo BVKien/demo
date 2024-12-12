@@ -105,10 +105,11 @@ namespace OJTEDU.Infrastructure.Repositories
                 {
                     StudentId = student.StudentId,
                     UniversityId = doet.UserId,
+                    RequestTitle = info?.RequestTitle,
                     RequestContent = info?.RequestContent,
                     Status = "1",
-                    CreatedAt = GetVietnamTime(),
-                    UpdatedAt = GetVietnamTime(),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
                 };
 
                 await _context.SupportRequests.AddAsync(supportRequest);
@@ -147,7 +148,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Not found support request.");
                 }
 
-                if (GetVietnamTime() - supportRequest.CreatedAt >= TimeSpan.FromHours(24))
+                if (DateTime.Now - supportRequest.CreatedAt >= TimeSpan.FromHours(24))
                 {
                     throw new Exception($"Cannot delete support request. The valid time is out of 24 hours.");
                 }
@@ -170,8 +171,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 // Stored 
                 supportRequest.Status = "0";
-                supportRequest.UpdatedAt = GetVietnamTime();
-                supportRequest.DeletedAt = GetVietnamTime();
+                supportRequest.UpdatedAt = DateTime.Now;
+                supportRequest.DeletedAt = DateTime.Now;
 
                 await _context.SaveChangesAsync();
 
@@ -270,7 +271,7 @@ namespace OJTEDU.Infrastructure.Repositories
             supportRequest.FeedbackContent = feedbackContent;
             supportRequest.Status = status.ToString();
             supportRequest.UniversityId = universityUserId; // Update university ID
-            supportRequest.UpdatedAt = GetVietnamTime();
+            supportRequest.UpdatedAt = DateTime.Now;
 
             _context.SupportRequests.Update(supportRequest);
             await _context.SaveChangesAsync();
@@ -303,10 +304,6 @@ namespace OJTEDU.Infrastructure.Repositories
             _context.SupportRequests.Remove(supportRequest);
             await _context.SaveChangesAsync();
             return true;
-        }
-        private DateTime GetVietnamTime()
-        {
-            return DateTime.UtcNow.AddHours(7);
         }
     }
 }

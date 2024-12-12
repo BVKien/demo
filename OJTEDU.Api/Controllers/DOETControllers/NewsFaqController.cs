@@ -140,34 +140,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     errorMessages.Add("Title is required.");
                 }
 
-                if (string.IsNullOrWhiteSpace(request.ParentNewscontent))
-                {
-                    errorMessages.Add("ParentNewscontent is required.");
-                }
-
-                if (request.Image == null || request.Image.Length == 0)
-                {
-                    errorMessages.Add("Image is required.");
-                }
-                else
-                {
-                    // Kiểm tra phần mở rộng file
-                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
-
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
-                    }
-
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.Image.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("Image size must not exceed 10MB.");
-                    }
-                }
-
                 //if (request.ForRoleIds == null || !request.ForRoleIds.Any())
                 //{
                 //    errorMessages.Add("At least one role is required.");
@@ -198,45 +170,20 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 string createdByUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                // Tạo tên file duy nhất
-                string fileName = request.Image.FileName;
-                string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{fileName}";
-
-                string newsPath = Path.Combine(_webHostEnvironment.WebRootPath, "news");
-
-                // Kiểm tra xem thư mục tồn tại chưa, nếu không có thì tạo mới
-                if (!Directory.Exists(newsPath))
-                {
-                    Directory.CreateDirectory(newsPath);
-                }
-
-                // Tạo đường dẫn đầy đủ đến tệp tin
-                string filePath = Path.Combine(newsPath, uniqueFileName);
-
-                // Lưu tệp tin vào thư mục
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await request.Image.CopyToAsync(fileStream);
-                }
-
-                var relativeImagePath = $"/news/{uniqueFileName}";
-
                 var forRoleIdsList = request.ForRoleIds
-           .Split(',')
-           .Select(id =>
-           {
-               int? parsedId = int.TryParse(id.Trim(), out int result) ? (int?)result : null;
-               return parsedId;
-           })
-           .ToList();
+            .Split(',')
+            .Select(id =>
+            {
+                int? parsedId = int.TryParse(id.Trim(), out int result) ? (int?)result : null;
+                return parsedId;
+            })
+            .ToList();
 
                 // Tạo tài liệu để lưu vào cơ sở dữ liệu
                 var parentNewsDto = new AddParentNewsForDoetDTO
                 {
                     UserId = int.Parse(createdByUserId),
                     Title = request.Title,
-                    ParentNewscontent = request.ParentNewscontent,
-                    Image = relativeImagePath, // Lưu tên file vào cơ sở dữ liệu
                     ForRoleIds = forRoleIdsList
                 };
 
@@ -244,9 +191,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 if (dataResponse == null)
                 {
-                    // Xóa file nếu có lỗi
-                    System.IO.File.Delete(filePath);
-
                     return StatusCode(500, new ApiResponse<object>
                     {
                         Data = null,
@@ -256,9 +200,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 if (dataResponse.Data == null)
                 {
-                    // Xóa file nếu có lỗi
-                    System.IO.File.Delete(filePath);
-
                     return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
                     {
                         Data = null,
@@ -276,11 +217,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
             }
             catch (Exception ex)
             {
-                // Xóa file nếu đã được tạo nhưng có lỗi xảy ra
-                if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "news", request.Image.FileName)))
-                {
-                    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "news", request.Image.FileName));
-                }
                 return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,
@@ -312,11 +248,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 if (string.IsNullOrWhiteSpace(request.Title))
                 {
                     errorMessages.Add("Title is required.");
-                }
-
-                if (string.IsNullOrWhiteSpace(request.ParentNewscontent))
-                {
-                    errorMessages.Add("ParentNewscontent is required.");
                 }
 
                 //if (request.ForRoleIds == null || !request.ForRoleIds.Any())
@@ -371,80 +302,15 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 {
                     ParentNewsId = newsId.Value,
                     Title = request.Title,
-                    ParentNewscontent = request.ParentNewscontent,
-                    Image = existingParentNews.Data.Image,
                     ForRoleIds = forRoleIdsList
                 };
 
                 string createdByUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                string filePath = null;
-
-                // Xử lý ảnh mới nếu có
-                if (request.Image != null && request.Image.Length > 0)
-                {
-                    // Kiểm tra phần mở rộng file (chỉ chấp nhận các định dạng ảnh)
-                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
-
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
-                    }
-
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.Image.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("Image size must not exceed 10MB.");
-                    }
-
-                    // Nếu có lỗi, trả về phản hồi lỗi
-                    if (errorMessages.Any())
-                    {
-                        return BadRequest(new ApiResponse<object>
-                        {
-                            Data = null,
-                            Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
-                        });
-                    }
-
-                    string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
-                    string newsPath = Path.Combine(_webHostEnvironment.WebRootPath, "news");
-
-                    if (!Directory.Exists(newsPath))
-                    {
-                        Directory.CreateDirectory(newsPath);
-                    }
-
-                    filePath = Path.Combine(newsPath, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await request.Image.CopyToAsync(fileStream);
-                    }
-
-                    // Xóa ảnh cũ nếu có
-                    string oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, updateDto.Image.TrimStart('/'));
-                    if (System.IO.File.Exists(oldImagePath))
-                    {
-                        System.IO.File.Delete(oldImagePath);
-                    }
-
-                    var relativeImagePath = $"/news/{uniqueFileName}";
-
-                    // Cập nhật tên ảnh mới trong DTO
-                    updateDto.Image = relativeImagePath;
-                }
-
                 var dataResponse = await _newsFaqService.UpdateParentNewsForDoetAsync(updateDto);
 
                 if (dataResponse == null)
                 {
-                    // Kiểm tra và xóa file nếu nó tồn tại
-                    if (filePath != null && System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
                     return StatusCode(500, new ApiResponse<object>
                     {
                         Data = null,
@@ -454,11 +320,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 if (dataResponse.Data == null)
                 {
-                    // Kiểm tra và xóa file nếu nó tồn tại
-                    if (filePath != null && System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
                     return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
                     {
                         Data = null,
@@ -477,11 +338,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
             }
             catch (Exception ex)
             {
-                // Xóa file nếu đã được tạo nhưng có lỗi xảy ra
-                if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "news", request.Image.FileName)))
-                {
-                    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "news", request.Image.FileName));
-                }
                 return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,
@@ -528,23 +384,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                         Data = null,
                         Message = dataResponse.Message
                     });
-                }
-
-                // Xóa tệp tin vật lý khỏi thư mục nếu xóa trong cơ sở dữ liệu thành công
-                string filePath = Path.Combine(_webHostEnvironment.WebRootPath, dataResponse.Data.Image.TrimStart('/'));
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
-
-                // Xóa tệp tin ảnh của ChildNews
-                foreach (var child in dataResponse.Data.DeletedChildNews)
-                {
-                    string childFilePath = Path.Combine(_webHostEnvironment.WebRootPath, child.Image.TrimStart('/'));
-                    if (System.IO.File.Exists(childFilePath))
-                    {
-                        System.IO.File.Delete(childFilePath);
-                    }
                 }
 
                 // Tạo phản hồi thành công
@@ -679,20 +518,20 @@ namespace OJTEDU.Api.Controllers.DOETControllers
             }
         }
 
-        [HttpGet("child-news/list/{parentId}")]
+        [HttpGet("child-news/list")]
         [Authorize(Roles = "DOET")]
         public async Task<IActionResult> GetAllChildNewsForDoet(int? parentId, string? title, int? roleId, string? status, int? pageNumber, int? pageSize)
         {
             try
             {
-                if (!parentId.HasValue) // Sử dụng HasValue để kiểm tra Nullable
-                {
-                    return BadRequest(new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = "parentId is required."
-                    });
-                }
+                //if (!parentId.HasValue) // Sử dụng HasValue để kiểm tra Nullable
+                //{
+                //    return BadRequest(new ApiResponse<object>
+                //    {
+                //        Data = null,
+                //        Message = "parentId is required."
+                //    });
+                //}
 
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
@@ -1355,34 +1194,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     errorMessages.Add("Title is required.");
                 }
 
-                if (string.IsNullOrWhiteSpace(request.ParentFaqcontent))
-                {
-                    errorMessages.Add("ParentFaqcontent is required.");
-                }
-
-                if (request.Image == null || request.Image.Length == 0)
-                {
-                    errorMessages.Add("Image is required.");
-                }
-                else
-                {
-                    // Kiểm tra phần mở rộng file
-                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
-
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
-                    }
-
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.Image.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("Image size must not exceed 10MB.");
-                    }
-                }
-
                 //if (request.ForRoleIds == null || !request.ForRoleIds.Any())
                 //{
                 //    errorMessages.Add("At least one role is required.");
@@ -1413,29 +1224,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 string createdByUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                // Tạo tên file duy nhất
-                string fileName = request.Image.FileName;
-                string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{fileName}";
-
-                string faqPath = Path.Combine(_webHostEnvironment.WebRootPath, "faqs");
-
-                // Kiểm tra xem thư mục tồn tại chưa, nếu không có thì tạo mới
-                if (!Directory.Exists(faqPath))
-                {
-                    Directory.CreateDirectory(faqPath);
-                }
-
-                // Tạo đường dẫn đầy đủ đến tệp tin
-                string filePath = Path.Combine(faqPath, uniqueFileName);
-
-                // Lưu tệp tin vào thư mục
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await request.Image.CopyToAsync(fileStream);
-                }
-
-                var relativeImagePath = $"/faqs/{uniqueFileName}";
-
                 var forRoleIdsList = request.ForRoleIds
            .Split(',')
            .Select(id =>
@@ -1450,8 +1238,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 {
                     UserId = int.Parse(createdByUserId),
                     Title = request.Title,
-                    ParentFaqcontent = request.ParentFaqcontent,
-                    Image = relativeImagePath, // Lưu tên file vào cơ sở dữ liệu
                     ForRoleIds = forRoleIdsList
                 };
 
@@ -1459,9 +1245,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 if (dataResponse == null)
                 {
-                    // Xóa file nếu có lỗi
-                    System.IO.File.Delete(filePath);
-
                     return StatusCode(500, new ApiResponse<object>
                     {
                         Data = null,
@@ -1471,9 +1254,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 if (dataResponse.Data == null)
                 {
-                    // Xóa file nếu có lỗi
-                    System.IO.File.Delete(filePath);
-
                     return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
                     {
                         Data = null,
@@ -1491,11 +1271,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
             }
             catch (Exception ex)
             {
-                // Xóa file nếu đã được tạo nhưng có lỗi xảy ra
-                if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "faqs", request.Image.FileName)))
-                {
-                    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "faqs", request.Image.FileName));
-                }
                 return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,
@@ -1527,11 +1302,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 if (string.IsNullOrWhiteSpace(request.Title))
                 {
                     errorMessages.Add("Title is required.");
-                }
-
-                if (string.IsNullOrWhiteSpace(request.ParentFaqcontent))
-                {
-                    errorMessages.Add("ParentFaqcontent is required.");
                 }
 
                 //if (request.ForRoleIds == null || !request.ForRoleIds.Any())
@@ -1585,80 +1355,15 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 {
                     ParentFaqId = faqId.Value,
                     Title = request.Title,
-                    ParentFaqcontent = request.ParentFaqcontent,
-                    Image = existingParentFaq.Data.Image,
                     ForRoleIds = forRoleIdsList
                 };
 
                 string createdByUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                string filePath = null;
-
-                // Xử lý ảnh mới nếu có
-                if (request.Image != null && request.Image.Length > 0)
-                {
-                    // Kiểm tra phần mở rộng file (chỉ chấp nhận các định dạng ảnh)
-                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
-
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
-                    }
-
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.Image.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("Image size must not exceed 10MB.");
-                    }
-
-                    // Nếu có lỗi, trả về phản hồi lỗi
-                    if (errorMessages.Any())
-                    {
-                        return BadRequest(new ApiResponse<object>
-                        {
-                            Data = null,
-                            Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
-                        });
-                    }
-
-                    string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
-                    string faqPath = Path.Combine(_webHostEnvironment.WebRootPath, "faqs");
-
-                    if (!Directory.Exists(faqPath))
-                    {
-                        Directory.CreateDirectory(faqPath);
-                    }
-
-                    filePath = Path.Combine(faqPath, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await request.Image.CopyToAsync(fileStream);
-                    }
-
-                    // Xóa ảnh cũ nếu có
-                    string oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, updateDto.Image.TrimStart('/'));
-                    if (System.IO.File.Exists(oldImagePath))
-                    {
-                        System.IO.File.Delete(oldImagePath);
-                    }
-
-                    var relativeImagePath = $"/faqs/{uniqueFileName}";
-
-                    // Cập nhật tên ảnh mới trong DTO
-                    updateDto.Image = relativeImagePath;
-                }
-
                 var dataResponse = await _newsFaqService.UpdateParentFaqForDoetAsync(updateDto);
 
                 if (dataResponse == null)
                 {
-                    // Kiểm tra và xóa file nếu nó tồn tại
-                    if (filePath != null && System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
                     return StatusCode(500, new ApiResponse<object>
                     {
                         Data = null,
@@ -1668,11 +1373,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 if (dataResponse.Data == null)
                 {
-                    // Kiểm tra và xóa file nếu nó tồn tại
-                    if (filePath != null && System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
                     return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
                     {
                         Data = null,
@@ -1691,11 +1391,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
             }
             catch (Exception ex)
             {
-                // Xóa file nếu đã được tạo nhưng có lỗi xảy ra
-                if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "faqs", request.Image.FileName)))
-                {
-                    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "faqs", request.Image.FileName));
-                }
                 return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,
@@ -1742,22 +1437,6 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                         Data = null,
                         Message = dataResponse.Message
                     });
-                }
-
-                // Xóa tệp tin vật lý khỏi thư mục nếu xóa trong cơ sở dữ liệu thành công
-                string filePath = Path.Combine(_webHostEnvironment.WebRootPath, dataResponse.Data.Image.TrimStart('/'));
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
-
-                foreach (var child in dataResponse.Data.DeletedChildFaq)
-                {
-                    string childFilePath = Path.Combine(_webHostEnvironment.WebRootPath, child.Image.TrimStart('/'));
-                    if (System.IO.File.Exists(childFilePath))
-                    {
-                        System.IO.File.Delete(childFilePath);
-                    }
                 }
 
                 // Tạo phản hồi thành công
@@ -1892,20 +1571,20 @@ namespace OJTEDU.Api.Controllers.DOETControllers
             }
         }
 
-        [HttpGet("child-faq/list/{parentId}")]
+        [HttpGet("child-faq/list")]
         [Authorize(Roles = "DOET")]
         public async Task<IActionResult> GetAllChildFaqForDoet(int? parentId, string? title, int? roleId, string? status, int? pageNumber, int? pageSize)
         {
             try
             {
-                if (!parentId.HasValue) // Sử dụng HasValue để kiểm tra Nullable
-                {
-                    return BadRequest(new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = "parentId is required."
-                    });
-                }
+                //if (!parentId.HasValue) // Sử dụng HasValue để kiểm tra Nullable
+                //{
+                //    return BadRequest(new ApiResponse<object>
+                //    {
+                //        Data = null,
+                //        Message = "parentId is required."
+                //    });
+                //}
 
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;

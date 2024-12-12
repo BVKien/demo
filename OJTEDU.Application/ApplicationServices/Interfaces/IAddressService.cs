@@ -1,4 +1,5 @@
-﻿using OJTEDU.Application.DTOs;
+﻿using Microsoft.AspNetCore.Http;
+using OJTEDU.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,11 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<UpdateProvinceForAdminDTO>> UpdateProvinceForAdminAsync(UpdateProvinceForAdminDTO updateProvinceForAdminDTO);
         Task<DataResponse<UpdateProvinceStatusForAdminDTO>> UpdateProvinceStatusForAdminAsync(UpdateProvinceStatusForAdminDTO updateProvinceStatusForAdminDTO);
         Task<DataResponse<DeleteProvinceForAdminDTO>> DeleteProvinceForAdminAsync(DeleteProvinceForAdminDTO deleteProvinceForAdminDTO);
+        Task<DataResponse<MemoryStream>> GenerateAddressTemplateAsync();
+        Task<DataResponse<object>> ImportAddressFileAsync(IFormFile file);
 
         // Admin - District Management
-        Task<DataResponse<PagedResponse<List<DistrictListForAdminDTO>>>> GetAllDistrictForAdminAsync(int provinceId, string? name, int pageNumber, int pageSize);
+        Task<DataResponse<PagedResponse<List<DistrictListForAdminDTO>>>> GetAllDistrictForAdminAsync(int? provinceId, string? name, int pageNumber, int pageSize);
         Task<DataResponse<DistrictDetailForAdminDTO>> GetDistrictDetailByIdForAdminAsync(int districtId);
         Task<DataResponse<AddDistrictForAdminDTO>> AddDistrictForAdminAsync(AddDistrictForAdminDTO addDistrictForAdminDTO);
         Task<DataResponse<UpdateDistrictForAdminDTO>> UpdateDistrictForAdminAsync(UpdateDistrictForAdminDTO updateDistrictForAdminDTO);
@@ -30,7 +33,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<DeleteDistrictForAdminDTO>> DeleteDistrictForAdminAsync(DeleteDistrictForAdminDTO deleteDistrictForAdminDTO);
 
         // Admin - Ward Management
-        Task<DataResponse<PagedResponse<List<WardListForAdminDTO>>>> GetAllWardForAdminAsync(int districtId, string? name, int pageNumber, int pageSize);
+        Task<DataResponse<PagedResponse<List<WardListForAdminDTO>>>> GetAllWardForAdminAsync(int? districtId, string? name, int pageNumber, int pageSize);
         Task<DataResponse<WardDetailForAdminDTO>> GetWardDetailByIdForAdminAsync(int wardId);
         Task<DataResponse<AddWardForAdminDTO>> AddWardForAdminAsync(AddWardForAdminDTO addWardForAdminDTO);
         Task<DataResponse<UpdateWardForAdminDTO>> UpdateWardForAdminAsync(UpdateWardForAdminDTO updateWardForAdminDTO);

@@ -4,6 +4,7 @@
     {
         public class CreateSupportRequestInput
         {
+            public string? RequestTitle { get; set; }
             public string? RequestContent { get; set; }
         }
     }

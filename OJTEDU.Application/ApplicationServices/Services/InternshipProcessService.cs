@@ -202,7 +202,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     return new DataResponse<UpdateInternshipProcessForAdminDoetDTO>
                     {
                         Data = null,
-                        Message = "User Guide not found.",
+                        Message = "Internship Process not found.",
                         StatusCode = 404 // Not Found
                     };
                 }

@@ -21,10 +21,12 @@ namespace OJTEDU.Application.ApplicationServices.Services
     public class InternshipService : IInternshipService
     {
         private readonly IInternshipRepository _internshipRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        public InternshipService(IInternshipRepository internshipRepository, IMapper mapper)
+        public InternshipService(IInternshipRepository internshipRepository, IMapper mapper, IUserRepository userRepository)
         {
             _internshipRepository = internshipRepository;
+            _userRepository = userRepository;
             _mapper = mapper;
         }
 
@@ -269,7 +271,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "No internships found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -333,12 +335,12 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "Internship not found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
                 // Lấy múi giờ Việt Nam
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
 
                 // Nếu không có năm, mặc định lấy năm hiện tại
@@ -415,6 +417,61 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+        public async Task<DataResponse<string>> AssignLecturerForInternshipsAsync(string role, AssignLecturerForInternshipDto dto)
+        {
+            try
+            {
+                // Kiểm tra role phải là "Dean" hoặc "Lecturer"
+                if (role != "Dean" && role != "Lecturer")
+                {
+                    return new DataResponse<string>
+                    {
+                        Data = null,
+                        Message = "Only Dean or Lecturer roles are allowed to perform this action.",
+                        StatusCode = 403
+                    };
+                }
+
+                // Lấy danh sách internships từ repository
+                var internshipsToUpdate = await _internshipRepository.GetInternshipsByIdsAsync(dto.InternshipIds);
+                if (internshipsToUpdate == null || internshipsToUpdate.Count == 0)
+                {
+                    return new DataResponse<string>
+                    {
+                        Data = null,
+                        Message = "No internships found with the provided IDs.",
+                        StatusCode = 204
+                    };
+                }
+
+                // Cập nhật LecturerId cho từng Internship
+                foreach (var internship in internshipsToUpdate)
+                {
+                    internship.LecturerId = dto.LecturerId;
+                    internship.UpdatedAt = DateTime.Now;
+                }
+
+                // Lưu thay đổi vào repository
+                await _internshipRepository.UpdateInternshipsAsync(internshipsToUpdate);
+
+                return new DataResponse<string>
+                {
+                    Data = "Success",
+                    Message = "Internships updated successfully.",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<string>
+                {
+                    Data = null,
+                    Message = $"Error: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
 
     }
 }

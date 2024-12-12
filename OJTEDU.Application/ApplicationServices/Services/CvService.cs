@@ -26,7 +26,41 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // Student 
-        public async Task<DataResponse<string>> UploadCvAsync(int? userId, string? fileName, byte[] fileData)
+        public async Task<DataResponse<string>> UploadCvAsync(int? userId, string? fileName, string? filePath)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return new DataResponse<string>
+                    {
+                        StatusCode = 404,
+                        Message = "Not found student.",
+                        Data = null
+                    };
+                }
+
+                var filePathReponse = await _cvRepository.UploadCvAsync(userId, fileName, filePath);
+                return new DataResponse<string>
+                {
+                    StatusCode = 200,
+                    Message = "Cv file uploaded successfully!",
+                    Data = filePathReponse
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<string>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while uploading cv file.",
+                    Data = ex.Message
+                };
+            }
+        }
+
+        /*
+                 public async Task<DataResponse<string>> UploadCvAsync(int? userId, string? fileName, byte[] fileData)
         {
             try
             {
@@ -53,11 +87,12 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 return new DataResponse<string>
                 {
                     StatusCode = 500,
-                    Message = $"An error occurred while uploading cv file.",
+                    Message = "An error occurred while uploading cv file.",
                     Data = ex.Message
                 };
             }
         }
+         */
 
         public async Task<DataResponse<bool>> SetPrimaryCvAsync(int? userId, int? cvId)
         {

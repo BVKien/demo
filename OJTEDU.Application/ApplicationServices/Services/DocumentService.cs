@@ -222,7 +222,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 existingDocument.Title = updateDocumentForAdminDTO.Title ?? existingDocument.Title;
                 existingDocument.Description = updateDocumentForAdminDTO.Description ?? existingDocument.Description;
                 existingDocument.DocumentFile = updateDocumentForAdminDTO.DocumentFile ?? existingDocument.DocumentFile;
-                existingDocument.UpdatedAt = GetVietnamTime();
+                existingDocument.UpdatedAt = DateTime.Now;
 
                 // Xử lý DocumentRoles
                 if (updateDocumentForAdminDTO.ForRoleIds != null)
@@ -539,7 +539,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 existingDocument.Title = updateDocumentForDoetDTO.Title ?? existingDocument.Title;
                 existingDocument.Description = updateDocumentForDoetDTO.Description ?? existingDocument.Description;
                 existingDocument.DocumentFile = updateDocumentForDoetDTO.DocumentFile ?? existingDocument.DocumentFile;
-                existingDocument.UpdatedAt = GetVietnamTime();
+                existingDocument.UpdatedAt = DateTime.Now;
 
                 // Xử lý DocumentRoles
                 if (updateDocumentForDoetDTO.ForRoleIds != null)
@@ -895,11 +895,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     Data = null
                 };
             }
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            return DateTime.UtcNow.AddHours(7);
         }
 
         // Guest 

@@ -128,8 +128,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 var semester = _mapper.Map<Semester>(addSemesterForAdminDoetDTO);
-                semester.CreatedAt = GetVietnamTime();
-                semester.UpdatedAt = GetVietnamTime();
+                semester.CreatedAt = DateTime.Now;
+                semester.UpdatedAt = DateTime.Now;
                 semester.Status = "Active";
                 await _semesterRepository.AddSemesterAsync(semester);
 
@@ -185,7 +185,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 semester.StartDate = updateSemesterForAdminDoetDTO.StartDate ?? semester.StartDate;
                 semester.EndDate = updateSemesterForAdminDoetDTO.EndDate ?? semester.EndDate;
                 semester.Description = updateSemesterForAdminDoetDTO.Description;
-                semester.UpdatedAt = GetVietnamTime();
+                semester.UpdatedAt = DateTime.Now;
 
                 await _semesterRepository.UpdateSemesterAsync(semester);
 
@@ -226,7 +226,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 }
 
                 semester.Status = updateSemesterStatusForAdminDoetDTO.Status ?? semester.Status;
-                semester.UpdatedAt = GetVietnamTime();
+                semester.UpdatedAt = DateTime.Now;
                 await _semesterRepository.UpdateSemesterAsync(semester);
 
                 var updatedDto = _mapper.Map<UpdateSemesterStatusForAdminDoetDTO>(semester);
@@ -272,7 +272,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     // Đổi trạng thái thành 'Unactive' thay vì xóa
                     semester.Status = "Unactive";
-                    semester.UpdatedAt = GetVietnamTime();
+                    semester.UpdatedAt = DateTime.Now;
                     await _semesterRepository.UpdateSemesterAsync(semester);
 
                     return new DataResponse<DeleteSemesterForAdminDoetDTO>
@@ -382,11 +382,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     StatusCode = 500
                 };
             }
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            return DateTime.UtcNow.AddHours(7);
         }
     }
 }

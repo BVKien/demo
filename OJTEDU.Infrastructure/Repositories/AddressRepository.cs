@@ -90,11 +90,16 @@ namespace OJTEDU.Infrastructure.Repositories
         }
 
         // Admin - District Management
-        public async Task<IEnumerable<District>> GetAllDistrictByProvinceIdAsync(int provinceId, string? name)
+        public async Task<IEnumerable<District>> GetAllDistrictByProvinceIdAsync(int? provinceId, string? name)
         {
-            IQueryable<District> query = _context.Districts.Include(d => d.Province).Where(d => d.ProvinceId == provinceId);
+            IQueryable<District> query = _context.Districts.Include(d => d.Province);
 
             // Apply search filters if provided
+            if (provinceId.HasValue)
+            {
+                query = query.Where(d => d.ProvinceId == provinceId);
+            }
+
             if (!string.IsNullOrWhiteSpace(name))
             {
                 name = name.ToLower();
@@ -154,11 +159,16 @@ namespace OJTEDU.Infrastructure.Repositories
         }
 
         // Admin - Ward Management
-        public async Task<IEnumerable<Ward>> GetAllWardByDistrictIdAsync(int districtId, string? name)
+        public async Task<IEnumerable<Ward>> GetAllWardByDistrictIdAsync(int? districtId, string? name)
         {
-            IQueryable<Ward> query = _context.Wards.Include(d => d.District).Where(d => d.DistrictId == districtId);
+            IQueryable<Ward> query = _context.Wards.Include(d => d.District);
 
             // Apply search filters if provided
+            if (districtId.HasValue)
+            {
+                query = query.Where(d => d.DistrictId == districtId);
+            }
+
             if (!string.IsNullOrWhiteSpace(name))
             {
                 name = name.ToLower();
@@ -237,7 +247,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingAddress.DistrictId = address.DistrictId;
             existingAddress.WardId = address.WardId;
             existingAddress.Detail = address.Detail;
-            existingAddress.UpdatedAt = GetVietnamTime();
+            existingAddress.UpdatedAt = DateTime.Now;
 
             _context.Addresses.Update(existingAddress);
             await _context.SaveChangesAsync();
@@ -269,9 +279,37 @@ namespace OJTEDU.Infrastructure.Repositories
             return true;
         }
 
-        private DateTime GetVietnamTime()
+        public async Task<Province> AddProvince1Async(Province province)
         {
-            return DateTime.UtcNow.AddHours(7);
+            _context.Provinces.Add(province);
+            await _context.SaveChangesAsync();
+            return province; // Return the newly added Province
+        }
+
+        public async Task<District> AddDistrict1Async(District district)
+        {
+            _context.Districts.Add(district);
+            await _context.SaveChangesAsync();
+            return district; // Return the newly added District
+        }
+
+        public async Task<Ward> AddWard1Async(Ward ward)
+        {
+            _context.Wards.Add(ward);
+            await _context.SaveChangesAsync();
+            return ward; // Return the newly added Ward
+        }
+
+        public async Task<District> GetDistrictByNameAndProvinceIdAsync(string districtName, int provinceId)
+        {
+            return await _context.Districts
+            .FirstOrDefaultAsync(d => d.Name == districtName && d.ProvinceId == provinceId);
+        }
+
+        public async Task<Ward> GetWardByNameAndDistrictIdAsync(string wardName, int districtId)
+        {
+            return await _context.Wards
+    .FirstOrDefaultAsync(w => w.Name == wardName && w.DistrictId == districtId);
         }
     }
 }

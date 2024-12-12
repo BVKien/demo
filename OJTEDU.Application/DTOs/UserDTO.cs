@@ -296,6 +296,8 @@ namespace OJTEDU.Application.DTOs
             public string UserCode { get; set; }
             public string Email { get; set; }
             public string MajorName { get; set; }
+            public int MajorId { get; set; }
+            public bool IsMajorActive { get; set; }
         }
 
         public class LecturerDetailsDto
@@ -304,6 +306,8 @@ namespace OJTEDU.Application.DTOs
             public string UserCode { get; set; }
             public string MajorName { get; set; }
             public string DeanName { get; set; }
+            public int MajorId { get; set; }
+            public bool IsMajorActive { get; set; }
             public PagedResponse<List<StudentListDto>> Students { get; set; }
         }
 
@@ -314,6 +318,9 @@ namespace OJTEDU.Application.DTOs
             public string Name { get; set; }
             public string Email { get; set; }
             public string DepartmentName { get; set; }
+            public int DepartmentId { get; set; }
+            public bool IsDepartmentActive { get; set; }
+
         }
 
         public class DeanDetailsDto
@@ -321,6 +328,8 @@ namespace OJTEDU.Application.DTOs
             public string Name { get; set; }
             public string Email { get; set; }
             public string Department { get; set; }
+            public int DepartmentId { get; set; }
+            public bool IsDepartmentActive { get; set; }
             public PagedResponse<List<LecturerListDto>> Lecturers { get; set; }
             public PagedResponse<List<StudentListDto>> Students { get; set; }
         }

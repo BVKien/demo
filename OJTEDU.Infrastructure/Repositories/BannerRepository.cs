@@ -80,8 +80,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
         public async Task<Banner> AddBannerForAdminAsync(Banner banner)
         {
-            banner.CreatedAt = GetVietnamTime();
-            banner.UpdatedAt = GetVietnamTime();
+            banner.CreatedAt = DateTime.Now;
+            banner.UpdatedAt = DateTime.Now;
             banner.Status = "Active"; // Set trạng thái mặc định là Active
             await _context.Banners.AddAsync(banner);
             await _context.SaveChangesAsync();
@@ -103,7 +103,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingBanner.Image = banner.Image ?? existingBanner.Image;
             existingBanner.UserId = banner.UserId ?? existingBanner.UserId;
             existingBanner.Status = banner.Status ?? existingBanner.Status;
-            existingBanner.UpdatedAt = GetVietnamTime();
+            existingBanner.UpdatedAt = DateTime.Now;
 
             _context.Banners.Update(existingBanner);
             await _context.SaveChangesAsync();
@@ -118,7 +118,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 throw new KeyNotFoundException("Banner not found in the list.");
             }
 
-            banner.DeletedAt = GetVietnamTime(); // Cập nhật thời gian xóa
+            banner.DeletedAt = DateTime.Now; // Cập nhật thời gian xóa
             _context.Banners.Remove(banner);
 
             // Lưu thay đổi vào cơ sở dữ liệu
@@ -133,11 +133,6 @@ namespace OJTEDU.Infrastructure.Repositories
             return await _context.Banners.Where(b => b.Status == "Displayed")
                                  .OrderBy(b => b.CreatedAt)
                                  .ToListAsync();
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            return DateTime.UtcNow.AddHours(7);
         }
     }
 }

@@ -39,7 +39,8 @@ namespace OJTEDU.Application.Profiles
                 .ForMember(dest => dest.UserCode, opt => opt.MapFrom(src => src.User.UserCode))
                 .ForMember(dest => dest.MajorName, opt => opt.MapFrom(src => src.Major.Name))
                 .ForMember(dest => dest.SemesterName, opt => opt.MapFrom(src => src.Semester.Name))
-                .ForMember(dest => dest.LecturerName, opt => opt.MapFrom(src => src.Lecturer.Name));
+                .ForMember(dest => dest.LecturerName, opt => opt.MapFrom(src => src.Lecturer.Name))
+                .ForMember(dest => dest.IsMajorActive, opt => opt.MapFrom(src => src.Major != null && src.Major.Status == "Active"));
              
 
             // Mapping for StudentDetailsDto

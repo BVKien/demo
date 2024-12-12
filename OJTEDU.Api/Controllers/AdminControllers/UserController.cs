@@ -14,6 +14,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
     public class UserController : ControllerBase
     {
         private readonly IJobService _jobService;
+
         public UserController(IJobService jobService)
         {
             _jobService = jobService;
@@ -1013,7 +1014,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
             }
         }
         [HttpPut("assign-major")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> AssignMajorToLecturerAsync(int lecturerId, int majorId)
         {
             try
@@ -1045,7 +1046,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
             }
         }
         [HttpPost("assign-lecturers")]
-        [Authorize(Roles = "Admin")]
+       // [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AssignLecturersToDeanForAdmin([FromBody] AssignLecturersToDeanDto assignLecturersDto)
         {
             var response = await _jobService.AssignLecturersToDeanAsync(assignLecturersDto);

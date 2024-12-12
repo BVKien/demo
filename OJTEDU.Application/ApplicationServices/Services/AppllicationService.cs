@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.IdentityModel.Tokens;
 using OJTEDU.Application.ApplicationServices.Interfaces;
 using OJTEDU.Application.DTOs;
 using OJTEDU.Domain.Entities;
@@ -56,16 +57,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         StatusCode = 404,
                         Message = "CV is required.",
-                        Data = null
-                    };
-                }
-
-                if (applyInfo?.JobId == null)
-                {
-                    return new DataResponse<ApplyJobForStudentDTO>
-                    {
-                        StatusCode = 404,
-                        Message = "Cover letter is required.",
                         Data = null
                     };
                 }

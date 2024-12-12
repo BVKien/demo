@@ -9,7 +9,14 @@ namespace OJTEDU.Domain.Interfaces
 {
     public interface INotificationRepository
     {
+        /*
+         + Noti status
+        0: Inactive
+        1: Active
+         */
+
         // Student, University, Company
         Task<Notification> CreateNotificationAsync(Notification? info);
+        Task<IEnumerable<Notification>> GetAllNotificationsByUserIdAsync(int? userId);
     }
 }

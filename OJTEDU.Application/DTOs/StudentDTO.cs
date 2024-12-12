@@ -56,6 +56,7 @@ namespace OJTEDU.Application.DTOs
             public string MajorName { get; set; }
             public string SemesterName { get; set; }
             public string LecturerName { get; set; }
+            public bool IsMajorActive { get; set; }
         }
 
         public class StudentDetailsDto
@@ -76,9 +77,10 @@ namespace OJTEDU.Application.DTOs
         public class UpdateStudentDto
         {
             public string Information { get; set; }
-            public string MajorName { get; set; }
-            public string SemesterName { get; set; }
+            public int? MajorId { get; set; }
+            public int? SemesterId { get; set; }
         }
+
 
     }
 }

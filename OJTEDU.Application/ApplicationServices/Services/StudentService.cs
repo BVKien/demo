@@ -127,6 +127,16 @@ namespace OJTEDU.Application.ApplicationServices.Services
         {
             try
             {
+                // Lấy thông tin UserId và Role của người dùng hiện tại
+                var currentUserId = GetCurrentUserId();
+                var currentUserRole = GetCurrentUserRole();
+
+                // Nếu người dùng hiện tại là Dean và không nhập LecturerId, mặc định LecturerId là ID của Dean
+                if (currentUserRole == "Dean" && dto.LecturerId == null)
+                {
+                    dto.LecturerId = currentUserId;
+                }
+
                 // Lấy danh sách sinh viên để kiểm tra vai trò
                 var studentsToUpdate = await _studentRepository.GetStudentsByIdsAsync(dto.StudentIds);
                 if (studentsToUpdate == null || studentsToUpdate.Count == 0)
@@ -151,28 +161,21 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     };
                 }
 
-                // Kiểm tra vai trò của Lecturer (LecturerId phải có Role là Lecturer hoặc Dean)
-                if (lecturer.Role == null || (lecturer.Role.Name != "Lecturer" && lecturer.Role.Name != "Dean"))
+                // Nếu nhập LecturerId khác ID hiện tại của Dean, kiểm tra MajorId của Lecturer và Student
+                if (currentUserRole == "Dean" && dto.LecturerId != currentUserId)
                 {
-                    return new DataResponse<string>
+                    // Kiểm tra MajorId của Lecturer phải trùng với MajorId của các Student
+                    foreach (var student in studentsToUpdate)
                     {
-                        Data = null,
-                        Message = "Invalid Lecturer Role. Lecturer must be Dean or Lecturer.",
-                        StatusCode = 400
-                    };
-                }
-
-                // Kiểm tra MajorId của Lecturer phải trùng với MajorId của các Student
-                foreach (var student in studentsToUpdate)
-                {
-                    if (student.MajorId != lecturer.MajorId)
-                    {
-                        return new DataResponse<string>
+                        if (student.MajorId != lecturer.MajorId)
                         {
-                            Data = null,
-                            Message = $"Major mismatch. Student has a different major from Lecturer.",
-                            StatusCode = 400
-                        };
+                            return new DataResponse<string>
+                            {
+                                Data = null,
+                                Message = $"Major mismatch. Student has a different major from Lecturer.",
+                                StatusCode = 400
+                            };
+                        }
                     }
                 }
 
@@ -180,7 +183,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 foreach (var student in studentsToUpdate)
                 {
                     student.LecturerId = dto.LecturerId;
-                    student.UpdatedAt = GetVietnamTime();
+                    student.UpdatedAt = DateTime.Now;
                 }
 
                 // Lưu thay đổi vào repository
@@ -205,8 +208,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
-
-
 
         // 2. GetStudentListAsync (for Dean and Lecturer)
         public async Task<DataResponse<PagedResponse<List<StudentListDto>>>> GetStudentListAsync(
@@ -316,7 +317,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "Student not found or access denied.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -375,18 +376,21 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "Student not found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
                 // Cập nhật Information
-                student.User.Information = dto.Information;
-
-                // Kiểm tra MajorName
-                if (!string.IsNullOrWhiteSpace(dto.MajorName))
+                if (!string.IsNullOrWhiteSpace(dto.Information))
                 {
-                    var major = await _studentRepository.GetMajorByNameAsync(dto.MajorName);
-                    if (major == null)
+                    student.User.Information = dto.Information;
+                }
+
+                // Kiểm tra MajorId
+                if (dto.MajorId.HasValue)
+                {
+                    var major = await _studentRepository.GetMajorByIdAsync(dto.MajorId.Value);
+                    if (major == null || major.Status != "Active")
                     {
                         return new DataResponse<string>
                         {
@@ -399,23 +403,25 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     student.MajorId = major.MajorId;
                 }
 
-                // Kiểm tra SemesterName
-                if (!string.IsNullOrWhiteSpace(dto.SemesterName))
+                // Kiểm tra SemesterId
+                if (dto.SemesterId.HasValue)
                 {
-                    var semester = await _studentRepository.GetSemesterByNameAsync(dto.SemesterName);
-                    if (semester == null)
+                    var semester = await _studentRepository.GetSemesterByIdAsync(dto.SemesterId.Value);
+                    if (semester == null || semester.Status != "Active")
                     {
                         return new DataResponse<string>
                         {
                             Data = null,
-                            Message = "Semester not found.",
+                            Message = "Semester not found or inactive.",
                             StatusCode = 400
                         };
                     }
 
                     student.SemesterId = semester.SemesterId;
                 }
-                student.UpdatedAt = GetVietnamTime();
+
+                // Cập nhật thời gian chỉnh sửa
+                student.UpdatedAt = DateTime.Now;
 
                 // Lưu thay đổi
                 await _studentRepository.UpdateStudentAsync(student);
@@ -436,10 +442,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     StatusCode = 500
                 };
             }
-        }
-        private DateTime GetVietnamTime()
-        {
-            return DateTime.UtcNow.AddHours(7);
         }
     }
 }

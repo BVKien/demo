@@ -77,5 +77,40 @@ namespace OJTEDU.Api.Controllers.DeanControllers
                 });
             }
         }
+
+        [HttpPost("assign-internships")]
+        public async Task<IActionResult> AssignLecturerForInternships([FromBody] AssignLecturerForInternshipDto dto)
+        {
+            // Lấy role từ claim
+            var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (string.IsNullOrEmpty(roleClaim))
+            {
+                return Unauthorized(new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = "User role not found."
+                });
+            }
+
+            // Gọi service để xử lý
+            var response = await _internshipService.AssignLecturerForInternshipsAsync(roleClaim, dto);
+
+            if (response.Data == null)
+            {
+                return StatusCode(response.StatusCode, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = response.Message
+                });
+            }
+
+            return Ok(new ApiResponse<string>
+            {
+                Data = response.Data,
+                Message = response.Message
+            });
+        }
+
     }
 }

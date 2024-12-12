@@ -1005,8 +1005,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 RoleId = roleId,
                                 Information = information,
                                 Status = "Active",
-                                CreatedAt = GetVietnamTime(),
-                                UpdatedAt = GetVietnamTime()
+                                CreatedAt = DateTime.Now,
+                                UpdatedAt = DateTime.Now
                             };
 
                             users.Add(user);
@@ -1044,11 +1044,11 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 if (addedUser.RoleId == 2) // RoleId = 2 là Student
                                 {
                                     var majorId = majorMapping[user.Email]; // Lấy MajorId từ dictionary
-                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = GetVietnamTime(), UpdatedAt = GetVietnamTime() });
+                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
                                 }
                                 else if (addedUser.RoleId == 3) // RoleId = 3 là Company
                                 {
-                                    companyUsers.Add(new Company { UserId = addedUser.UserId, CreatedAt = GetVietnamTime(), UpdatedAt = GetVietnamTime() });
+                                    companyUsers.Add(new Company { UserId = addedUser.UserId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
                                 }
                             }
                         }
@@ -2080,8 +2080,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 RoleId = roleId,
                                 Information = information,
                                 Status = "Active",
-                                CreatedAt = GetVietnamTime(),
-                                UpdatedAt = GetVietnamTime()
+                                CreatedAt = DateTime.Now,
+                                UpdatedAt = DateTime.Now
                             };
 
                             users.Add(user);
@@ -2119,11 +2119,11 @@ namespace OJTEDU.Application.ApplicationServices.Services
                                 if (addedUser.RoleId == 2) // RoleId = 2 là Student
                                 {
                                     var majorId = majorMapping[user.Email]; // Lấy MajorId từ dictionary
-                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = GetVietnamTime(), UpdatedAt = GetVietnamTime() });
+                                    studentUsers.Add(new Student { UserId = addedUser.UserId, MajorId = majorId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
                                 }
                                 else if (addedUser.RoleId == 3) // RoleId = 3 là Company
                                 {
-                                    companyUsers.Add(new Company { UserId = addedUser.UserId, CreatedAt = GetVietnamTime(), UpdatedAt = GetVietnamTime() });
+                                    companyUsers.Add(new Company { UserId = addedUser.UserId, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
                                 }
                             }
                         }
@@ -2712,7 +2712,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
                 user.Name = dto.Name;
                 user.Information = dto.Information;
-                user.UpdatedAt = GetVietnamTime();
+                user.UpdatedAt = DateTime.Now;
 
                 if (role == "Dean")
                 {
@@ -2777,8 +2777,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     RoleId = roleId,
                     Status = "Active",
                     AssignForId = assignForId,
-                    CreatedAt = GetVietnamTime(),
-                    UpdatedAt = GetVietnamTime()
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
                 };
 
                 await _userRepository.CreateLecturerForDeanAsync(newLecturer);
@@ -2824,7 +2824,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "No lecturers found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -2889,7 +2889,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "Lecturer not found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -3019,7 +3019,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "No deans found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -3084,7 +3084,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "Dean not found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -3195,7 +3195,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     Data = null,
                     Message = "Dean not found.",
-                    StatusCode = 404
+                    StatusCode = 204
                 };
             }
 
@@ -3204,14 +3204,14 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
             foreach (var lecturer in lecturers)
             {
-                if (lecturer.Major == null || lecturer.Major.DepartmentId != dean.DepartmentId)
+                if (lecturer.Major == null || lecturer.Major.DepartmentId != dean.DepartmentId || lecturer.Major.Status == "InActive")
                 {
                     invalidLecturers.Add(lecturer.Email);
                 }
                 else
                 {
                     lecturer.AssignForId = dto.DeanId;
-                    lecturer.UpdatedAt = GetVietnamTime();
+                    lecturer.UpdatedAt = DateTime.Now;
                 }
             }
 
@@ -3255,7 +3255,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     {
                         Data = null,
                         Message = "No lecturers found.",
-                        StatusCode = 404
+                        StatusCode = 204
                     };
                 }
 
@@ -3332,7 +3332,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     Data = null,
                     Message = ex.Message,
-                    StatusCode = 404
+                    StatusCode = 204
                 };
             }
             catch (InvalidOperationException ex)
@@ -3388,7 +3388,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     Data = null,
                     Message = ex.Message,
-                    StatusCode = 404
+                    StatusCode = 204
                 };
             }
             catch (InvalidOperationException ex)
@@ -3409,11 +3409,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     StatusCode = 500
                 };
             }
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            return DateTime.UtcNow.AddHours(7);
         }
     }
 }

@@ -4,7 +4,6 @@ using Microsoft.Extensions.Hosting;
 using OJTEDU.Application.ApplicationServices.Interfaces;
 using OJTEDU.Domain.Entities;
 using System;
-using System.ComponentModel;
 
 namespace OJTEDU.Application.ApplicationServices.Services
 {
@@ -23,7 +22,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             {
                 try
                 {
-                    var now = GetVietnamTime();
+                    var now = DateTime.Now;
                     var nextRun = now.Date.AddDays(1).AddHours(2);
                     var delay = nextRun - now;
                     Console.WriteLine($"Next execution scheduled at: {nextRun}");
@@ -58,11 +57,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     Console.WriteLine($"Error in AutoAttendanceReportService: {ex.Message}");
                 }
             }
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            return DateTime.UtcNow.AddHours(7);
         }
     }
 }

@@ -72,8 +72,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
         public async Task<UserGuide> AddUserGuideForAdminAsync(UserGuide userGuide)
         {
-            userGuide.CreatedAt = GetVietnamTime();
-            userGuide.UpdatedAt = GetVietnamTime();
+            userGuide.CreatedAt = DateTime.Now;
+            userGuide.UpdatedAt = DateTime.Now;
             userGuide.Status = "Active"; // Mặc định trạng thái là Active
             await _context.UserGuides.AddAsync(userGuide);
             await _context.SaveChangesAsync();
@@ -92,7 +92,7 @@ namespace OJTEDU.Infrastructure.Repositories
             existingUserGuide.UserGuideFile = userGuide.UserGuideFile ?? existingUserGuide.UserGuideFile;
             existingUserGuide.RoleId = userGuide.RoleId ?? existingUserGuide.RoleId;
             existingUserGuide.Status = userGuide.Status ?? existingUserGuide.Status;
-            existingUserGuide.UpdatedAt = GetVietnamTime();
+            existingUserGuide.UpdatedAt = DateTime.Now;
             _context.UserGuides.Update(userGuide);
             await _context.SaveChangesAsync();
 
@@ -127,11 +127,6 @@ namespace OJTEDU.Infrastructure.Repositories
                 throw new KeyNotFoundException("User Guide not found");
             }
             return userGuide;
-        }
-
-        private DateTime GetVietnamTime()
-        {
-            return DateTime.UtcNow.AddHours(7);
         }
     }
 }

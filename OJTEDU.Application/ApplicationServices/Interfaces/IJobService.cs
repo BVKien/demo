@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using OJTEDU.Application.DTOs;
 using OJTEDU.Domain.Entities;
 using System.Security.Claims;

@@ -40,5 +40,6 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         int userId,
         string role,
         int? year = null);
+        Task<DataResponse<string>> AssignLecturerForInternshipsAsync(string role, AssignLecturerForInternshipDto dto);
     }
 }

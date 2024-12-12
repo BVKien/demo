@@ -5,16 +5,12 @@
         public class AddParentNewsRequestForDoet
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
-            public string? ParentNewscontent { get; set; }
             public string ForRoleIds { get; set; }
         }
 
         public class UpdateParentNewsRequestForDoet
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
-            public string? ParentNewscontent { get; set; }
             public string ForRoleIds { get; set; }
         }
 
@@ -46,16 +42,12 @@
         public class AddParentFaqRequestForDoet
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
-            public string? ParentFaqcontent { get; set; }
             public string ForRoleIds { get; set; }
         }
 
         public class UpdateParentFaqRequestForDoet
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
-            public string? ParentFaqcontent { get; set; }
             public string ForRoleIds { get; set; }
         }
 

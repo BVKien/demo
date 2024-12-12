@@ -21,7 +21,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<List<StatusNewsListForAdminDTO>>> GetAllStatusesNewsForAdminAsync();
 
         // Admin - Child News Management
-        Task<DataResponse<PagedResponse<List<ChildNewsListForAdminDTO>>>> GetAllChildNewsForAdminAsync(int parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize);
+        Task<DataResponse<PagedResponse<List<ChildNewsListForAdminDTO>>>> GetAllChildNewsForAdminAsync(int? parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize);
         Task<DataResponse<ChildNewsDetailForAdminDTO>> GetChildNewsDetailByIdForAdminAsync(int newsId);
         Task<DataResponse<AddChildNewsForAdminDTO>> AddChildNewsForAdminAsync(AddChildNewsForAdminDTO addChildNewsForAdminDTO);
         Task<DataResponse<UpdateChildNewsForAdminDTO>> UpdateChildNewsForAdminAsync(UpdateChildNewsForAdminDTO updateChildNewsForAdminDTO);
@@ -38,7 +38,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<List<StatusFaqListForAdminDTO>>> GetAllStatusesFaqForAdminAsync();
 
         // Admin - Child Faq Management
-        Task<DataResponse<PagedResponse<List<ChildFaqListForAdminDTO>>>> GetAllChildFaqForAdminAsync(int parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize);
+        Task<DataResponse<PagedResponse<List<ChildFaqListForAdminDTO>>>> GetAllChildFaqForAdminAsync(int? parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize);
         Task<DataResponse<ChildFaqDetailForAdminDTO>> GetChildFaqDetailByIdForAdminAsync(int faqId);
         Task<DataResponse<AddChildFaqForAdminDTO>> AddChildFaqForAdminAsync(AddChildFaqForAdminDTO addChildFaqForAdminDTO);
         Task<DataResponse<UpdateChildFaqForAdminDTO>> UpdateChildFaqForAdminAsync(UpdateChildFaqForAdminDTO updateChildFaqForAdminDTO);
@@ -55,7 +55,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<List<StatusNewsListForDoetDTO>>> GetAllStatusesNewsForDoetAsync();
 
         // Doet - Child News Management
-        Task<DataResponse<PagedResponse<List<ChildNewsListForDoetDTO>>>> GetAllChildNewsForDoetAsync(int parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize);
+        Task<DataResponse<PagedResponse<List<ChildNewsListForDoetDTO>>>> GetAllChildNewsForDoetAsync(int? parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize);
         Task<DataResponse<ChildNewsDetailForDoetDTO>> GetChildNewsDetailByIdForDoetAsync(int newsId);
         Task<DataResponse<AddChildNewsForDoetDTO>> AddChildNewsForDoetAsync(AddChildNewsForDoetDTO addChildNewsForDoetDTO);
         Task<DataResponse<UpdateChildNewsForDoetDTO>> UpdateChildNewsForDoetAsync(UpdateChildNewsForDoetDTO updateChildNewsForDoetDTO);
@@ -72,7 +72,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<List<StatusFaqListForDoetDTO>>> GetAllStatusesFaqForDoetAsync();
 
         // Doet - Child Faq Management
-        Task<DataResponse<PagedResponse<List<ChildFaqListForDoetDTO>>>> GetAllChildFaqForDoetAsync(int parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize);
+        Task<DataResponse<PagedResponse<List<ChildFaqListForDoetDTO>>>> GetAllChildFaqForDoetAsync(int? parentId, string? title, int? roleId, string? status, int pageNumber, int pageSize);
         Task<DataResponse<ChildFaqDetailForDoetDTO>> GetChildFaqDetailByIdForDoetAsync(int faqId);
         Task<DataResponse<AddChildFaqForDoetDTO>> AddChildFaqForDoetAsync(AddChildFaqForDoetDTO addChildFaqForDoetDTO);
         Task<DataResponse<UpdateChildFaqForDoetDTO>> UpdateChildFaqForDoetAsync(UpdateChildFaqForDoetDTO updateChildFaqForDoetDTO);
