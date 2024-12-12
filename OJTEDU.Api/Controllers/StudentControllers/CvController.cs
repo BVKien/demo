@@ -22,67 +22,20 @@ namespace OJTEDU.Api.Controllers.StudentControllers
             _logger = logger;
         }
 
-        ////[Authorize(Roles = "Student")]
-        //[HttpPost("upload")]
-        //public async Task<IActionResult> UploadCv(IFormFile file)
-        //{
-        //    try
-        //    {
-        //        //int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
-        //        int userId = 21;
-
-        //        if (file == null || file.Length == 0)
-        //            return BadRequest("No file uploaded.");
-
-        //        // Read content file to byte[]
-        //        byte[] fileData;
-        //        using (var memoryStream = new MemoryStream())
-        //        {
-        //            await file.CopyToAsync(memoryStream);
-        //            fileData = memoryStream.ToArray();
-        //        }
-
-        //        var response = await _cvService.UploadCvAsync(userId, file.FileName, fileData);
-
-        //        var apiResponse = new ApiResponse<string>
-        //        {
-        //            Message = response.Message,
-        //            Data = response.Data
-        //        };
-
-        //        return Ok(apiResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new { Message = "An error occurred while uploading CV." + ex.Message });
-        //    }
-        //}
-
+        //[Authorize(Roles = "Student")]
         [HttpPost("upload")]
         public async Task<IActionResult> UploadCv(IFormFile file)
         {
-            _logger.LogInformation("UploadCv action started.");
             try
             {
-                // Mocked userId for demonstration
+                //int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
                 int userId = 21;
-                _logger.LogDebug("UserId: {UserId}", userId);
 
                 if (file == null || file.Length == 0)
-                {
-                    _logger.LogWarning("No file uploaded.");
                     return BadRequest("No file uploaded.");
-                }
 
-                // Check file type
-                if (file.ContentType != "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
-                    file.ContentType != "application/pdf")
-                {
-                    return BadRequest("Invalid file type. Only Word and PDF files are allowed.");
-                }
-
-                _logger.LogInformation("Reading file content.");
+                // Read content file to byte[]
                 byte[] fileData;
                 using (var memoryStream = new MemoryStream())
                 {
@@ -90,37 +43,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                     fileData = memoryStream.ToArray();
                 }
 
-                _logger.LogDebug("File {FileName} uploaded with size {FileSize} bytes.", file.FileName, file.Length);
-
                 var response = await _cvService.UploadCvAsync(userId, file.FileName, fileData);
-                _logger.LogInformation("CV uploaded successfully for UserId {UserId}", userId);
-
-                if (response.StatusCode == 404)
-                {
-                    return BadRequest(new ApiResponse<string>
-                    {
-                        Message = response.Message,
-                        Data = null
-                    });
-                }
-
-                if (response.StatusCode == 400)
-                {
-                    return BadRequest(new ApiResponse<string>
-                    {
-                        Message = response.Message,
-                        Data = null
-                    });
-                }
-
-                if (response.StatusCode == 500)
-                {
-                    return StatusCode(500, new ApiResponse<string>
-                    {
-                        Message = response.Message,
-                        Data = null
-                    });
-                }
 
                 var apiResponse = new ApiResponse<string>
                 {
@@ -132,14 +55,91 @@ namespace OJTEDU.Api.Controllers.StudentControllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while uploading CV.");
-                return StatusCode(500, new { Message = "An error occurred while uploading CV: " + ex.Message });
-            }
-            finally
-            {
-                _logger.LogInformation("UploadCv action completed.");
+                return StatusCode(500, new { Message = "An error occurred while uploading CV." + ex.Message });
             }
         }
+
+        //[HttpPost("upload")]
+        //public async Task<IActionResult> UploadCv(IFormFile file)
+        //{
+        //    _logger.LogInformation("UploadCv action started.");
+        //    try
+        //    {
+        //        // Mocked userId for demonstration
+        //        int userId = 21;
+        //        _logger.LogDebug("UserId: {UserId}", userId);
+
+        //        if (file == null || file.Length == 0)
+        //        {
+        //            _logger.LogWarning("No file uploaded.");
+        //            return BadRequest("No file uploaded.");
+        //        }
+
+        //        // Check file type
+        //        if (file.ContentType != "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
+        //            file.ContentType != "application/pdf")
+        //        {
+        //            return BadRequest("Invalid file type. Only Word and PDF files are allowed.");
+        //        }
+
+        //        _logger.LogInformation("Reading file content.");
+        //        byte[] fileData;
+        //        using (var memoryStream = new MemoryStream())
+        //        {
+        //            await file.CopyToAsync(memoryStream);
+        //            fileData = memoryStream.ToArray();
+        //        }
+
+        //        _logger.LogDebug("File {FileName} uploaded with size {FileSize} bytes.", file.FileName, file.Length);
+
+        //        var response = await _cvService.UploadCvAsync(userId, file.FileName, fileData);
+        //        _logger.LogInformation("CV uploaded successfully for UserId {UserId}", userId);
+
+        //        if (response.StatusCode == 404)
+        //        {
+        //            return BadRequest(new ApiResponse<string>
+        //            {
+        //                Message = response.Message,
+        //                Data = null
+        //            });
+        //        }
+
+        //        if (response.StatusCode == 400)
+        //        {
+        //            return BadRequest(new ApiResponse<string>
+        //            {
+        //                Message = response.Message,
+        //                Data = null
+        //            });
+        //        }
+
+        //        if (response.StatusCode == 500)
+        //        {
+        //            return StatusCode(500, new ApiResponse<string>
+        //            {
+        //                Message = response.Message,
+        //                Data = null
+        //            });
+        //        }
+
+        //        var apiResponse = new ApiResponse<string>
+        //        {
+        //            Message = response.Message,
+        //            Data = response.Data
+        //        };
+
+        //        return Ok(apiResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "An error occurred while uploading CV.");
+        //        return StatusCode(500, new { Message = "An error occurred while uploading CV: " + ex.Message });
+        //    }
+        //    finally
+        //    {
+        //        _logger.LogInformation("UploadCv action completed.");
+        //    }
+        //}
 
 
         [Authorize(Roles = "Student")]
