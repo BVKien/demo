@@ -1203,7 +1203,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
-        /*
         public async Task<DataResponse<object>> ImportUsersForAdminAsync(IFormFile file)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -1442,108 +1441,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
-        */
-
-        public async Task<DataResponse<object>> ImportUsersForAdminAsync(string? fileUrl)
-        {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-            if (string.IsNullOrEmpty(fileUrl))
-            {
-                return new DataResponse<object>
-                {
-                    Data = null,
-                    Message = "File URL is empty or not provided.",
-                    StatusCode = 400
-                };
-            }
-
-            try
-            {
-                using (var httpClient = new HttpClient())
-                {
-                    // Tải file từ Firebase qua URL
-                    var response = await httpClient.GetAsync(fileUrl);
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return new DataResponse<object>
-                        {
-                            Data = null,
-                            Message = $"Failed to fetch file from URL: {response.ReasonPhrase}",
-                            StatusCode = 400
-                        };
-                    }
-
-                    // Đọc nội dung file vào MemoryStream
-                    using (var stream = new MemoryStream(await response.Content.ReadAsByteArrayAsync()))
-                    {
-                        using (var package = new ExcelPackage(stream))
-                        {
-                            var worksheet = package.Workbook.Worksheets.FirstOrDefault();
-                            var users = new List<User>();
-                            var errorMessages = new List<string>();
-
-                            // Xử lý dữ liệu trong worksheet (phần code cũ)
-                            // ...
-
-                            // Nếu có bất kỳ lỗi nào
-                            if (errorMessages.Any())
-                            {
-                                return new DataResponse<object>
-                                {
-                                    Data = new
-                                    {
-                                        SuccessCount = 0,
-                                        ErrorCount = errorMessages.Count,
-                                        Errors = errorMessages
-                                    },
-                                    Message = $"Import failed. There were {errorMessages.Count} errors. Please fix the reported errors to successfully add the file.",
-                                    StatusCode = 400
-                                };
-                            }
-
-                            // Thêm vào DB
-                            await _userRepository.AddUsersForAdminAsync(users);
-
-                            // Thực hiện thêm các bản ghi Student và Company
-                            // ...
-
-                            return new DataResponse<object>
-                            {
-                                Data = new
-                                {
-                                    SuccessCount = users.Count,
-                                    ErrorCount = 0,
-                                    Errors = errorMessages
-                                },
-                                Message = $"Import completed. Successfully added {users.Count} users.",
-                                StatusCode = 200
-                            };
-                        }
-                    }
-                }
-            }
-            catch (UnauthorizedAccessException authEx)
-            {
-                return new DataResponse<object>
-                {
-                    Data = null,
-                    Message = $"Access denied while importing users: {authEx.Message}",
-                    StatusCode = 403
-                };
-            }
-            catch (Exception ex)
-            {
-                return new DataResponse<object>
-                {
-                    Data = null,
-                    Message = $"Error importing users: {ex.Message}",
-                    StatusCode = 500
-                };
-            }
-        }
-
         // Hàm kiểm tra định dạng email
         private bool IsValidEmail(string email)
         {
