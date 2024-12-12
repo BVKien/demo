@@ -78,7 +78,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
                 var testFilePath = Path.Combine("wwwroot/uploads/applications/files/", input.TestFile);
-                var cvFilePath = Path.Combine("wwwroot/uploads/applications/files/", input.CvFile);
+                var cvFilePath = input.CvFilePath; // Path.Combine("wwwroot/uploads/applications/files/", input.CvFile);
 
                 // Initialize 
                 byte[]? testFileData = null;
@@ -89,10 +89,10 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                 {
                     testFileData = await System.IO.File.ReadAllBytesAsync(testFilePath);
                 }
-                if (!string.IsNullOrEmpty(input.CvFile) && System.IO.File.Exists(cvFilePath))
-                {
-                    cvFileData = await System.IO.File.ReadAllBytesAsync(cvFilePath);
-                }
+                //if (!string.IsNullOrEmpty(input.CvFile) && System.IO.File.Exists(cvFilePath))
+                //{
+                //    cvFileData = await System.IO.File.ReadAllBytesAsync(cvFilePath);
+                //}
 
                 var applyInfoDto = new ApplyJobForStudentDTO
                 {
@@ -101,7 +101,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                     CvId = input.CvId
                 };
 
-                var apiResponse = await _appllicationService.ApplyJobAsync(userId, applyInfoDto, input.TestFile, testFileData, input.CvFile, cvFileData);
+                var apiResponse = await _appllicationService.ApplyJobAsync(userId, applyInfoDto, input.TestFile, testFileData, input.CvFilePath, cvFileData);
 
                 if (apiResponse.StatusCode == 404)
                 {

@@ -92,10 +92,23 @@ namespace OJTEDU.Infrastructure.Repositories
                     testFilePath = null;
                 }
 
-                if (cvFileName == null || cvFileData == null)
-                {
-                    cvFilePath = null;
-                }
+                //if (cvFileName == null || cvFileData == null)
+                //{
+                //    cvFilePath = null;
+                //}
+
+                //var application = new Appllication
+                //{
+                //    StudentId = studentExists.StudentId,
+                //    JobId = applyInfo.JobId,
+                //    TestFile = testFilePath?.Replace("wwwroot", ""),
+                //    CoverLetter = applyInfo.CoverLetter,
+                //    CvId = applyInfo.CvId,
+                //    CvFile = cvFilePath?.Replace("wwwroot", ""),
+                //    Status = "1",
+                //    CreatedAt = DateTime.Now,
+                //    UpdatedAt = DateTime.Now,
+                //};
 
                 var application = new Appllication
                 {
@@ -104,7 +117,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     TestFile = testFilePath?.Replace("wwwroot", ""),
                     CoverLetter = applyInfo.CoverLetter,
                     CvId = applyInfo.CvId,
-                    CvFile = cvFilePath?.Replace("wwwroot", ""),
+                    CvFile = cvFileName,
                     Status = "1",
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,

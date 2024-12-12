@@ -8,7 +8,7 @@
             public string? TestFile { get; set; }
             public string? CoverLetter { get; set; }
             public int? CvId { get; set; }
-            public string? CvFile { get; set; }
+            public string? CvFilePath { get; set; }
         }
     }
 }
