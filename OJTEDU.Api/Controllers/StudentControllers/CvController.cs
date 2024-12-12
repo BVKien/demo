@@ -28,7 +28,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                if (file == null)
+                if (fileName == null || filePath == null)
                     return BadRequest("No file uploaded.");
 
                 //if (file == null || file.Length == 0)
