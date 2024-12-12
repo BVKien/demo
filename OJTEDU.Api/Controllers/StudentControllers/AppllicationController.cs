@@ -77,18 +77,18 @@ namespace OJTEDU.Api.Controllers.StudentControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var testFilePath = Path.Combine("wwwroot/uploads/applications/files/", input.TestFile);
+                var testFilePath = input.TestFile; // Path.Combine("wwwroot/uploads/applications/files/", input.TestFile);
                 var cvFilePath = input.CvFilePath; // Path.Combine("wwwroot/uploads/applications/files/", input.CvFile);
 
                 // Initialize 
                 byte[]? testFileData = null;
                 byte[]? cvFileData = null;
 
-                // Read content file if it is not null
-                if (!string.IsNullOrEmpty(input.TestFile) && System.IO.File.Exists(testFilePath))
-                {
-                    testFileData = await System.IO.File.ReadAllBytesAsync(testFilePath);
-                }
+                //// Read content file if it is not null
+                //if (!string.IsNullOrEmpty(input.TestFile) && System.IO.File.Exists(testFilePath))
+                //{
+                //    testFileData = await System.IO.File.ReadAllBytesAsync(testFilePath);
+                //}
                 //if (!string.IsNullOrEmpty(input.CvFile) && System.IO.File.Exists(cvFilePath))
                 //{
                 //    cvFileData = await System.IO.File.ReadAllBytesAsync(cvFilePath);

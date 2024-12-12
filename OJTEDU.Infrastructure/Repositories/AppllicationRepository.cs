@@ -67,30 +67,30 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Application already exists for this job.");
                 }
 
-                // Create file name format studentId_timestamp_filename
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                var newTestFileName = testFileName != null ? $"{studentExists.StudentId}_{timestamp}_{testFileName}" : null;
-                var newCvFileName = cvFileName != null ? $"{studentExists.StudentId}_{timestamp}_{cvFileName}" : null;
+                //// Create file name format studentId_timestamp_filename
+                //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                //var newTestFileName = testFileName != null ? $"{studentExists.StudentId}_{timestamp}_{testFileName}" : null;
+                //var newCvFileName = cvFileName != null ? $"{studentExists.StudentId}_{timestamp}_{cvFileName}" : null;
 
-                var testFilePath = newTestFileName != null ? Path.Combine(_testFileDirectory, newTestFileName) : null;
-                var cvFilePath = newCvFileName != null ? Path.Combine(_cvFileDirectory, newCvFileName) : null;
+                //var testFilePath = newTestFileName != null ? Path.Combine(_testFileDirectory, newTestFileName) : null;
+                //var cvFilePath = newCvFileName != null ? Path.Combine(_cvFileDirectory, newCvFileName) : null;
 
-                // Save files to folders
-                if (testFileData != null && testFilePath != null)
-                {
-                    await File.WriteAllBytesAsync(testFilePath, testFileData);
-                }
+                //// Save files to folders
+                //if (testFileData != null && testFilePath != null)
+                //{
+                //    await File.WriteAllBytesAsync(testFilePath, testFileData);
+                //}
 
-                if (cvFileData != null && cvFilePath != null)
-                {
-                    await File.WriteAllBytesAsync(cvFilePath, cvFileData);
-                }
+                //if (cvFileData != null && cvFilePath != null)
+                //{
+                //    await File.WriteAllBytesAsync(cvFilePath, cvFileData);
+                //}
 
                 // If null 
-                if (testFileName == null || testFileData == null)
-                {
-                    testFilePath = null;
-                }
+                //if (testFileName == null || testFileData == null)
+                //{
+                //    testFilePath = null;
+                //}
 
                 //if (cvFileName == null || cvFileData == null)
                 //{
@@ -114,7 +114,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 {
                     StudentId = studentExists.StudentId,
                     JobId = applyInfo.JobId,
-                    TestFile = testFilePath?.Replace("wwwroot", ""),
+                    TestFile = testFileName,
                     CoverLetter = applyInfo.CoverLetter,
                     CvId = applyInfo.CvId,
                     CvFile = cvFileName,
