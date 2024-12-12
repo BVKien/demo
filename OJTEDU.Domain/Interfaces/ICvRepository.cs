@@ -17,7 +17,8 @@ namespace OJTEDU.Domain.Interfaces
          */
 
         // Student 
-        Task<string> UploadCvAsync(int? userId, string? fileName, byte[] fileData);
+        //Task<string> UploadCvAsync(int? userId, string? fileName, byte[] fileData);
+        Task<string> UploadCvAsync(int? userId, string? fileName, string? filePath);
         Task<bool> SetPrimaryCvAsync(int? userId, int? cvIdd);
         Task<IEnumerable<Cv>> GetAllCvByStudentIdAsync(int? userId);
         Task<bool> DeleteAndStoredCvAsync(int? cvId);

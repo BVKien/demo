@@ -11,7 +11,8 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
     public interface ICvService
     {
         // Student 
-        Task<DataResponse<string>> UploadCvAsync(int? userId, string? fileName, byte[] fileData);
+        //Task<DataResponse<string>> UploadCvAsync(int? userId, string? fileName, byte[] fileData);
+        Task<DataResponse<string>> UploadCvAsync(int? userId, string? fileName, string? filePath);
 
         Task<DataResponse<bool>> SetPrimaryCvAsync(int? userId, int? cvId);
 

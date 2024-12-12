@@ -22,24 +22,27 @@ namespace OJTEDU.Api.Controllers.StudentControllers
 
         [Authorize(Roles = "Student")]
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadCv(IFormFile file)
+        public async Task<IActionResult> UploadCv(string? fileName, string? filePath)
         {
             try
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                if (file == null || file.Length == 0)
+                if (file == null)
                     return BadRequest("No file uploaded.");
 
-                // Read content file to byte[]
-                byte[] fileData;
-                using (var memoryStream = new MemoryStream())
-                {
-                    await file.CopyToAsync(memoryStream);
-                    fileData = memoryStream.ToArray();
-                }
+                //if (file == null || file.Length == 0)
+                //    return BadRequest("No file uploaded.");
 
-                var response = await _cvService.UploadCvAsync(userId, file.FileName, fileData);
+                //// Read content file to byte[]
+                //byte[] fileData;
+                //using (var memoryStream = new MemoryStream())
+                //{
+                //    await file.CopyToAsync(memoryStream);
+                //    fileData = memoryStream.ToArray();
+                //}
+
+                var response = await _cvService.UploadCvAsync(userId, fileName, filePath);
 
                 if (response.StatusCode == 404)
                 {
