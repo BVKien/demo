@@ -125,8 +125,8 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 var companyProposal = new CompanyProposal
                 {
-                    StudentId = companyProposalInfo?.StudentId,
-                    UniversityId = companyProposalInfo?.UniversityId,
+                    StudentId = studentExists?.StudentId,
+                    UniversityId = universityExists?.UserId,
                     ProposalTitle = companyProposalInfo?.ProposalTitle,
                     ProposalContent = companyProposalInfo?.ProposalContent,
                     ProposalDate = DateTime.Now,
