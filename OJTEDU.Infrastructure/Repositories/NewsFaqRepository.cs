@@ -1824,17 +1824,14 @@ namespace OJTEDU.Infrastructure.Repositories
 
         public async Task<IEnumerable<NewsFaq>> GetAllNewsContentForNewsParentAsync(int? parentId, string role)
         {
-            var parentNewsList = await GetAllNewsAsync(role, null);
-            var parentNewsExists = parentNewsList.Any(n => n.NewsFaqid == parentId);
-
-            if (!parentNewsExists)
-            {
-                throw new KeyNotFoundException($"Not found news parent with id: {parentId}");
-            }
-
             var newsQuery = _context.NewsFaqs.Include(u => u.NewsFaqroles).ThenInclude(u => u.Role)
                                               .Include(n => n.User)
-                                              .Where(n => n.IsNews == true && n.ParentId == parentId && n.Status == "Active");
+                                              .Where(n => n.IsNews == true && n.ParentId != null && n.Status == "Active");
+
+            if (parentId.HasValue)
+            {
+                newsQuery = newsQuery.Where(d => d.ParentId == parentId);
+            }
 
             if (role == "guest")
             {
@@ -1924,7 +1921,12 @@ namespace OJTEDU.Infrastructure.Repositories
 
             var faqsQuery = _context.NewsFaqs.Include(u => u.NewsFaqroles).ThenInclude(u => u.Role)
                                               .Include(n => n.User)
-                                              .Where(n => n.IsNews == false && n.ParentId == parentId && n.Status == "Active");
+                                              .Where(n => n.IsNews == false && n.ParentId != null && n.Status == "Active");
+
+            if (parentId.HasValue)
+            {
+                faqsQuery = faqsQuery.Where(d => d.ParentId == parentId);
+            }
 
             if (role == "guest")
             {

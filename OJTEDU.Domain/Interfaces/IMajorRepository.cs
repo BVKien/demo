@@ -14,6 +14,7 @@ namespace OJTEDU.Domain.Interfaces
         Task<Major> GetMajorByIdAsync(int majorId);
         Task<Major> GetMajorByCodeAsync(string? majorCode);
         Task AddMajorAsync(Major major);
+        Task AddMajorsAsync(IEnumerable<Major> majors);
         Task UpdateMajorAsync(Major major);
         Task DeleteMajorAsync(Major major);
         Task<bool> CheckMajorDependenciesAsync(int majorId);

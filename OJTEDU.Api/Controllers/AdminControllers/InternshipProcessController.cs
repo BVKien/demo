@@ -143,24 +143,24 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 {
                     errorMessages.Add("File is required.");
                 }
-                else
-                {
-                    // Lấy phần mở rộng của file
-                    string fileExtension = Path.GetExtension(request.FilePath.FileName).ToLower();
+                //else
+                //{
+                //    // Lấy phần mở rộng của file
+                //    string fileExtension = Path.GetExtension(request.FilePath.FileName).ToLower();
 
-                    // Chỉ cho phép file .pdf
-                    if (fileExtension != ".pdf")
-                    {
-                        errorMessages.Add("Only .pdf files are allowed.");
-                    }
+                //    // Chỉ cho phép file .pdf
+                //    if (fileExtension != ".pdf")
+                //    {
+                //        errorMessages.Add("Only .pdf files are allowed.");
+                //    }
 
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.FilePath.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("File size must not exceed 10MB.");
-                    }
-                }
+                //    // Giới hạn dung lượng file (tối đa 10MB)
+                //    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                //    if (request.FilePath.Length > maxFileSizeInBytes)
+                //    {
+                //        errorMessages.Add("File size must not exceed 10MB.");
+                //    }
+                //}
 
                 // Nếu có lỗi, trả về phản hồi lỗi
                 if (errorMessages.Any())
@@ -174,36 +174,36 @@ namespace OJTEDU.Api.Controllers.AdminControllers
 
                 string createdByUniversityId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                // Tạo tên file duy nhất
-                string fileName = request.FilePath.FileName;
-                string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now:yyyyMMddHHmmssfff}_{Path.GetFileNameWithoutExtension(fileName)}.pdf";
+                //// Tạo tên file duy nhất
+                //string fileName = request.FilePath.FileName;
+                //string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now:yyyyMMddHHmmssfff}_{Path.GetFileNameWithoutExtension(fileName)}.pdf";
 
-                // Lấy đường dẫn đến thư mục wwwroot/documents
-                string internshipprocessPath = Path.Combine(_webHostEnvironment.WebRootPath, "internshipprocess");
+                //// Lấy đường dẫn đến thư mục wwwroot/documents
+                //string internshipprocessPath = Path.Combine(_webHostEnvironment.WebRootPath, "internshipprocess");
 
-                // Kiểm tra xem thư mục tồn tại chưa, nếu không có thì tạo mới
-                if (!Directory.Exists(internshipprocessPath))
-                {
-                    Directory.CreateDirectory(internshipprocessPath);
-                }
+                //// Kiểm tra xem thư mục tồn tại chưa, nếu không có thì tạo mới
+                //if (!Directory.Exists(internshipprocessPath))
+                //{
+                //    Directory.CreateDirectory(internshipprocessPath);
+                //}
 
-                // Tạo đường dẫn đầy đủ đến tệp tin
-                string filePath = Path.Combine(internshipprocessPath, uniqueFileName);
+                //// Tạo đường dẫn đầy đủ đến tệp tin
+                //string filePath = Path.Combine(internshipprocessPath, uniqueFileName);
 
-                // Lưu tệp tin vào thư mục
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await request.FilePath.CopyToAsync(fileStream);
-                }
+                //// Lưu tệp tin vào thư mục
+                //using (var fileStream = new FileStream(filePath, FileMode.Create))
+                //{
+                //    await request.FilePath.CopyToAsync(fileStream);
+                //}
 
-                var relativeDocumentPath = $"/internshipprocess/{uniqueFileName}";
+                //var relativeDocumentPath = $"/internshipprocess/{uniqueFileName}";
 
                 // Tạo tài liệu để lưu vào cơ sở dữ liệu
                 var userGuideDto = new AddInternshipProcessForAdminDoetDTO
                 {
                     Title = request.Title,
                     CreatedBy = int.Parse(createdByUniversityId),
-                    FilePath = relativeDocumentPath // Lưu tên file vào cơ sở dữ liệu
+                    FilePath = request.FilePath  // Lưu tên file vào cơ sở dữ liệu
                 };
 
                 var dataResponse = await _internshipProcessService.AddInternshipProcessForAdminDoetAsync(userGuideDto);
@@ -211,7 +211,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 if (dataResponse == null)
                 {
                     // Xóa file nếu có lỗi
-                    System.IO.File.Delete(filePath);
+                    //System.IO.File.Delete(filePath);
 
                     return StatusCode(500, new ApiResponse<object>
                     {
@@ -223,7 +223,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 if (dataResponse.Data == null)
                 {
                     // Xóa file nếu có lỗi
-                    System.IO.File.Delete(filePath);
+                    //System.IO.File.Delete(filePath);
 
                     return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
                     {
@@ -243,11 +243,11 @@ namespace OJTEDU.Api.Controllers.AdminControllers
             }
             catch (Exception ex)
             {
-                // Xóa file nếu đã được tạo nhưng có lỗi xảy ra
-                if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "internshipprocess", request.FilePath.FileName)))
-                {
-                    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "internshipprocess", request.FilePath.FileName));
-                }
+                //// Xóa file nếu đã được tạo nhưng có lỗi xảy ra
+                //if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "internshipprocess", request.FilePath.FileName)))
+                //{
+                //    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "internshipprocess", request.FilePath.FileName));
+                //}
                 return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,
@@ -279,22 +279,22 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     errorMessages.Add("Title is required.");
                 }
 
-                // Nếu file được gửi lên, kiểm tra định dạng
-                if (request.FilePath != null && request.FilePath.Length > 0)
-                {
-                    string fileExtension = Path.GetExtension(request.FilePath.FileName).ToLower();
-                    if (fileExtension != ".pdf")
-                    {
-                        errorMessages.Add("Only .pdf files are allowed.");
-                    }
+                //// Nếu file được gửi lên, kiểm tra định dạng
+                //if (request.FilePath != null && request.FilePath.Length > 0)
+                //{
+                //    string fileExtension = Path.GetExtension(request.FilePath.FileName).ToLower();
+                //    if (fileExtension != ".pdf")
+                //    {
+                //        errorMessages.Add("Only .pdf files are allowed.");
+                //    }
 
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.FilePath.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("File size must not exceed 10MB.");
-                    }
-                }
+                //    // Giới hạn dung lượng file (tối đa 10MB)
+                //    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                //    if (request.FilePath.Length > maxFileSizeInBytes)
+                //    {
+                //        errorMessages.Add("File size must not exceed 10MB.");
+                //    }
+                //}
 
                 if (errorMessages.Any())
                 {
@@ -327,31 +327,31 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 // Nếu có file được gửi lên
                 if (request.FilePath != null && request.FilePath.Length > 0)
                 {
-                    // Tạo file mới
-                    string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now:yyyyMMddHHmmssfff}_{Path.GetFileNameWithoutExtension(request.FilePath.FileName)}.pdf";
-                    string internProcessPath = Path.Combine(_webHostEnvironment.WebRootPath, "internshipprocess");
+                    //// Tạo file mới
+                    //string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now:yyyyMMddHHmmssfff}_{Path.GetFileNameWithoutExtension(request.FilePath.FileName)}.pdf";
+                    //string internProcessPath = Path.Combine(_webHostEnvironment.WebRootPath, "internshipprocess");
 
-                    if (!Directory.Exists(internProcessPath))
-                    {
-                        Directory.CreateDirectory(internProcessPath);
-                    }
+                    //if (!Directory.Exists(internProcessPath))
+                    //{
+                    //    Directory.CreateDirectory(internProcessPath);
+                    //}
 
-                    string newFilePath = Path.Combine(internProcessPath, uniqueFileName);
-                    using (var fileStream = new FileStream(newFilePath, FileMode.Create))
-                    {
-                        await request.FilePath.CopyToAsync(fileStream);
-                    }
+                    //string newFilePath = Path.Combine(internProcessPath, uniqueFileName);
+                    //using (var fileStream = new FileStream(newFilePath, FileMode.Create))
+                    //{
+                    //    await request.FilePath.CopyToAsync(fileStream);
+                    //}
 
-                    // Xóa file cũ nếu tồn tại
-                    string oldInternProcessPath = Path.Combine(_webHostEnvironment.WebRootPath, internProcessDto.FilePath.TrimStart('/'));
-                    if (System.IO.File.Exists(oldInternProcessPath))
-                    {
-                        System.IO.File.Delete(oldInternProcessPath);
-                    }
+                    //// Xóa file cũ nếu tồn tại
+                    //string oldInternProcessPath = Path.Combine(_webHostEnvironment.WebRootPath, internProcessDto.FilePath.TrimStart('/'));
+                    //if (System.IO.File.Exists(oldInternProcessPath))
+                    //{
+                    //    System.IO.File.Delete(oldInternProcessPath);
+                    //}
 
-                    // Cập nhật đường dẫn file mới
-                    var relativeDocumentPath = $"/internshipprocess/{uniqueFileName}";
-                    internProcessDto.FilePath = relativeDocumentPath;
+                    //// Cập nhật đường dẫn file mới
+                    //var relativeDocumentPath = $"/internshipprocess/{uniqueFileName}";
+                    internProcessDto.FilePath = request.FilePath;
                 }
 
                 var dataResponse = await _internshipProcessService.UpdateInternshipProcessForAdminDoetAsync(internProcessDto);

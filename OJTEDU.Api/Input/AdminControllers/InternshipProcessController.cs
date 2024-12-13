@@ -5,7 +5,7 @@
         public class AddOrUpdateInternshipProcessRequestForAdmin
         {
             public string? Title { get; set; }
-            public IFormFile? FilePath { get; set; }
+            public string? FilePath { get; set; }
         }
 
         public class UpdateInternshipProcessVisibleRequestForAdmin

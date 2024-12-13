@@ -22,7 +22,7 @@
         public class AddChildNewsRequestForAdmin
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
+            public string? Image { get; set; }
             public string? ChildNewscontent { get; set; }
             public int? ParentNewsId { get; set; }
         }

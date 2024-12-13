@@ -806,7 +806,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
 
-                var dataResponse = await _addressService.GetAllDistrictForAdminAsync(districtId, name, actualPageNumber, actualPageSize);
+                var dataResponse = await _addressService.GetAllWardForAdminAsync(districtId, name, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
@@ -826,7 +826,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     });
                 }
 
-                var apiResponse = new ApiResponse<PagedResponse<List<DistrictListForAdminDTO>>>
+                var apiResponse = new ApiResponse<PagedResponse<List<WardListForAdminDTO>>>
                 {
                     Data = dataResponse.Data,
                     Message = dataResponse.Message

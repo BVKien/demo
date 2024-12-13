@@ -1,4 +1,5 @@
-﻿using OJTEDU.Application.DTOs;
+﻿using Microsoft.AspNetCore.Http;
+using OJTEDU.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<UpdateMajorForAdminDoetDTO>> UpdateMajorForAdminDoetAsync(UpdateMajorForAdminDoetDTO updateMajorForAdminDoetDTO);
         Task<DataResponse<UpdateMajorStatusForAdminDoetDTO>> UpdateMajorStatusForAdminDoetAsync(UpdateMajorStatusForAdminDoetDTO updateMajorStatusForAdminDoetDTO);
         Task<DataResponse<DeleteMajorForAdminDoetDTO>> DeleteMajorForAdminDoetAsync(DeleteMajorForAdminDoetDTO deleteMajorForAdminDoetDTO);
+        Task<DataResponse<MemoryStream>> GenerateMajorTemplateForAdminDoetAsync();
+        Task<DataResponse<object>> ImportMajorsForAdminDoetAsync(IFormFile file);
         Task<DataResponse<List<StatusMajorListForAdminDoetDTO>>> GetAllStatusesMajorForAdminDoetAsync();
 
         // Common

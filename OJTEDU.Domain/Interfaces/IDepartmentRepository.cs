@@ -14,6 +14,7 @@ namespace OJTEDU.Domain.Interfaces
         Task<Department> GetDepartmentByIdAsync(int departmentId);
         Task<Department> GetDepartmentByCodeAsync(string? departmentCode);
         Task AddDepartmentAsync(Department department);
+        Task AddDepartmentsAsync(IEnumerable<Department> departments);
         Task UpdateDepartmentAsync(Department department);
         Task DeleteDepartmentAsync(Department department);
         Task<bool> CheckDepartmentDependenciesAsync(int departmentId);

@@ -76,6 +76,12 @@ namespace OJTEDU.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task AddDepartmentsAsync(IEnumerable<Department> departments)
+        {
+            await _context.Departments.AddRangeAsync(departments);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task UpdateDepartmentAsync(Department department)
         {
             _context.Departments.Update(department);

@@ -149,19 +149,19 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     errorMessages.Add("Description is required.");
                 }
 
-                if (request.DocumentFile == null || request.DocumentFile.Length == 0)
+                if (request.DocumentFile == null)
                 {
                     errorMessages.Add("DocumentFile is required.");
                 }
-                else
-                {
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.DocumentFile.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("File size must not exceed 10MB.");
-                    }
-                }
+                //else
+                //{
+                //    // Giới hạn dung lượng file (tối đa 10MB)
+                //    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                //    if (request.DocumentFile.Length > maxFileSizeInBytes)
+                //    {
+                //        errorMessages.Add("File size must not exceed 10MB.");
+                //    }
+                //}
 
                 //if (request.ForRoleIds == null || !request.ForRoleIds.Any())
                 //{
@@ -193,29 +193,29 @@ namespace OJTEDU.Api.Controllers.AdminControllers
 
                 string createdByUniversityId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                // Tạo tên file duy nhất
-                string fileName = request.DocumentFile.FileName;
-                string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{fileName}";
+                //// Tạo tên file duy nhất
+                //string fileName = request.DocumentFile.FileName;
+                //string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{fileName}";
 
-                // Lấy đường dẫn đến thư mục wwwroot/documents
-                string documentsPath = Path.Combine(_webHostEnvironment.WebRootPath, "documents");
+                //// Lấy đường dẫn đến thư mục wwwroot/documents
+                //string documentsPath = Path.Combine(_webHostEnvironment.WebRootPath, "documents");
 
-                // Kiểm tra xem thư mục tồn tại chưa, nếu không có thì tạo mới
-                if (!Directory.Exists(documentsPath))
-                {
-                    Directory.CreateDirectory(documentsPath);
-                }
+                //// Kiểm tra xem thư mục tồn tại chưa, nếu không có thì tạo mới
+                //if (!Directory.Exists(documentsPath))
+                //{
+                //    Directory.CreateDirectory(documentsPath);
+                //}
 
-                // Tạo đường dẫn đầy đủ đến tệp tin
-                string filePath = Path.Combine(documentsPath, uniqueFileName);
+                //// Tạo đường dẫn đầy đủ đến tệp tin
+                //string filePath = Path.Combine(documentsPath, uniqueFileName);
 
-                // Lưu tệp tin vào thư mục
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await request.DocumentFile.CopyToAsync(fileStream);
-                }
+                //// Lưu tệp tin vào thư mục
+                //using (var fileStream = new FileStream(filePath, FileMode.Create))
+                //{
+                //    await request.DocumentFile.CopyToAsync(fileStream);
+                //}
 
-                var relativeDocumentPath = $"/documents/{uniqueFileName}";
+                //var relativeDocumentPath = $"/documents/{uniqueFileName}";
 
                 var forRoleIdsList = request.ForRoleIds
             .Split(',')
@@ -232,7 +232,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     UniversityId = int.Parse(createdByUniversityId),
                     Title = request.Title,
                     Description = request.Description,
-                    DocumentFile = relativeDocumentPath, // Lưu tên file vào cơ sở dữ liệu
+                    DocumentFile = request.DocumentFile, // Lưu tên file vào cơ sở dữ liệu
                     ForRoleIds = forRoleIdsList
                 };
 
@@ -241,7 +241,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 if (dataResponse == null)
                 {
                     // Xóa file nếu có lỗi
-                    System.IO.File.Delete(filePath);
+                    //System.IO.File.Delete(filePath);
 
                     return StatusCode(500, new ApiResponse<object>
                     {
@@ -253,7 +253,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 if (dataResponse.Data == null)
                 {
                     // Xóa file nếu có lỗi
-                    System.IO.File.Delete(filePath);
+                    //System.IO.File.Delete(filePath);
 
                     return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
                     {
@@ -273,11 +273,11 @@ namespace OJTEDU.Api.Controllers.AdminControllers
             }
             catch (Exception ex)
             {
-                // Xóa file nếu đã được tạo nhưng có lỗi xảy ra
-                if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "documents", request.DocumentFile.FileName)))
-                {
-                    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "documents", request.DocumentFile.FileName));
-                }
+                //// Xóa file nếu đã được tạo nhưng có lỗi xảy ra
+                //if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "documents", request.DocumentFile.FileName)))
+                //{
+                //    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "documents", request.DocumentFile.FileName));
+                //}
                 return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,

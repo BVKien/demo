@@ -4,7 +4,7 @@
     {
         public class AddOrUpdateUserGuideRequestForAdmin
         {
-            public IFormFile? UserGuideFile { get; set; }
+            public string? UserGuideFile { get; set; }
             public int? RoleId { get; set; }
         }
 

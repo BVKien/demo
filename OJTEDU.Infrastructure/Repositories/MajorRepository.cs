@@ -81,6 +81,12 @@ namespace OJTEDU.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task AddMajorsAsync(IEnumerable<Major> majors)
+        {
+            await _context.Majors.AddRangeAsync(majors);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task UpdateMajorAsync(Major major)
         {
             _context.Majors.Update(major);

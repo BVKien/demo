@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OJTEDU.Api.Configuration;
 using OJTEDU.Application.ApplicationServices.Interfaces;
+using OJTEDU.Application.ApplicationServices.Services;
 using OJTEDU.Application.DTOs;
 using static OJTEDU.Api.Input.AdminControllers.DepartmentController;
 using static OJTEDU.Application.DTOs.DepartmentDTO;
@@ -430,6 +431,123 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 {
                     Data = null,
                     Message = $"Internal Server Error: {ex.Message}"
+                });
+            }
+        }
+
+        [HttpPost("import-file")]
+        [Authorize(Roles = "Admin,DOET")]
+        public async Task<IActionResult> ImportDepartmentsForAdminDoet([FromForm] IFormFile file)
+        {
+            try
+            {
+                // Kiểm tra file đầu vào
+                if (file == null || file.Length == 0)
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "The uploaded file is empty or missing. Please ensure you provide a valid Excel file. If you're unsure of the required format, download the template and follow the instructions provided in the User Guide."
+                    });
+                }
+
+                // Kiểm tra định dạng file (chỉ chấp nhận .xlsx hoặc .xls)
+                string fileExtension = Path.GetExtension(file.FileName).ToLower();
+                if (fileExtension != ".xlsx" && fileExtension != ".xls")
+                {
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "Invalid file format. Only Excel files (.xlsx, .xls) are accepted. Please download the template to prepare your data correctly and follow the instructions in the User Guide."
+                    });
+                }
+
+                // Gọi service để thực hiện import
+                var dataResponse = await _departmentService.ImportDepartmentsForAdminDoetAsync(file);
+
+                // Kiểm tra kết quả trả về từ service
+                if (dataResponse == null)
+                {
+                    return StatusCode(500, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "Unexpected error occurred during the import process."
+                    });
+                }
+
+                // Trả về lỗi nếu có
+                if (dataResponse.StatusCode != 200)
+                {
+                    return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
+                    {
+                        Data = dataResponse.Data,
+                        Message = dataResponse.Message
+                    });
+                }
+
+                // Trả về kết quả import thành công
+                return Ok(new ApiResponse<object>
+                {
+                    Data = dataResponse.Data,
+                    Message = dataResponse.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi nếu có
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Error occurred while importing departments: {ex.Message}"
+                });
+            }
+        }
+
+
+        [HttpGet("download-file-template")]
+        [Authorize(Roles = "Admin,DOET")]
+        public async Task<IActionResult> DownloadTemplateForAdminDoet()
+        {
+            try
+            {
+                var dataResponse = await _departmentService.GenerateDepartmentTemplateForAdminDoetAsync();
+
+                if (dataResponse == null)
+                {
+                    return StatusCode(500, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = "Unexpected error occurred during template generation."
+                    });
+                }
+
+                if (dataResponse.Data == null)
+                {
+                    return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = dataResponse.Message
+                    });
+                }
+
+                // Đặt lại vị trí của MemoryStream về đầu
+                var templateStream = dataResponse.Data;
+                templateStream.Position = 0;
+
+                // Trả về file dưới dạng file download
+                var fileResult = new FileStreamResult(templateStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                {
+                    FileDownloadName = "DepartmentTemplateForAdminDoet.xlsx"
+                };
+
+                return fileResult; // Trả về file Excel cho client
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Error downloading template: {ex.Message}"
                 });
             }
         }

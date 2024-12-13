@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using OfficeOpenXml;
 using OJTEDU.Application.ApplicationServices.Interfaces;
 using OJTEDU.Application.DTOs;
 using OJTEDU.Domain.Entities;
 using OJTEDU.Domain.Interfaces;
+using OJTEDU.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -305,6 +308,226 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     Data = null,
                     Message = $"Error deleting department: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        public async Task<DataResponse<MemoryStream>> GenerateDepartmentTemplateForAdminDoetAsync()
+        {
+            try
+            {
+                var memoryStream = new MemoryStream();
+                using (var package = new ExcelPackage(memoryStream))
+                {
+                    var worksheet = package.Workbook.Worksheets.Add("Department Template");
+
+                    // Add headers
+                    worksheet.Cells[1, 1].Value = "Department Code(*)";
+                    worksheet.Cells[1, 2].Value = "Department Name(*)";
+                    worksheet.Cells[1, 3].Value = "Department Detail(*)";
+
+                    for (int col = 1; col <= 3; col++)
+                    {
+                        worksheet.Cells[1, col].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                        worksheet.Cells[1, col].Style.Font.Bold = true; // Đặt chữ in đậm
+                    }
+
+                    // Example rows
+                    worksheet.Cells[2, 1].Value = "IT001";
+                    worksheet.Cells[2, 2].Value = "Công nghệ thông tin";
+                    worksheet.Cells[2, 3].Value = "Phòng ban quản lý hạ tầng IT và phát triển phần mềm.";
+
+                    // Căn giữa cho tất cả các ô
+                    for (int row = 2; row <= 1000; row++)
+                    {
+                        for (int col = 1; col <= 3; col++)
+                        {
+                            worksheet.Cells[row, col].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                        }
+                    }
+
+                    worksheet.Column(1).Width = 30;
+                    worksheet.Column(2).Width = 30;
+                    worksheet.Column(3).Width = 50;
+
+                    // Thêm ghi chú cho các trường
+                    worksheet.Cells[1, 5].Value = "Ghi chú:"; // Cột 6
+                    worksheet.Cells[2, 5].Value = "(*) : Bắt buộc điền."; // Cột 6
+                    worksheet.Cells[3, 5].Value = "Department Code : Không được quá 50 ký tự."; // Cột 6
+                    worksheet.Cells[4, 5].Value = "Department Name : Không được quá 255 ký tự.."; // Cột 6
+                    worksheet.Cells[5, 5].Value = "Hãy xóa dữ liệu mẫu trước khi điền tránh trùng lặp."; // Cột 6
+
+                    for (int row = 1; row <= 5; row++)
+                    {
+                        worksheet.Cells[row, 5].Style.Font.Bold = true;
+                        worksheet.Cells[row, 5].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                    }
+
+                    package.Save();
+                }
+
+                memoryStream.Position = 0;
+                return new DataResponse<MemoryStream>
+                {
+                    Data = memoryStream,
+                    Message = "Template generated successfully.",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<MemoryStream>
+                {
+                    Data = null,
+                    Message = $"Error generating template: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        public async Task<DataResponse<object>> ImportDepartmentsForAdminDoetAsync(IFormFile file)
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            if (file == null || file.Length == 0)
+            {
+                return new DataResponse<object>
+                {
+                    Data = null,
+                    Message = "File is empty or not provided.",
+                    StatusCode = 400
+                };
+            }
+
+            try
+            {
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+                        var departments = new List<Department>();
+                        var errorMessages = new List<string>();
+
+                        // Xác định số hàng cuối cùng trong phạm vi từ cột A đến cột E
+                        int lastRow = 1;
+                        for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
+                        {
+                            bool hasDataInRange = false;
+                            for (int col = 1; col <= 3; col++) // Chỉ từ cột A đến E (1 đến 6)
+                            {
+                                if (!string.IsNullOrWhiteSpace(worksheet.Cells[row, col]?.Text))
+                                {
+                                    hasDataInRange = true;
+                                    break;
+                                }
+                            }
+                            if (hasDataInRange)
+                            {
+                                lastRow = row;
+                            }
+                        }
+
+                        for (int row = 2; row <= lastRow; row++)
+                        {
+                            var code = worksheet.Cells[row, 1].Value?.ToString().Trim();
+                            var name = worksheet.Cells[row, 2].Value?.ToString().Trim();
+                            var detail = worksheet.Cells[row, 3].Value?.ToString().Trim();
+
+                            if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(detail))
+                            {
+                                errorMessages.Add($"Row {row}: Missing required data.");
+                                continue;
+                            }
+
+                            // Kiểm tra độ dài của UserCode
+                            if (code.Length > 50)
+                            {
+                                errorMessages.Add($"Row {row}: DepartmentCode must not exceed 50 characters.");
+                                continue;
+                            }
+
+                            if (name.Length > 255)
+                            {
+                                errorMessages.Add($"Row {row}: DepartmentName must not exceed 255 characters.");
+                                continue;
+                            }
+
+                            var isDepartmentCodeExists = await _departmentRepository.GetDepartmentByCodeAsync(code);
+
+                            if (isDepartmentCodeExists != null)
+                            {
+                                errorMessages.Add($"Row {row}: DepartmentCode '{code}' already exists.");
+                                continue;
+                            }
+
+                            var department = new Department
+                            {
+                                DepartmentCode = code,
+                                Name = name,
+                                Detail = detail,
+                                Status = "Active",
+                                CreatedAt = DateTime.Now,
+                                UpdatedAt = DateTime.Now
+                            };
+
+                            departments.Add(department);
+                        }
+
+                        // Nếu có bất kỳ lỗi nào, trả về lỗi và không thêm vào DB
+                        if (errorMessages.Any())
+                        {
+                            return new DataResponse<object>
+                            {
+                                Data = new
+                                {
+                                    SuccessCount = 0,
+                                    ErrorCount = errorMessages.Count,
+                                    Errors = errorMessages
+                                },
+                                Message = $"Import failed. There were {errorMessages.Count} errors. Please fix the reported errors to successfully add the file.",
+                                StatusCode = 400
+                            };
+                        }
+
+
+                        await _departmentRepository.AddDepartmentsAsync(departments);
+
+                        var successCount = departments.Count;
+
+                        var resultMessage = $"Import completed. Successfully added {successCount} departments.";
+
+                        return new DataResponse<object>
+                        {
+                            Data = new
+                            {
+                                SuccessCount = successCount,
+                                ErrorCount = 0,
+                                Errors = errorMessages
+                            },
+                            Message = resultMessage,
+                            StatusCode = 200
+                        };
+                    }
+                }
+            }
+            catch (UnauthorizedAccessException authEx)
+            {
+                // Xử lý lỗi quyền truy cập
+                return new DataResponse<object>
+                {
+                    Data = null,
+                    Message = $"Access denied while importing deparments: {authEx.Message}",
+                    StatusCode = 403 // Forbidden
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<object>
+                {
+                    Data = null,
+                    Message = $"Error importing deparments: {ex.Message}",
                     StatusCode = 500
                 };
             }

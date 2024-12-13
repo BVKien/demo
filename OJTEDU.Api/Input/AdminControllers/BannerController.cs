@@ -4,7 +4,7 @@
     {
         public class AddBannerRequestForAdmin
         {
-            public IFormFile? Image { get; set; }
+            public string? Image { get; set; }
             public DateTime? EventDate { get; set; }
             public string? Link { get; set; }
         }

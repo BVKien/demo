@@ -1,4 +1,5 @@
-﻿using OJTEDU.Application.DTOs;
+﻿using Microsoft.AspNetCore.Http;
+using OJTEDU.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<UpdateDepartmentForAdminDoetDTO>> UpdateDepartmentForAdminDoetAsync(UpdateDepartmentForAdminDoetDTO updateDepartmentForAdminDoetDTO);
         Task<DataResponse<UpdateDepartmentStatusForAdminDoetDTO>> UpdateDepartmentStatusForAdminDoetAsync(UpdateDepartmentStatusForAdminDoetDTO updateDepartmentStatusForAdminDoetDTO);
         Task<DataResponse<DeleteDepartmentForAdminDoetDTO>> DeleteDepartmentForAdminDoetAsync(DeleteDepartmentForAdminDoetDTO deleteDepartmentForAdminDoetDTO);
+        Task<DataResponse<MemoryStream>> GenerateDepartmentTemplateForAdminDoetAsync();
+        Task<DataResponse<object>> ImportDepartmentsForAdminDoetAsync(IFormFile file);
         Task<DataResponse<List<StatusDepartmentListForAdminDoetDTO>>> GetAllStatusesDepartmentForAdminDoetAsync();
 
         // Common

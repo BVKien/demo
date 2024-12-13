@@ -663,28 +663,28 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     errorMessages.Add("ChildNewscontent is required.");
                 }
 
-                if (request.Image == null || request.Image.Length == 0)
+                if (request.Image == null)
                 {
                     errorMessages.Add("Image is required.");
                 }
-                else
-                {
-                    // Kiểm tra phần mở rộng file
-                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
+                //else
+                //{
+                //    // Kiểm tra phần mở rộng file
+                //    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+                //    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
 
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
-                    }
+                //    if (!allowedExtensions.Contains(fileExtension))
+                //    {
+                //        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
+                //    }
 
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.Image.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("Image size must not exceed 10MB.");
-                    }
-                }
+                //    // Giới hạn dung lượng file (tối đa 10MB)
+                //    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                //    if (request.Image.Length > maxFileSizeInBytes)
+                //    {
+                //        errorMessages.Add("Image size must not exceed 10MB.");
+                //    }
+                //}
 
                 if (request.ParentNewsId <= 0)
                 {
@@ -702,28 +702,28 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 }
                 string createdByUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                // Tạo tên file duy nhất
-                string fileName = request.Image.FileName;
-                string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{fileName}";
+                //// Tạo tên file duy nhất
+                //string fileName = request.Image.FileName;
+                //string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{fileName}";
 
-                string newsPath = Path.Combine(_webHostEnvironment.WebRootPath, "news");
+                //string newsPath = Path.Combine(_webHostEnvironment.WebRootPath, "news");
 
-                // Kiểm tra xem thư mục tồn tại chưa, nếu không có thì tạo mới
-                if (!Directory.Exists(newsPath))
-                {
-                    Directory.CreateDirectory(newsPath);
-                }
+                //// Kiểm tra xem thư mục tồn tại chưa, nếu không có thì tạo mới
+                //if (!Directory.Exists(newsPath))
+                //{
+                //    Directory.CreateDirectory(newsPath);
+                //}
 
-                // Tạo đường dẫn đầy đủ đến tệp tin
-                string filePath = Path.Combine(newsPath, uniqueFileName);
+                //// Tạo đường dẫn đầy đủ đến tệp tin
+                //string filePath = Path.Combine(newsPath, uniqueFileName);
 
-                // Lưu tệp tin vào thư mục
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await request.Image.CopyToAsync(fileStream);
-                }
+                //// Lưu tệp tin vào thư mục
+                //using (var fileStream = new FileStream(filePath, FileMode.Create))
+                //{
+                //    await request.Image.CopyToAsync(fileStream);
+                //}
 
-                var relativeImagePath = $"/news/{uniqueFileName}";
+                //var relativeImagePath = $"/news/{uniqueFileName}";
 
                 // Tạo tài liệu để lưu vào cơ sở dữ liệu
                 var childNewsDto = new AddChildNewsForAdminDTO
@@ -731,7 +731,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     UserId = int.Parse(createdByUserId),
                     Title = request.Title,
                     ChildNewscontent = request.ChildNewscontent,
-                    Image = relativeImagePath, // Lưu tên file vào cơ sở dữ liệu
+                    Image = request.Image, // Lưu tên file vào cơ sở dữ liệu
                     ParentId = request.ParentNewsId
                 };
 
@@ -740,7 +740,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 if (dataResponse == null)
                 {
                     // Xóa file nếu có lỗi
-                    System.IO.File.Delete(filePath);
+                    // System.IO.File.Delete(filePath);
 
                     return StatusCode(500, new ApiResponse<object>
                     {
@@ -752,7 +752,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 if (dataResponse.Data == null)
                 {
                     // Xóa file nếu có lỗi
-                    System.IO.File.Delete(filePath);
+                    // System.IO.File.Delete(filePath);
 
                     return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
                     {
@@ -771,11 +771,11 @@ namespace OJTEDU.Api.Controllers.AdminControllers
             }
             catch (Exception ex)
             {
-                // Xóa file nếu đã được tạo nhưng có lỗi xảy ra
-                if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "news", request.Image.FileName)))
-                {
-                    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "news", request.Image.FileName));
-                }
+                //// Xóa file nếu đã được tạo nhưng có lỗi xảy ra
+                //if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "news", request.Image.FileName)))
+                //{
+                //    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "news", request.Image.FileName));
+                //}
                 return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,

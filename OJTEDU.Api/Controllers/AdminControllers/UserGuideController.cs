@@ -137,24 +137,24 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 {
                     errorMessages.Add("UserGuide File is required.");
                 }
-                else
-                {
-                    // Lấy phần mở rộng của file
-                    string fileExtension = Path.GetExtension(request.UserGuideFile.FileName).ToLower();
+                //else
+                //{
+                //    // Lấy phần mở rộng của file
+                //    string fileExtension = Path.GetExtension(request.UserGuideFile.FileName).ToLower();
 
-                    // Chỉ cho phép file .pdf
-                    if (fileExtension != ".pdf")
-                    {
-                        errorMessages.Add("Only .pdf files are allowed.");
-                    }
+                //    // Chỉ cho phép file .pdf
+                //    if (fileExtension != ".pdf")
+                //    {
+                //        errorMessages.Add("Only .pdf files are allowed.");
+                //    }
 
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.UserGuideFile.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("File size must not exceed 10MB.");
-                    }
-                }
+                //    // Giới hạn dung lượng file (tối đa 10MB)
+                //    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                //    if (request.UserGuideFile.Length > maxFileSizeInBytes)
+                //    {
+                //        errorMessages.Add("File size must not exceed 10MB.");
+                //    }
+                //}
 
                 if (!request.RoleId.HasValue)
                 {
@@ -173,34 +173,34 @@ namespace OJTEDU.Api.Controllers.AdminControllers
 
                 string createdByUniversityId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                // Tạo tên file duy nhất
-                string fileName = request.UserGuideFile.FileName;
-                string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now:yyyyMMddHHmmssfff}_{Path.GetFileNameWithoutExtension(fileName)}.pdf";
+                //// Tạo tên file duy nhất
+                //string fileName = request.UserGuideFile.FileName;
+                //string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now:yyyyMMddHHmmssfff}_{Path.GetFileNameWithoutExtension(fileName)}.pdf";
 
-                // Lấy đường dẫn đến thư mục wwwroot/documents
-                string userguidesPath = Path.Combine(_webHostEnvironment.WebRootPath, "userguides");
+                //// Lấy đường dẫn đến thư mục wwwroot/documents
+                //string userguidesPath = Path.Combine(_webHostEnvironment.WebRootPath, "userguides");
 
-                // Kiểm tra xem thư mục tồn tại chưa, nếu không có thì tạo mới
-                if (!Directory.Exists(userguidesPath))
-                {
-                    Directory.CreateDirectory(userguidesPath);
-                }
+                //// Kiểm tra xem thư mục tồn tại chưa, nếu không có thì tạo mới
+                //if (!Directory.Exists(userguidesPath))
+                //{
+                //    Directory.CreateDirectory(userguidesPath);
+                //}
 
-                // Tạo đường dẫn đầy đủ đến tệp tin
-                string filePath = Path.Combine(userguidesPath, uniqueFileName);
+                //// Tạo đường dẫn đầy đủ đến tệp tin
+                //string filePath = Path.Combine(userguidesPath, uniqueFileName);
 
-                // Lưu tệp tin vào thư mục
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await request.UserGuideFile.CopyToAsync(fileStream);
-                }
+                //// Lưu tệp tin vào thư mục
+                //using (var fileStream = new FileStream(filePath, FileMode.Create))
+                //{
+                //    await request.UserGuideFile.CopyToAsync(fileStream);
+                //}
 
-                var relativeDocumentPath = $"/userguides/{uniqueFileName}";
+                //var relativeDocumentPath = $"/userguides/{uniqueFileName}";
 
                 // Tạo tài liệu để lưu vào cơ sở dữ liệu
                 var userGuideDto = new AddUserGuideForAdminDTO
                 {
-                    UserGuideFile = relativeDocumentPath, // Lưu tên file vào cơ sở dữ liệu
+                    UserGuideFile = request.UserGuideFile, // Lưu tên file vào cơ sở dữ liệu
                     ForRoleId = request.RoleId.Value
                 };
 
@@ -209,7 +209,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 if (dataResponse == null)
                 {
                     // Xóa file nếu có lỗi
-                    System.IO.File.Delete(filePath);
+                    // System.IO.File.Delete(filePath);
 
                     return StatusCode(500, new ApiResponse<object>
                     {
@@ -221,7 +221,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 if (dataResponse.Data == null)
                 {
                     // Xóa file nếu có lỗi
-                    System.IO.File.Delete(filePath);
+                    // System.IO.File.Delete(filePath);
 
                     return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
                     {
@@ -241,11 +241,11 @@ namespace OJTEDU.Api.Controllers.AdminControllers
             }
             catch (Exception ex)
             {
-                // Xóa file nếu đã được tạo nhưng có lỗi xảy ra
-                if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "userguides", request.UserGuideFile.FileName)))
-                {
-                    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "userguides", request.UserGuideFile.FileName));
-                }
+                //// Xóa file nếu đã được tạo nhưng có lỗi xảy ra
+                //if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "userguides", request.UserGuideFile.FileName)))
+                //{
+                //    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "userguides", request.UserGuideFile.FileName));
+                //}
                 return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,
@@ -272,22 +272,22 @@ namespace OJTEDU.Api.Controllers.AdminControllers
 
                 var errorMessages = new List<string>();
 
-                // Nếu file được gửi lên, kiểm tra định dạng
-                if (request.UserGuideFile != null && request.UserGuideFile.Length > 0)
-                {
-                    string fileExtension = Path.GetExtension(request.UserGuideFile.FileName).ToLower();
-                    if (fileExtension != ".pdf")
-                    {
-                        errorMessages.Add("Only .pdf files are allowed.");
-                    }
+                //// Nếu file được gửi lên, kiểm tra định dạng
+                //if (request.UserGuideFile != null && request.UserGuideFile.Length > 0)
+                //{
+                //    string fileExtension = Path.GetExtension(request.UserGuideFile.FileName).ToLower();
+                //    if (fileExtension != ".pdf")
+                //    {
+                //        errorMessages.Add("Only .pdf files are allowed.");
+                //    }
 
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.UserGuideFile.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("File size must not exceed 10MB.");
-                    }
-                }
+                //    // Giới hạn dung lượng file (tối đa 10MB)
+                //    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                //    if (request.UserGuideFile.Length > maxFileSizeInBytes)
+                //    {
+                //        errorMessages.Add("File size must not exceed 10MB.");
+                //    }
+                //}
 
                 if (!request.RoleId.HasValue)
                 {
@@ -323,33 +323,34 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 string createdByUniversityId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 // Nếu có file được gửi lên
-                if (request.UserGuideFile != null && request.UserGuideFile.Length > 0)
+                if (request.UserGuideFile != null)
                 {
-                    // Tạo file mới
-                    string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now:yyyyMMddHHmmssfff}_{Path.GetFileNameWithoutExtension(request.UserGuideFile.FileName)}.pdf";
-                    string userGuidesPath = Path.Combine(_webHostEnvironment.WebRootPath, "userguides");
+                    //{
+                    //    // Tạo file mới
+                    //    string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now:yyyyMMddHHmmssfff}_{Path.GetFileNameWithoutExtension(request.UserGuideFile.FileName)}.pdf";
+                    //    string userGuidesPath = Path.Combine(_webHostEnvironment.WebRootPath, "userguides");
 
-                    if (!Directory.Exists(userGuidesPath))
-                    {
-                        Directory.CreateDirectory(userGuidesPath);
-                    }
+                    //    if (!Directory.Exists(userGuidesPath))
+                    //    {
+                    //        Directory.CreateDirectory(userGuidesPath);
+                    //    }
 
-                    string newFilePath = Path.Combine(userGuidesPath, uniqueFileName);
-                    using (var fileStream = new FileStream(newFilePath, FileMode.Create))
-                    {
-                        await request.UserGuideFile.CopyToAsync(fileStream);
-                    }
+                    //    string newFilePath = Path.Combine(userGuidesPath, uniqueFileName);
+                    //    using (var fileStream = new FileStream(newFilePath, FileMode.Create))
+                    //    {
+                    //        await request.UserGuideFile.CopyToAsync(fileStream);
+                    //    }
 
-                    // Xóa file cũ nếu tồn tại
-                    string oldUserGuidePath = Path.Combine(_webHostEnvironment.WebRootPath, userGuideDto.UserGuideFile.TrimStart('/'));
-                    if (System.IO.File.Exists(oldUserGuidePath))
-                    {
-                        System.IO.File.Delete(oldUserGuidePath);
-                    }
+                    //    // Xóa file cũ nếu tồn tại
+                    //    string oldUserGuidePath = Path.Combine(_webHostEnvironment.WebRootPath, userGuideDto.UserGuideFile.TrimStart('/'));
+                    //    if (System.IO.File.Exists(oldUserGuidePath))
+                    //    {
+                    //        System.IO.File.Delete(oldUserGuidePath);
+                    //    }
 
-                    // Cập nhật đường dẫn file mới
-                    var relativeDocumentPath = $"/userguides/{uniqueFileName}";
-                    userGuideDto.UserGuideFile = relativeDocumentPath;
+                    //    // Cập nhật đường dẫn file mới
+                    //    var relativeDocumentPath = $"/userguides/{uniqueFileName}";
+                    userGuideDto.UserGuideFile = request.UserGuideFile;
                 }
 
                 var dataResponse = await _userGuideService.UpdateUserGuideForAdminAsync(userGuideDto);
