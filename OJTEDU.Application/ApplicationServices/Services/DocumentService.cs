@@ -746,7 +746,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // Company
-        public async Task<DataResponse<CreateDocumentTestFilesForCompanyDTO>> CreateDocumentsByUserIdAsync(int? userId, string? fileName, byte[] fileData, CreateDocumentTestFilesForCompanyDTO? info)
+        public async Task<DataResponse<CreateDocumentTestFilesForCompanyDTO>> CreateDocumentsByUserIdAsync(int? userId, string? fileName, string? fileData, CreateDocumentTestFilesForCompanyDTO? info)
         {
             try
             {

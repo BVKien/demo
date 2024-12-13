@@ -273,7 +273,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
-        public async Task<Job> CreateJobAsync(int? userId, string? fileName, byte[] fileData, Job? info, Address? addressInfo)
+        public async Task<Job> CreateJobAsync(int? userId, string? fileName, Job? info, Address? addressInfo)
         {
             try
             {
@@ -331,25 +331,25 @@ namespace OJTEDU.Infrastructure.Repositories
                     await _context.SaveChangesAsync();
 
                     // Test file 
-                    // Create file name format jobId_timestamp_filename
-                    var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                    var newFileNameValid = fileName != null ? $"{jobValid.JobId}_{timestampValid}_{fileName}" : null;
+                    //// Create file name format jobId_timestamp_filename
+                    //var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    //var newFileNameValid = fileName != null ? $"{jobValid.JobId}_{timestampValid}_{fileName}" : null;
 
-                    var filePathValid = newFileNameValid != null ? Path.Combine(_testFileDirectory, newFileNameValid) : null;
+                    //var filePathValid = newFileNameValid != null ? Path.Combine(_testFileDirectory, newFileNameValid) : null;
 
-                    // Save files to folders
-                    if (fileData != null && filePathValid != null)
-                    {
-                        await File.WriteAllBytesAsync(filePathValid, fileData);
-                    }
+                    //// Save files to folders
+                    //if (fileData != null && filePathValid != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(filePathValid, fileData);
+                    //}
 
-                    // If null 
-                    if (fileName == null || fileData == null)
-                    {
-                        filePathValid = null;
-                    }
+                    //// If null 
+                    //if (fileName == null || fileData == null)
+                    //{
+                    //    filePathValid = null;
+                    //}
 
-                    jobValid.TestFile = filePathValid?.Replace("wwwroot", "");
+                    jobValid.TestFile = fileName;
 
                     _context.Jobs.Update(jobValid);
                     await _context.SaveChangesAsync();
@@ -388,25 +388,25 @@ namespace OJTEDU.Infrastructure.Repositories
                 await _context.SaveChangesAsync();
 
                 // Test file 
-                // Create file name format jobId_timestamp_filename
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                var newFileName = fileName != null ? $"{job.JobId}_{timestamp}_{fileName}" : null;
+                //// Create file name format jobId_timestamp_filename
+                //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                //var newFileName = fileName != null ? $"{job.JobId}_{timestamp}_{fileName}" : null;
 
-                var filePath = newFileName != null ? Path.Combine(_testFileDirectory, newFileName) : null;
+                //var filePath = newFileName != null ? Path.Combine(_testFileDirectory, newFileName) : null;
 
-                // Save files to folders
-                if (fileData != null && filePath != null)
-                {
-                    await File.WriteAllBytesAsync(filePath, fileData);
-                }
+                //// Save files to folders
+                //if (fileData != null && filePath != null)
+                //{
+                //    await File.WriteAllBytesAsync(filePath, fileData);
+                //}
 
-                // If null 
-                if (fileName == null || fileData == null)
-                {
-                    filePath = null;
-                }
+                //// If null 
+                //if (fileName == null || fileData == null)
+                //{
+                //    filePath = null;
+                //}
 
-                job.TestFile = filePath?.Replace("wwwroot", "");
+                job.TestFile = fileName;
 
                 _context.Jobs.Update(job);
                 await _context.SaveChangesAsync();
@@ -419,7 +419,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
-        public async Task<Job> UpdateJobAsync(int? userId, int? jobId, string? fileName, byte[] fileData, Job? info, Address? addressInfo)
+        public async Task<Job> UpdateJobAsync(int? userId, int? jobId, string? fileName, Job? info, Address? addressInfo)
         {
             try
             {
@@ -452,25 +452,25 @@ namespace OJTEDU.Infrastructure.Repositories
                     .FirstOrDefaultAsync(c => c.AddressId == job.AddressedNavigation.AddressId && c.UserId == userId && c.User.Role.Name == "Company");
 
                 // Test file 
-                // Create file name format jobId_timestamp_filename
-                var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                var newFileNameValid = fileName != null ? $"{job.JobId}_{timestampValid}_{fileName}" : null;
+                //// Create file name format jobId_timestamp_filename
+                //var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                //var newFileNameValid = fileName != null ? $"{job.JobId}_{timestampValid}_{fileName}" : null;
 
-                var filePathValid = newFileNameValid != null ? Path.Combine(_testFileDirectory, newFileNameValid) : null;
+                //var filePathValid = newFileNameValid != null ? Path.Combine(_testFileDirectory, newFileNameValid) : null;
 
-                // Save files to folders
-                if (fileData != null && filePathValid != null)
-                {
-                    await File.WriteAllBytesAsync(filePathValid, fileData);
-                }
+                //// Save files to folders
+                //if (fileData != null && filePathValid != null)
+                //{
+                //    await File.WriteAllBytesAsync(filePathValid, fileData);
+                //}
 
-                // If null 
-                if (fileName == null || fileData == null)
-                {
-                    filePathValid = null;
-                }
+                //// If null 
+                //if (fileName == null || fileData == null)
+                //{
+                //    filePathValid = null;
+                //}
 
-                var filePath = filePathValid?.Replace("wwwroot", "");
+                var filePath = fileName;
 
                 // If address company -> add new update address
                 if (address != null)

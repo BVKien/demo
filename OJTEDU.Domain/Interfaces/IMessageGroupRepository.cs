@@ -26,7 +26,7 @@ namespace OJTEDU.Domain.Interfaces
         // Admin, DOET, Dean, Lecturer, Mentor, Student
         Task<bool> LeaveMessageGroupAsync(int? userId, int? groupChatId);
         Task<List<MessageGroup>> GetAllMessagesInGroupChatAsync(int? groupChatId);
-        Task<MessageGroup> CreateMessageInMessageGroupAsync(int? userId, string? messageFileName, byte[]? messageFileData, string? imageFileName, byte[]? imageFileData, MessageGroup? messageGroupInfo);
+        Task<MessageGroup> CreateMessageInMessageGroupAsync(int? userId, string? messageFileName, string? imageFileName, MessageGroup? messageGroupInfo);
 
         // off noti 
         // is read -> is seen 

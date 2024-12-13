@@ -17,8 +17,8 @@ namespace OJTEDU.Domain.Interfaces
 
         // Student 
         Task<IEnumerable<WorkingReport>> GetAllByStudentIdAsync(int? userId);
-        Task<WorkingReport> CreateWorkingReportAsync(int? userId, WorkingReport? workingReportInfo, string? fileName, byte[] fileData);
-        Task<WorkingReport> UpdateWorkingReportAsync(int? workingReportId, WorkingReport? workingReportInfo, string? fileName, byte[] fileData);
+        Task<WorkingReport> CreateWorkingReportAsync(int? userId, WorkingReport? workingReportInfo, string? fileName, string? fileData);
+        Task<WorkingReport> UpdateWorkingReportAsync(int? workingReportId, WorkingReport? workingReportInfo, string? fileName);
         Task<WorkingReport> GetWorkingReportDetailAsync(int? workingReportId); // + Mentor 
 
         //For Dean

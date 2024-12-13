@@ -25,7 +25,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         public async Task<DataResponse<CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO>> CreateFirstMessageConversationAsync(int? userId, int? receiverId,
-            string? messageFileName, byte[]? messageFileData, string? imageFileName, byte[]? imageFileData,
+            string? messageFileName, string? imageFileName,
             CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO? messageGroupInfo)
         {
             try
@@ -55,7 +55,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     MessageContent = messageGroupInfo?.MessageContent
                 };
 
-                var message = await _messageRepository.CreateFirstMessageConversationAsync(userId, receiverId, messageFileName, messageFileData, imageFileName, imageFileData, messageInfo);
+                var message = await _messageRepository.CreateFirstMessageConversationAsync(userId, receiverId, messageFileName, imageFileName, messageInfo);
                 var response = _mapper.Map<CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO>(message);
 
                 return new DataResponse<CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO>
@@ -77,7 +77,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         public async Task<DataResponse<CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO>> CreateMessageAsync(int? userId,
-            string? messageFileName, byte[]? messageFileData, string? imageFileName, byte[]? imageFileData,
+            string? messageFileName, string? imageFileName,
             CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO? messageGroupInfo)
         {
             try
@@ -98,7 +98,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     MessageContent = messageGroupInfo?.MessageContent
                 };
 
-                var message = await _messageRepository.CreateMessageAsync(userId, messageFileName, messageFileData, imageFileName, imageFileData, messageInfo);
+                var message = await _messageRepository.CreateMessageAsync(userId, messageFileName, imageFileName, messageInfo);
                 var response = _mapper.Map<CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO>(message);
 
                 return new DataResponse<CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO>

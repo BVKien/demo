@@ -371,59 +371,59 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 string filePath = null;
 
                 // Xử lý ảnh mới nếu có
-                if (request.Image != null && request.Image.Length > 0)
+                if (request.Image != null)
                 {
-                    // Kiểm tra phần mở rộng file (chỉ chấp nhận các định dạng ảnh)
-                    string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                    string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
+                    //// Kiểm tra phần mở rộng file (chỉ chấp nhận các định dạng ảnh)
+                    //string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
+                    //string fileExtension = Path.GetExtension(request.Image.FileName).ToLower();
 
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
-                    }
+                    //if (!allowedExtensions.Contains(fileExtension))
+                    //{
+                    //    errorMessages.Add("Only image files with extensions .jpg, .jpeg, .png, .gif, .bmp, .webp are allowed.");
+                    //}
 
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.Image.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("Image size must not exceed 10MB.");
-                    }
+                    //// Giới hạn dung lượng file (tối đa 10MB)
+                    //long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    //if (request.Image.Length > maxFileSizeInBytes)
+                    //{
+                    //    errorMessages.Add("Image size must not exceed 10MB.");
+                    //}
 
-                    // Nếu có lỗi, trả về phản hồi lỗi
-                    if (errorMessages.Any())
-                    {
-                        return BadRequest(new ApiResponse<object>
-                        {
-                            Data = null,
-                            Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
-                        });
-                    }
+                    //// Nếu có lỗi, trả về phản hồi lỗi
+                    //if (errorMessages.Any())
+                    //{
+                    //    return BadRequest(new ApiResponse<object>
+                    //    {
+                    //        Data = null,
+                    //        Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
+                    //    });
+                    //}
 
-                    string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
-                    string bannerPath = Path.Combine(_webHostEnvironment.WebRootPath, "banners");
+                    //string uniqueFileName = $"{createdByUserId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.Image.FileName}";
+                    //string bannerPath = Path.Combine(_webHostEnvironment.WebRootPath, "banners");
 
-                    if (!Directory.Exists(bannerPath))
-                    {
-                        Directory.CreateDirectory(bannerPath);
-                    }
+                    //if (!Directory.Exists(bannerPath))
+                    //{
+                    //    Directory.CreateDirectory(bannerPath);
+                    //}
 
-                    filePath = Path.Combine(bannerPath, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await request.Image.CopyToAsync(fileStream);
-                    }
+                    //filePath = Path.Combine(bannerPath, uniqueFileName);
+                    //using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    //{
+                    //    await request.Image.CopyToAsync(fileStream);
+                    //}
 
-                    // Xóa ảnh cũ nếu có
-                    string oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, updateDto.Image.TrimStart('/'));
-                    if (System.IO.File.Exists(oldImagePath))
-                    {
-                        System.IO.File.Delete(oldImagePath);
-                    }
+                    //// Xóa ảnh cũ nếu có
+                    //string oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, updateDto.Image.TrimStart('/'));
+                    //if (System.IO.File.Exists(oldImagePath))
+                    //{
+                    //    System.IO.File.Delete(oldImagePath);
+                    //}
 
-                    var relativeImagePath = $"/banners/{uniqueFileName}";
+                    //var relativeImagePath = $"/banners/{uniqueFileName}";
 
                     // Cập nhật tên ảnh mới trong DTO
-                    updateDto.Image = relativeImagePath;
+                    updateDto.Image = request.Image;
                 }
 
                 var dataResponse = await _bannerService.UpdateBannerForAdminAsync(updateDto);
@@ -467,11 +467,11 @@ namespace OJTEDU.Api.Controllers.AdminControllers
             }
             catch (Exception ex)
             {
-                // Xóa file nếu đã được tạo nhưng có lỗi xảy ra
-                if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "banners", request.Image.FileName)))
-                {
-                    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "banners", request.Image.FileName));
-                }
+                //// Xóa file nếu đã được tạo nhưng có lỗi xảy ra
+                //if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "banners", request.Image.FileName)))
+                //{
+                //    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "banners", request.Image.FileName));
+                //}
                 return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,

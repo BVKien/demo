@@ -30,7 +30,7 @@
         public class UpdateChildNewsRequestForAdmin
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
+            public string? Image { get; set; }
             public string? ChildNewscontent { get; set; }
         }
 
@@ -59,7 +59,7 @@
         public class AddChildFaqRequestForAdmin
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
+            public string? Image { get; set; }
             public string? ChildFaqcontent { get; set; }
             public int? ParentFaqId { get; set; }
         }
@@ -67,7 +67,7 @@
         public class UpdateChildFaqRequestForAdmin
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
+            public string? Image { get; set; }
             public string? ChildFaqcontent { get; set; }
         }
 

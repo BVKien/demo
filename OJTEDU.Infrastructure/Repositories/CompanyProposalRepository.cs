@@ -80,7 +80,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
-        public async Task<CompanyProposal> CreateCompanyProposalAsync(int? userId, CompanyProposal? companyProposalInfo, string? fileName, byte[] fileData)
+        public async Task<CompanyProposal> CreateCompanyProposalAsync(int? userId, CompanyProposal? companyProposalInfo, string? fileName, string? fileData)
         {
             try
             {
@@ -105,23 +105,23 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Not found student.");
                 }
 
-                // Create file name format studentId_timestamp_filename
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                var newFileName = fileName != null ? $"{studentExists.StudentId}_{timestamp}_{fileName}" : null;
+                //// Create file name format studentId_timestamp_filename
+                //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                //var newFileName = fileName != null ? $"{studentExists.StudentId}_{timestamp}_{fileName}" : null;
 
-                var filePath = newFileName != null ? Path.Combine(_fileDirectory, newFileName) : null;
+                //var filePath = newFileName != null ? Path.Combine(_fileDirectory, newFileName) : null;
 
-                // Save files to folders
-                if (fileData != null && filePath != null)
-                {
-                    await File.WriteAllBytesAsync(filePath, fileData);
-                }
+                //// Save files to folders
+                //if (fileData != null && filePath != null)
+                //{
+                //    await File.WriteAllBytesAsync(filePath, fileData);
+                //}
 
-                // If null 
-                if (fileName == null || fileData == null)
-                {
-                    filePath = null;
-                }
+                //// If null 
+                //if (fileName == null || fileData == null)
+                //{
+                //    filePath = null;
+                //}
 
                 var companyProposal = new CompanyProposal
                 {
@@ -130,7 +130,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     ProposalTitle = companyProposalInfo?.ProposalTitle,
                     ProposalContent = companyProposalInfo?.ProposalContent,
                     ProposalDate = DateTime.Now,
-                    Contract = filePath?.Replace("wwwroot", ""),
+                    Contract = fileData,
                     Status = "1",
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now

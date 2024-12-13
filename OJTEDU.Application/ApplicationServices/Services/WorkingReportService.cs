@@ -66,7 +66,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
-        public async Task<DataResponse<CreateWorkingReportForStudentDTO>> CreateWorkingReportAsync(int? userId, CreateWorkingReportForStudentDTO? workingReportInfo, string? fileName, byte[] fileData)
+        public async Task<DataResponse<CreateWorkingReportForStudentDTO>> CreateWorkingReportAsync(int? userId, CreateWorkingReportForStudentDTO? workingReportInfo, string? fileName, string? fileData)
         {
             try
             {
@@ -127,7 +127,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
-        public async Task<DataResponse<UpdateWorkingReportForStudentDTO>> UpdateWorkingReportAsync(int? workingReportId, UpdateWorkingReportForStudentDTO? workingReportInfo, string? fileName, byte[] fileData)
+        public async Task<DataResponse<UpdateWorkingReportForStudentDTO>> UpdateWorkingReportAsync(int? workingReportId, UpdateWorkingReportForStudentDTO? workingReportInfo, string? fileName)
         {
             try
             {
@@ -146,7 +146,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     ReportContent = workingReportInfo.ReportContent,
                 };
 
-                var workingReport = await _workingReportRepository.UpdateWorkingReportAsync(workingReportId, reportInfo, fileName, fileData);
+                var workingReport = await _workingReportRepository.UpdateWorkingReportAsync(workingReportId, reportInfo, fileName);
                 var response = _mapper.Map<UpdateWorkingReportForStudentDTO>(workingReport);
 
                 return new DataResponse<UpdateWorkingReportForStudentDTO>

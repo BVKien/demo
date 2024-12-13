@@ -22,7 +22,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         // Admin, DOET, Dean, Lecturer, Mentor, Student
         Task<DataResponse<bool>> LeaveMessageGroupForUserAsync(int? userId, int? groupChatId);
         Task<DataResponse<List<MessagesInGroupChatListForForAdminDOETDeanLecturerMentorStudentDTO>>> GetAllMessagesInGroupChatAsync(int? groupChatId);
-        Task<DataResponse<CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO>> CreateMessageInMessageGroupAsync(int? userId, string? messageFileName, byte[]? messageFileData, string? imageFileName, byte[]? imageFileData,
+        Task<DataResponse<CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO>> CreateMessageInMessageGroupAsync(int? userId, string? messageFileName, string? imageFileName,
             CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO? messageGroupInfo);
     }
 }

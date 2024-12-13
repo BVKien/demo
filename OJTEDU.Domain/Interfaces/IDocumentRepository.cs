@@ -28,7 +28,7 @@ namespace OJTEDU.Domain.Interfaces
 
         // Company 
         Task<IEnumerable<Document>> GetAllDocumentsByUserIdAsync(int? userId);
-        Task<Document> CreateDocumentsByUserIdAsync(int? userId, string? fileName, byte[] fileData, Document? info);
+        Task<Document> CreateDocumentsByUserIdAsync(int? userId, string? fileName, string? fileData, Document? info);
         Task<Document> UpdateDocumentAsync(int? documentId, string? fileName, byte[] fileData, Document? info);
         Task<bool> StoredDocumentsByUserIdAsync(int? documentId);
     }

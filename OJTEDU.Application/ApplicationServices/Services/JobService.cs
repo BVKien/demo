@@ -243,7 +243,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
-        public async Task<DataResponse<CreateJobForCompanyDTO>> CreateJobAsync(int? userId, string? fileName, byte[] fileData, CreateJobForCompanyDTO? info)
+        public async Task<DataResponse<CreateJobForCompanyDTO>> CreateJobAsync(int? userId, string? fileName, CreateJobForCompanyDTO? info)
         {
             try
             {
@@ -292,7 +292,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     ProvinceId = info?.ProvinceId,
                 };
 
-                var job = await _jobRepository.CreateJobAsync(userId, fileName, fileData, jobInfo, addressInfo);
+                var job = await _jobRepository.CreateJobAsync(userId, fileName, jobInfo, addressInfo);
                 var response = _mapper.Map<CreateJobForCompanyDTO>(job);
 
                 return new DataResponse<CreateJobForCompanyDTO>
@@ -313,7 +313,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
-        public async Task<DataResponse<UpdateJobForCompanyDTO>> UpdateJobAsync(int? userId, int? jobId, string? fileName, byte[] fileData, UpdateJobForCompanyDTO? info)
+        public async Task<DataResponse<UpdateJobForCompanyDTO>> UpdateJobAsync(int? userId, int? jobId, string? fileName, UpdateJobForCompanyDTO? info)
         {
             try
             {
@@ -371,7 +371,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     ProvinceId = info?.ProvinceId,
                 };
 
-                var job = await _jobRepository.UpdateJobAsync(userId, jobId, fileName, fileData, jobInfo, addressInfo);
+                var job = await _jobRepository.UpdateJobAsync(userId, jobId, fileName, jobInfo, addressInfo);
                 var response = _mapper.Map<UpdateJobForCompanyDTO>(job);
 
                 return new DataResponse<UpdateJobForCompanyDTO>

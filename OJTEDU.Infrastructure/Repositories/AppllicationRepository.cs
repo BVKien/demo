@@ -38,7 +38,7 @@ namespace OJTEDU.Infrastructure.Repositories
         }
 
         // Student
-        public async Task<Appllication> ApplyJobAsync(int? userId, Appllication? applyInfo, string? testFileName, byte[]? testFileData, string? cvFileName, byte[]? cvFileData)
+        public async Task<Appllication> ApplyJobAsync(int? userId, Appllication? applyInfo, string? testFileName)
         {
             try
             {
@@ -117,7 +117,6 @@ namespace OJTEDU.Infrastructure.Repositories
                     TestFile = testFileName,
                     CoverLetter = applyInfo.CoverLetter,
                     CvId = applyInfo.CvId,
-                    CvFile = cvFileName,
                     Status = "1",
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,

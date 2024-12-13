@@ -22,8 +22,8 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         // Company 
         Task<DataResponse<List<JobListForCompanyDTO>>> GetAllJobsByUserIdAsync(int? userId);
         Task<DataResponse<JobDetailForCompanyDTO>> GetJobDetailForCompanyAsync(int? jobId);
-        Task<DataResponse<CreateJobForCompanyDTO>> CreateJobAsync(int? userId, string? fileName, byte[] fileData, CreateJobForCompanyDTO? info);
-        Task<DataResponse<UpdateJobForCompanyDTO>> UpdateJobAsync(int? userId, int? jobId, string? fileName, byte[] fileData, UpdateJobForCompanyDTO? info);
+        Task<DataResponse<CreateJobForCompanyDTO>> CreateJobAsync(int? userId, string? fileName, CreateJobForCompanyDTO? info);
+        Task<DataResponse<UpdateJobForCompanyDTO>> UpdateJobAsync(int? userId, int? jobId, string? fileName, UpdateJobForCompanyDTO? info);
 
         // User service
         //Task<DataResponse<UserReadForAuthDTO>> LoginWithGoogleAsync(string token);

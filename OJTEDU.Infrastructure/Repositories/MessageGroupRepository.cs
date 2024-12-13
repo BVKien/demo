@@ -1655,7 +1655,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
-        public async Task<MessageGroup> CreateMessageInMessageGroupAsync(int? userId, string? messageFileName, byte[]? messageFileData, string? imageFileName, byte[]? imageFileData, MessageGroup? messageGroupInfo)
+        public async Task<MessageGroup> CreateMessageInMessageGroupAsync(int? userId, string? messageFileName, string? imageFileName, MessageGroup? messageGroupInfo)
         {
             try
             {
@@ -1677,43 +1677,43 @@ namespace OJTEDU.Infrastructure.Repositories
                 // Uni
                 if (userExists?.Role?.Name == "Admin" || userExists?.Role?.Name == "DOET" || userExists?.Role?.Name == "Dean" || userExists?.Role?.Name == "Lecturer")
                 {
-                    // Create file name format userId_timestamp_filename
-                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                    var newMessageFileName = messageFileName != null ? $"{userId}_{timestamp}_{messageFileName}" : null;
-                    var newImageFileName = imageFileName != null ? $"{userId}_{timestamp}_{imageFileName}" : null;
+                    //// Create file name format userId_timestamp_filename
+                    //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    //var newMessageFileName = messageFileName != null ? $"{userId}_{timestamp}_{messageFileName}" : null;
+                    //var newImageFileName = imageFileName != null ? $"{userId}_{timestamp}_{imageFileName}" : null;
 
-                    var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
-                    var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
+                    //var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
+                    //var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
 
-                    // Save files to folders
-                    if (messageFileData != null && messageFilePath != null)
-                    {
-                        await File.WriteAllBytesAsync(messageFilePath, messageFileData);
-                    }
+                    //// Save files to folders
+                    //if (messageFileData != null && messageFilePath != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(messageFilePath, messageFileData);
+                    //}
 
-                    if (imageFileData != null && imageFilePath != null)
-                    {
-                        await File.WriteAllBytesAsync(imageFilePath, imageFileData);
-                    }
+                    //if (imageFileData != null && imageFilePath != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(imageFilePath, imageFileData);
+                    //}
 
-                    // If null 
-                    if (messageFileName == null || messageFileData == null)
-                    {
-                        messageFilePath = null;
-                    }
+                    //// If null 
+                    //if (messageFileName == null || messageFileData == null)
+                    //{
+                    //    messageFilePath = null;
+                    //}
 
-                    if (imageFileName == null || imageFileData == null)
-                    {
-                        imageFilePath = null;
-                    }
+                    //if (imageFileName == null || imageFileData == null)
+                    //{
+                    //    imageFilePath = null;
+                    //}
 
                     // Create new message infomation
                     var uniMemberInfo = new MessageGroup
                     {
                         GroupChatId = messageGroupInfo?.GroupChatId,
                         MessageContent = messageGroupInfo?.MessageContent,
-                        MessageFile = messageFilePath?.Replace("wwwroot", ""),
-                        Image = imageFilePath?.Replace("wwwroot", ""),
+                        MessageFile = messageFileName,
+                        Image = imageFileName,
                         UniversityId = userId,
                         IsRead = false,
                         CreatedAt = DateTime.Now,
@@ -1731,43 +1731,43 @@ namespace OJTEDU.Infrastructure.Repositories
                 {
                     var mentor = await _context.Companies.Include(c => c.User).ThenInclude(c => c.Role).FirstOrDefaultAsync(c => c.UserId == userId);
 
-                    // Create file name format companyId_timestamp_filename
-                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                    var newMessageFileName = messageFileName != null ? $"{mentor.CompanyId}_{timestamp}_{messageFileName}" : null;
-                    var newImageFileName = imageFileName != null ? $"{mentor.CompanyId}_{timestamp}_{imageFileName}" : null;
+                    //// Create file name format companyId_timestamp_filename
+                    //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    //var newMessageFileName = messageFileName != null ? $"{mentor.CompanyId}_{timestamp}_{messageFileName}" : null;
+                    //var newImageFileName = imageFileName != null ? $"{mentor.CompanyId}_{timestamp}_{imageFileName}" : null;
 
-                    var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
-                    var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
+                    //var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
+                    //var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
 
-                    // Save files to folders
-                    if (messageFileData != null && messageFilePath != null)
-                    {
-                        await File.WriteAllBytesAsync(messageFilePath, messageFileData);
-                    }
+                    //// Save files to folders
+                    //if (messageFileData != null && messageFilePath != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(messageFilePath, messageFileData);
+                    //}
 
-                    if (imageFileData != null && imageFilePath != null)
-                    {
-                        await File.WriteAllBytesAsync(imageFilePath, imageFileData);
-                    }
+                    //if (imageFileData != null && imageFilePath != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(imageFilePath, imageFileData);
+                    //}
 
-                    // If null 
-                    if (messageFileName == null || messageFileData == null)
-                    {
-                        messageFilePath = null;
-                    }
+                    //// If null 
+                    //if (messageFileName == null || messageFileData == null)
+                    //{
+                    //    messageFilePath = null;
+                    //}
 
-                    if (imageFileName == null || imageFileData == null)
-                    {
-                        imageFilePath = null;
-                    }
+                    //if (imageFileName == null || imageFileData == null)
+                    //{
+                    //    imageFilePath = null;
+                    //}
 
                     // Create new message infomation
                     var mentorMemberInfo = new MessageGroup
                     {
                         GroupChatId = messageGroupInfo?.GroupChatId,
                         MessageContent = messageGroupInfo?.MessageContent,
-                        MessageFile = messageFilePath,
-                        Image = imageFilePath,
+                        MessageFile = messageFileName,
+                        Image = imageFileName,
                         MentorId = mentor.CompanyId,
                         IsRead = false,
                         CreatedAt = DateTime.Now,
@@ -1783,43 +1783,43 @@ namespace OJTEDU.Infrastructure.Repositories
                 // Student 
                 var student = await _context.Students.Include(s => s.User).ThenInclude(s => s.Role).FirstOrDefaultAsync(s => s.UserId == userId);
 
-                // Create file name format studentId_timestamp_filename
-                var timestampStu = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                var newMessageFileNameStu = messageFileName != null ? $"{student.StudentId}_{timestampStu}_{messageFileName}" : null;
-                var newImageFileNameStu = imageFileName != null ? $"{student.StudentId}_{timestampStu}_{imageFileName}" : null;
+                //// Create file name format studentId_timestamp_filename
+                //var timestampStu = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                //var newMessageFileNameStu = messageFileName != null ? $"{student.StudentId}_{timestampStu}_{messageFileName}" : null;
+                //var newImageFileNameStu = imageFileName != null ? $"{student.StudentId}_{timestampStu}_{imageFileName}" : null;
 
-                var messageFilePathStu = newMessageFileNameStu != null ? Path.Combine(_messageFileDirectory, newMessageFileNameStu) : null;
-                var imageFilePathStu = newImageFileNameStu != null ? Path.Combine(_imageFileDirectory, newImageFileNameStu) : null;
+                //var messageFilePathStu = newMessageFileNameStu != null ? Path.Combine(_messageFileDirectory, newMessageFileNameStu) : null;
+                //var imageFilePathStu = newImageFileNameStu != null ? Path.Combine(_imageFileDirectory, newImageFileNameStu) : null;
 
-                // Save files to folders
-                if (messageFileData != null && messageFilePathStu != null)
-                {
-                    await File.WriteAllBytesAsync(messageFilePathStu, messageFileData);
-                }
+                //// Save files to folders
+                //if (messageFileData != null && messageFilePathStu != null)
+                //{
+                //    await File.WriteAllBytesAsync(messageFilePathStu, messageFileData);
+                //}
 
-                if (imageFileData != null && imageFilePathStu != null)
-                {
-                    await File.WriteAllBytesAsync(imageFilePathStu, imageFileData);
-                }
+                //if (imageFileData != null && imageFilePathStu != null)
+                //{
+                //    await File.WriteAllBytesAsync(imageFilePathStu, imageFileData);
+                //}
 
-                // If null 
-                if (messageFileName == null || messageFileData == null)
-                {
-                    messageFilePathStu = null;
-                }
+                //// If null 
+                //if (messageFileName == null || messageFileData == null)
+                //{
+                //    messageFilePathStu = null;
+                //}
 
-                if (imageFileName == null || imageFileData == null)
-                {
-                    imageFilePathStu = null;
-                }
+                //if (imageFileName == null || imageFileData == null)
+                //{
+                //    imageFilePathStu = null;
+                //}
 
                 // Create new message infomation
                 var studentMemberInfo = new MessageGroup
                 {
                     GroupChatId = messageGroupInfo?.GroupChatId,
                     MessageContent = messageGroupInfo?.MessageContent,
-                    MessageFile = messageFilePathStu,
-                    Image = imageFilePathStu,
+                    MessageFile = messageFileName,
+                    Image = imageFileName,
                     StudentId = student.StudentId,
                     IsRead = false,
                     CreatedAt = DateTime.Now,

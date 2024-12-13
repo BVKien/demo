@@ -27,7 +27,7 @@ namespace OJTEDU.Infrastructure.Repositories
         }
 
         // Mentor 
-        public async Task<Contract> AssignContractAsync(int? userId, int? internshipId, string? fileName, byte[] fileData, Contract? info)
+        public async Task<Contract> AssignContractAsync(int? userId, int? internshipId, string? fileName, Contract? info)
         {
             try
             {
@@ -54,29 +54,29 @@ namespace OJTEDU.Infrastructure.Repositories
                 var company = await _context.Companies.FirstOrDefaultAsync(c => c.UserId == mentor.ForCompany);
 
                 // Create file name format internshipId_timestamp_filename
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                var newFileName = fileName != null ? $"{internshipId}_{timestamp}_{fileName}" : null;
+                //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                //var newFileName = fileName != null ? $"{internshipId}_{timestamp}_{fileName}" : null;
 
-                var filePath = newFileName != null ? Path.Combine(_contractDirectory, newFileName) : null;
+                //var filePath = newFileName != null ? Path.Combine(_contractDirectory, newFileName) : null;
 
-                // Save files to folders
-                if (fileData != null && filePath != null)
-                {
-                    await File.WriteAllBytesAsync(filePath, fileData);
-                }
+                //// Save files to folders
+                //if (fileData != null && filePath != null)
+                //{
+                //    await File.WriteAllBytesAsync(filePath, fileData);
+                //}
 
-                // If null 
-                if (fileName == null || fileData == null)
-                {
-                    filePath = null;
-                }
+                //// If null 
+                //if (fileName == null || fileData == null)
+                //{
+                //    filePath = null;
+                //}
 
                 var contract = new Contract
                 {
                     ContractTypeId = 1, // contract type where company - uni collaboration 
                     CompanyId = company?.CompanyId,
                     Name = info?.Name,
-                    ContractFile = filePath?.Replace("wwwroot", ""),
+                    ContractFile = fileName,
                     Status = "1",
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now

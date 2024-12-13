@@ -60,7 +60,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
-        public async Task<WorkingReport> CreateWorkingReportAsync(int? userId, WorkingReport? workingReportInfo, string? fileName, byte[] fileData)
+        public async Task<WorkingReport> CreateWorkingReportAsync(int? userId, WorkingReport? workingReportInfo, string? fileName, string? fileData)
         {
             try
             {
@@ -94,23 +94,23 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException($"Not found student.");
                 }
 
-                // Create file name format studentId_timestamp_filename
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                var newFileName = fileName != null ? $"{workingReportInfo.StudentId}_{timestamp}_{fileName}" : null;
+                //// Create file name format studentId_timestamp_filename
+                //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                //var newFileName = fileName != null ? $"{workingReportInfo.StudentId}_{timestamp}_{fileName}" : null;
 
-                var filePath = newFileName != null ? Path.Combine(_fileDirectory, newFileName) : null;
+                //var filePath = newFileName != null ? Path.Combine(_fileDirectory, newFileName) : null;
 
-                // Save files to folders
-                if (fileData != null && filePath != null)
-                {
-                    await File.WriteAllBytesAsync(filePath, fileData);
-                }
+                //// Save files to folders
+                //if (fileData != null && filePath != null)
+                //{
+                //    await File.WriteAllBytesAsync(filePath, fileData);
+                //}
 
-                // If null 
-                if (fileName == null || fileData == null)
-                {
-                    filePath = null;
-                }
+                //// If null 
+                //if (fileName == null || fileData == null)
+                //{
+                //    filePath = null;
+                //}
 
                 var workingReport = new WorkingReport
                 {
@@ -120,7 +120,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     ReportTitle = workingReportInfo?.ReportTitle,
                     ReportContent = workingReportInfo?.ReportContent,
                     ReportDate = DateTime.Now,
-                    FileAttachment = filePath?.Replace("wwwroot", ""),
+                    FileAttachment = fileData,
                     Status = "1",
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
@@ -137,7 +137,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
-        public async Task<WorkingReport> UpdateWorkingReportAsync(int? workingReportId, WorkingReport? workingReportInfo, string? fileName, byte[] fileData)
+        public async Task<WorkingReport> UpdateWorkingReportAsync(int? workingReportId, WorkingReport? workingReportInfo, string? fileName)
         {
             try
             {
@@ -150,28 +150,28 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Not found working report.");
                 }
 
-                // Create file name format studentId_timestamp_filename
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                var newFileName = fileName != null ? $"{workingReport.StudentId}_{timestamp}_{fileName}" : null;
+                //// Create file name format studentId_timestamp_filename
+                //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                //var newFileName = fileName != null ? $"{workingReport.StudentId}_{timestamp}_{fileName}" : null;
 
-                var filePath = newFileName != null ? Path.Combine(_fileDirectory, newFileName) : null;
+                //var filePath = newFileName != null ? Path.Combine(_fileDirectory, newFileName) : null;
 
-                // Save files to folders
-                if (fileData != null && filePath != null)
-                {
-                    await File.WriteAllBytesAsync(filePath, fileData);
-                }
+                //// Save files to folders
+                //if (fileData != null && filePath != null)
+                //{
+                //    await File.WriteAllBytesAsync(filePath, fileData);
+                //}
 
-                // If null 
-                if (fileName == null || fileData == null)
-                {
-                    filePath = null;
-                }
+                //// If null 
+                //if (fileName == null || fileData == null)
+                //{
+                //    filePath = null;
+                //}
 
                 // Update
                 workingReport.ReportTitle = workingReportInfo?.ReportTitle;
                 workingReport.ReportContent = workingReportInfo?.ReportContent;
-                workingReport.FileAttachment = filePath?.Replace("wwwroot", "");
+                workingReport.FileAttachment = fileName;
                 workingReport.UpdatedAt = DateTime.Now;
 
                 _context.WorkingReports.Update(workingReport);

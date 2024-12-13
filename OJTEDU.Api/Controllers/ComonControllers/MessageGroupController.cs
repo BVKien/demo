@@ -329,50 +329,50 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             }
         }
 
-        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Student")]
-        [HttpPost("files/upload")]
-        public async Task<IActionResult> UploadFile(IFormFile file)
-        {
-            try
-            {
-                if (file == null || file.Length == 0)
-                    return BadRequest("No file uploaded.");
+        //[Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Student")]
+        //[HttpPost("files/upload")]
+        //public async Task<IActionResult> UploadFile()
+        //{
+        //    try
+        //    {
+        //        if (file == null || file.Length == 0)
+        //            return BadRequest("No file uploaded.");
 
-                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/messagesgroup/files/");
-                if (!Directory.Exists(uploadPath))
-                {
-                    Directory.CreateDirectory(uploadPath);
-                }
+        //        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/messagesgroup/files/");
+        //        if (!Directory.Exists(uploadPath))
+        //        {
+        //            Directory.CreateDirectory(uploadPath);
+        //        }
 
-                var filePath = Path.Combine(uploadPath, file.FileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
+        //        var filePath = Path.Combine(uploadPath, file.FileName);
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            await file.CopyToAsync(stream);
+        //        }
 
-                byte[] fileData;
-                using (var memoryStream = new MemoryStream())
-                {
-                    await file.CopyToAsync(memoryStream);
-                    fileData = memoryStream.ToArray();
-                }
+        //        byte[] fileData;
+        //        using (var memoryStream = new MemoryStream())
+        //        {
+        //            await file.CopyToAsync(memoryStream);
+        //            fileData = memoryStream.ToArray();
+        //        }
 
-                return Ok(new
-                {
-                    Data = file.FileName
-                });
-            }
-            catch (Exception ex)
-            {
-                var errorResponse = new ApiResponse<string>
-                {
-                    Message = $"An error occurred while uploading file.",
-                    Data = ex.Message
-                };
+        //        return Ok(new
+        //        {
+        //            Data = file.FileName
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var errorResponse = new ApiResponse<string>
+        //        {
+        //            Message = $"An error occurred while uploading file.",
+        //            Data = ex.Message
+        //        };
 
-                return StatusCode(500, errorResponse);
-            }
-        }
+        //        return StatusCode(500, errorResponse);
+        //    }
+        //}
 
         [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Student")]
         [HttpPost("message/create")]
@@ -382,22 +382,22 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var messageFilePath = Path.Combine("wwwroot/uploads/messagesgroup/files/", input.MessageFile);
-                var imageFilePath = Path.Combine("wwwroot/uploads/messagesgroup/files/", input.Image);
+                //var messageFilePath = Path.Combine("wwwroot/uploads/messagesgroup/files/", input.MessageFile);
+                //var imageFilePath = Path.Combine("wwwroot/uploads/messagesgroup/files/", input.Image);
 
-                // Initialize 
-                byte[]? messageFileData = null;
-                byte[]? imageFileData = null;
+                //// Initialize 
+                //byte[]? messageFileData = null;
+                //byte[]? imageFileData = null;
 
-                // Read content file if it is not null
-                if (!string.IsNullOrEmpty(input.MessageFile) && System.IO.File.Exists(messageFilePath))
-                {
-                    messageFileData = await System.IO.File.ReadAllBytesAsync(messageFilePath);
-                }
-                if (!string.IsNullOrEmpty(input.Image) && System.IO.File.Exists(imageFilePath))
-                {
-                    imageFileData = await System.IO.File.ReadAllBytesAsync(imageFilePath);
-                }
+                //// Read content file if it is not null
+                //if (!string.IsNullOrEmpty(input.MessageFile) && System.IO.File.Exists(messageFilePath))
+                //{
+                //    messageFileData = await System.IO.File.ReadAllBytesAsync(messageFilePath);
+                //}
+                //if (!string.IsNullOrEmpty(input.Image) && System.IO.File.Exists(imageFilePath))
+                //{
+                //    imageFileData = await System.IO.File.ReadAllBytesAsync(imageFilePath);
+                //}
 
                 var messageInfoDto = new CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO
                 {
@@ -405,7 +405,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
                     MessageContent = input?.MessageContent
                 };
 
-                var apiResponse = await _messageGroupService.CreateMessageInMessageGroupAsync(userId, input?.MessageFile, messageFileData, input?.Image, imageFileData, messageInfoDto);
+                var apiResponse = await _messageGroupService.CreateMessageInMessageGroupAsync(userId, input?.MessageFile, input?.Image, messageInfoDto);
 
                 if (apiResponse.StatusCode == 404)
                 {
@@ -434,18 +434,18 @@ namespace OJTEDU.Api.Controllers.ComonControllers
                     });
                 }
 
-                if (apiResponse.StatusCode == 200)
-                {
-                    if (messageFileData != null && System.IO.File.Exists(messageFilePath))
-                    {
-                        System.IO.File.Delete(messageFilePath);
-                    }
+                //if (apiResponse.StatusCode == 200)
+                //{
+                //    if (messageFileData != null && System.IO.File.Exists(messageFilePath))
+                //    {
+                //        System.IO.File.Delete(messageFilePath);
+                //    }
 
-                    if (imageFileData != null && System.IO.File.Exists(imageFilePath))
-                    {
-                        System.IO.File.Delete(imageFilePath);
-                    }
-                }
+                //    if (imageFileData != null && System.IO.File.Exists(imageFilePath))
+                //    {
+                //        System.IO.File.Delete(imageFilePath);
+                //    }
+                //}
 
                 return Ok(new ApiResponse<CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO>
                 {

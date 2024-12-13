@@ -36,7 +36,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
         // First message from sender -> create conversation
         // Admin, DOET, Dean, Lecturer, Mentor, Company, Student
-        public async Task<Message> CreateFirstMessageConversationAsync(int? userId, int? receiverId, string? messageFileName, byte[]? messageFileData, string? imageFileName, byte[]? imageFileData, Message? messageInfo)
+        public async Task<Message> CreateFirstMessageConversationAsync(int? userId, int? receiverId, string? messageFileName, string? imageFileName, Message? messageInfo)
         {
             try
             {
@@ -64,35 +64,35 @@ namespace OJTEDU.Infrastructure.Repositories
                 // Uni side
                 if (userExists?.Role.Name == "Admin" || userExists?.Role.Name == "DOET" || userExists?.Role.Name == "Dean" || userExists?.Role.Name == "Lecturer")
                 {
-                    // Create file name format userId_timestamp_filename
-                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                    var newMessageFileName = messageFileName != null ? $"{userId}_{timestamp}_{messageFileName}" : null;
-                    var newImageFileName = imageFileName != null ? $"{userId}_{timestamp}_{imageFileName}" : null;
+                    //// Create file name format userId_timestamp_filename
+                    //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    //var newMessageFileName = messageFileName != null ? $"{userId}_{timestamp}_{messageFileName}" : null;
+                    //var newImageFileName = imageFileName != null ? $"{userId}_{timestamp}_{imageFileName}" : null;
 
-                    var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
-                    var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
+                    //var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
+                    //var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
 
-                    // Save files to folders
-                    if (messageFileData != null && messageFilePath != null)
-                    {
-                        await File.WriteAllBytesAsync(messageFilePath, messageFileData);
-                    }
+                    //// Save files to folders
+                    //if (messageFileData != null && messageFilePath != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(messageFilePath, messageFileData);
+                    //}
 
-                    if (imageFileData != null && imageFilePath != null)
-                    {
-                        await File.WriteAllBytesAsync(imageFilePath, imageFileData);
-                    }
+                    //if (imageFileData != null && imageFilePath != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(imageFilePath, imageFileData);
+                    //}
 
-                    // If null 
-                    if (messageFileName == null || messageFileData == null)
-                    {
-                        messageFilePath = null;
-                    }
+                    //// If null 
+                    //if (messageFileName == null || messageFileData == null)
+                    //{
+                    //    messageFilePath = null;
+                    //}
 
-                    if (imageFileName == null || imageFileData == null)
-                    {
-                        imageFilePath = null;
-                    }
+                    //if (imageFileName == null || imageFileData == null)
+                    //{
+                    //    imageFilePath = null;
+                    //}
 
                     int conversationId;
 
@@ -110,8 +110,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     {
                         MessageContent = messageInfo?.MessageContent,
                         ConversationId = conversationId,
-                        MessageFile = messageFilePath,
-                        Image = imageFilePath,
+                        MessageFile = messageFileName,
+                        Image = imageFileName,
                         UniversiryId = userId,
                         IsRead = false,
                         Status = "1",
@@ -236,35 +236,35 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Include(c => c.User).ThenInclude(c => c.Role)
                         .FirstOrDefaultAsync();
 
-                    // Create file name format companyId_timestamp_filename
-                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                    var newMessageFileName = messageFileName != null ? $"{company.CompanyId}_{timestamp}_{messageFileName}" : null;
-                    var newImageFileName = imageFileName != null ? $"{company.CompanyId}_{timestamp}_{imageFileName}" : null;
+                    //// Create file name format companyId_timestamp_filename
+                    //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    //var newMessageFileName = messageFileName != null ? $"{company.CompanyId}_{timestamp}_{messageFileName}" : null;
+                    //var newImageFileName = imageFileName != null ? $"{company.CompanyId}_{timestamp}_{imageFileName}" : null;
 
-                    var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
-                    var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
+                    //var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
+                    //var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
 
-                    // Save files to folders
-                    if (messageFileData != null && messageFilePath != null)
-                    {
-                        await File.WriteAllBytesAsync(messageFilePath, messageFileData);
-                    }
+                    //// Save files to folders
+                    //if (messageFileData != null && messageFilePath != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(messageFilePath, messageFileData);
+                    //}
 
-                    if (imageFileData != null && imageFilePath != null)
-                    {
-                        await File.WriteAllBytesAsync(imageFilePath, imageFileData);
-                    }
+                    //if (imageFileData != null && imageFilePath != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(imageFilePath, imageFileData);
+                    //}
 
-                    // If null 
-                    if (messageFileName == null || messageFileData == null)
-                    {
-                        messageFilePath = null;
-                    }
+                    //// If null 
+                    //if (messageFileName == null || messageFileData == null)
+                    //{
+                    //    messageFilePath = null;
+                    //}
 
-                    if (imageFileName == null || imageFileData == null)
-                    {
-                        imageFilePath = null;
-                    }
+                    //if (imageFileName == null || imageFileData == null)
+                    //{
+                    //    imageFilePath = null;
+                    //}
 
                     int conversationId;
 
@@ -282,8 +282,8 @@ namespace OJTEDU.Infrastructure.Repositories
                     {
                         MessageContent = messageInfo?.MessageContent,
                         ConversationId = conversationId,
-                        MessageFile = messageFilePath,
-                        Image = imageFilePath,
+                        MessageFile = messageFileName,
+                        Image = imageFileName,
                         CompanyId = company.CompanyId,
                         IsRead = false,
                         Status = "1",
@@ -411,35 +411,35 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Not found student.");
                 }
 
-                // Create file name format studentId_timestamp_filename
-                var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                var newMessageFileNameValid = messageFileName != null ? $"{student.StudentId}_{timestampValid}_{messageFileName}" : null;
-                var newImageFileNameValid = imageFileName != null ? $"{student.StudentId}_{timestampValid}_{imageFileName}" : null;
+                //// Create file name format studentId_timestamp_filename
+                //var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                //var newMessageFileNameValid = messageFileName != null ? $"{student.StudentId}_{timestampValid}_{messageFileName}" : null;
+                //var newImageFileNameValid = imageFileName != null ? $"{student.StudentId}_{timestampValid}_{imageFileName}" : null;
 
-                var messageFilePathValid = newMessageFileNameValid != null ? Path.Combine(_messageFileDirectory, newMessageFileNameValid) : null;
-                var imageFilePathValid = newImageFileNameValid != null ? Path.Combine(_imageFileDirectory, newImageFileNameValid) : null;
+                //var messageFilePathValid = newMessageFileNameValid != null ? Path.Combine(_messageFileDirectory, newMessageFileNameValid) : null;
+                //var imageFilePathValid = newImageFileNameValid != null ? Path.Combine(_imageFileDirectory, newImageFileNameValid) : null;
 
-                // Save files to folders
-                if (messageFileData != null && messageFilePathValid != null)
-                {
-                    await File.WriteAllBytesAsync(messageFilePathValid, messageFileData);
-                }
+                //// Save files to folders
+                //if (messageFileData != null && messageFilePathValid != null)
+                //{
+                //    await File.WriteAllBytesAsync(messageFilePathValid, messageFileData);
+                //}
 
-                if (imageFileData != null && imageFilePathValid != null)
-                {
-                    await File.WriteAllBytesAsync(imageFilePathValid, imageFileData);
-                }
+                //if (imageFileData != null && imageFilePathValid != null)
+                //{
+                //    await File.WriteAllBytesAsync(imageFilePathValid, imageFileData);
+                //}
 
-                // If null 
-                if (messageFileName == null || messageFileData == null)
-                {
-                    messageFilePathValid = null;
-                }
+                //// If null 
+                //if (messageFileName == null || messageFileData == null)
+                //{
+                //    messageFilePathValid = null;
+                //}
 
-                if (imageFileName == null || imageFileData == null)
-                {
-                    imageFilePathValid = null;
-                }
+                //if (imageFileName == null || imageFileData == null)
+                //{
+                //    imageFilePathValid = null;
+                //}
 
                 int conversationIdValid;
 
@@ -457,8 +457,8 @@ namespace OJTEDU.Infrastructure.Repositories
                 {
                     MessageContent = messageInfo?.MessageContent,
                     ConversationId = conversationIdValid,
-                    MessageFile = messageFilePathValid?.Replace("wwwroot", ""),
-                    Image = imageFilePathValid?.Replace("wwwroot", ""),
+                    MessageFile = messageFileName,
+                    Image = imageFileName,
                     StudentId = student.StudentId,
                     IsRead = false,
                     Status = "1",
@@ -581,7 +581,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
-        public async Task<Message> CreateMessageAsync(int? userId, string? messageFileName, byte[]? messageFileData, string? imageFileName, byte[]? imageFileData, Message? messageInfo)
+        public async Task<Message> CreateMessageAsync(int? userId, string? messageFileName, string? imageFileName, Message? messageInfo)
         {
             try
             {
@@ -602,42 +602,42 @@ namespace OJTEDU.Infrastructure.Repositories
                 // Uni side
                 if (userExists?.Role.Name == "Admin" || userExists?.Role.Name == "DOET" || userExists?.Role.Name == "Dean" || userExists?.Role.Name == "Lecturer")
                 {
-                    // Create file name format userId_timestamp_filename
-                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                    var newMessageFileName = messageFileName != null ? $"{userId}_{timestamp}_{messageFileName}" : null;
-                    var newImageFileName = imageFileName != null ? $"{userId}_{timestamp}_{imageFileName}" : null;
+                    //// Create file name format userId_timestamp_filename
+                    //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    //var newMessageFileName = messageFileName != null ? $"{userId}_{timestamp}_{messageFileName}" : null;
+                    //var newImageFileName = imageFileName != null ? $"{userId}_{timestamp}_{imageFileName}" : null;
 
-                    var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
-                    var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
+                    //var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
+                    //var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
 
-                    // Save files to folders
-                    if (messageFileData != null && messageFilePath != null)
-                    {
-                        await File.WriteAllBytesAsync(messageFilePath, messageFileData);
-                    }
+                    //// Save files to folders
+                    //if (messageFileData != null && messageFilePath != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(messageFilePath, messageFileData);
+                    //}
 
-                    if (imageFileData != null && imageFilePath != null)
-                    {
-                        await File.WriteAllBytesAsync(imageFilePath, imageFileData);
-                    }
+                    //if (imageFileData != null && imageFilePath != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(imageFilePath, imageFileData);
+                    //}
 
-                    // If null 
-                    if (messageFileName == null || messageFileData == null)
-                    {
-                        messageFilePath = null;
-                    }
+                    //// If null 
+                    //if (messageFileName == null || messageFileData == null)
+                    //{
+                    //    messageFilePath = null;
+                    //}
 
-                    if (imageFileName == null || imageFileData == null)
-                    {
-                        imageFilePath = null;
-                    }
+                    //if (imageFileName == null || imageFileData == null)
+                    //{
+                    //    imageFilePath = null;
+                    //}
 
                     var message = new Message
                     {
                         MessageContent = messageInfo?.MessageContent,
                         ConversationId = messageInfo?.ConversationId,
-                        MessageFile = messageFilePath?.Replace("wwwroot", ""),
-                        Image = imageFilePath?.Replace("wwwroot", ""),
+                        MessageFile = messageFileName,
+                        Image = imageFileName,
                         UniversiryId = userId,
                         IsRead = false,
                         Status = "1",
@@ -658,42 +658,42 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Include(c => c.User).ThenInclude(c => c.Role)
                         .FirstOrDefaultAsync();
 
-                    // Create file name format companyId_timestamp_filename
-                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                    var newMessageFileName = messageFileName != null ? $"{company.CompanyId}_{timestamp}_{messageFileName}" : null;
-                    var newImageFileName = imageFileName != null ? $"{company.CompanyId}_{timestamp}_{imageFileName}" : null;
+                    //// Create file name format companyId_timestamp_filename
+                    //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                    //var newMessageFileName = messageFileName != null ? $"{company.CompanyId}_{timestamp}_{messageFileName}" : null;
+                    //var newImageFileName = imageFileName != null ? $"{company.CompanyId}_{timestamp}_{imageFileName}" : null;
 
-                    var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
-                    var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
+                    //var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
+                    //var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
 
-                    // Save files to folders
-                    if (messageFileData != null && messageFilePath != null)
-                    {
-                        await File.WriteAllBytesAsync(messageFilePath, messageFileData);
-                    }
+                    //// Save files to folders
+                    //if (messageFileData != null && messageFilePath != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(messageFilePath, messageFileData);
+                    //}
 
-                    if (imageFileData != null && imageFilePath != null)
-                    {
-                        await File.WriteAllBytesAsync(imageFilePath, imageFileData);
-                    }
+                    //if (imageFileData != null && imageFilePath != null)
+                    //{
+                    //    await File.WriteAllBytesAsync(imageFilePath, imageFileData);
+                    //}
 
-                    // If null 
-                    if (messageFileName == null || messageFileData == null)
-                    {
-                        messageFilePath = null;
-                    }
+                    //// If null 
+                    //if (messageFileName == null || messageFileData == null)
+                    //{
+                    //    messageFilePath = null;
+                    //}
 
-                    if (imageFileName == null || imageFileData == null)
-                    {
-                        imageFilePath = null;
-                    }
+                    //if (imageFileName == null || imageFileData == null)
+                    //{
+                    //    imageFilePath = null;
+                    //}
 
                     var message = new Message
                     {
                         MessageContent = messageInfo?.MessageContent,
                         ConversationId = messageInfo?.ConversationId,
-                        MessageFile = messageFilePath?.Replace("wwwroot", ""),
-                        Image = imageFilePath?.Replace("wwwroot", ""),
+                        MessageFile = messageFileName,
+                        Image = imageFileName,
                         CompanyId = company.CompanyId,
                         IsRead = false,
                         Status = "1",
@@ -717,42 +717,42 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Not found student.");
                 }
 
-                // Create file name format studentId_timestamp_filename
-                var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                var newMessageFileNameValid = messageFileName != null ? $"{student.StudentId}_{timestampValid}_{messageFileName}" : null;
-                var newImageFileNameValid = imageFileName != null ? $"{student.StudentId}_{timestampValid}_{imageFileName}" : null;
+                //// Create file name format studentId_timestamp_filename
+                //var timestampValid = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                //var newMessageFileNameValid = messageFileName != null ? $"{student.StudentId}_{timestampValid}_{messageFileName}" : null;
+                //var newImageFileNameValid = imageFileName != null ? $"{student.StudentId}_{timestampValid}_{imageFileName}" : null;
 
-                var messageFilePathValid = newMessageFileNameValid != null ? Path.Combine(_messageFileDirectory, newMessageFileNameValid) : null;
-                var imageFilePathValid = newImageFileNameValid != null ? Path.Combine(_imageFileDirectory, newImageFileNameValid) : null;
+                //var messageFilePathValid = newMessageFileNameValid != null ? Path.Combine(_messageFileDirectory, newMessageFileNameValid) : null;
+                //var imageFilePathValid = newImageFileNameValid != null ? Path.Combine(_imageFileDirectory, newImageFileNameValid) : null;
 
-                // Save files to folders
-                if (messageFileData != null && messageFilePathValid != null)
-                {
-                    await File.WriteAllBytesAsync(messageFilePathValid, messageFileData);
-                }
+                //// Save files to folders
+                //if (messageFileData != null && messageFilePathValid != null)
+                //{
+                //    await File.WriteAllBytesAsync(messageFilePathValid, messageFileData);
+                //}
 
-                if (imageFileData != null && imageFilePathValid != null)
-                {
-                    await File.WriteAllBytesAsync(imageFilePathValid, imageFileData);
-                }
+                //if (imageFileData != null && imageFilePathValid != null)
+                //{
+                //    await File.WriteAllBytesAsync(imageFilePathValid, imageFileData);
+                //}
 
-                // If null 
-                if (messageFileName == null || messageFileData == null)
-                {
-                    messageFilePathValid = null;
-                }
+                //// If null 
+                //if (messageFileName == null || messageFileData == null)
+                //{
+                //    messageFilePathValid = null;
+                //}
 
-                if (imageFileName == null || imageFileData == null)
-                {
-                    imageFilePathValid = null;
-                }
+                //if (imageFileName == null || imageFileData == null)
+                //{
+                //    imageFilePathValid = null;
+                //}
 
                 var messageValid = new Message
                 {
                     MessageContent = messageInfo?.MessageContent,
                     ConversationId = messageInfo?.ConversationId,
-                    MessageFile = messageFilePathValid?.Replace("wwwroot", ""),
-                    Image = imageFilePathValid?.Replace("wwwroot", ""),
+                    MessageFile = messageFileName,
+                    Image = imageFileName,
                     StudentId = student.StudentId,
                     IsRead = false,
                     Status = "1",

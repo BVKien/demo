@@ -20,7 +20,7 @@ namespace OJTEDU.Domain.Interfaces
          */
 
         // Student 
-        Task<Appllication> ApplyJobAsync(int? userId, Appllication? applyInfo, string? testFileName, byte[] testFileData, string? cvFileName, byte[] cvFileData);
+        Task<Appllication> ApplyJobAsync(int? userId, Appllication? applyInfo, string? testFileName);
         Task<Appllication> GetApplicationDetailByIdAsync(int? applicationId); // + Comapny 
         Task<IEnumerable<Appllication>> GetAllApplicationsByUserIdAsync(int? userId);
         Task<bool> CompanyOffersActionsAsync(int? userId, int? applicationId, string? studentRejectReason, string? status);

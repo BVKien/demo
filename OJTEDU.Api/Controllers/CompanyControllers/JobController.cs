@@ -136,55 +136,55 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
             }
         }
 
-        [Authorize(Roles = "Company")]
-        [HttpPost("files/upload")]
-        public async Task<IActionResult> UploadFile(IFormFile file)
-        {
-            try
-            {
-                if (file == null || file.Length == 0)
-                    return BadRequest("No file uploaded.");
+        //[Authorize(Roles = "Company")]
+        //[HttpPost("files/upload")]
+        //public async Task<IActionResult> UploadFile()
+        //{
+        //    try
+        //    {
+        //        if (file == null || file.Length == 0)
+        //            return BadRequest("No file uploaded.");
 
-                // Maximum 10MB validate
-                const long maxFileSize = 10 * 1024 * 1024;
-                if (file.Length > maxFileSize)
-                    return BadRequest("File size exceeds the 10MB limit.");
+        //        // Maximum 10MB validate
+        //        const long maxFileSize = 10 * 1024 * 1024;
+        //        if (file.Length > maxFileSize)
+        //            return BadRequest("File size exceeds the 10MB limit.");
 
-                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/jobs/files/");
-                if (!Directory.Exists(uploadPath))
-                {
-                    Directory.CreateDirectory(uploadPath);
-                }
+        //        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/jobs/files/");
+        //        if (!Directory.Exists(uploadPath))
+        //        {
+        //            Directory.CreateDirectory(uploadPath);
+        //        }
 
-                var filePath = Path.Combine(uploadPath, file.FileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
+        //        var filePath = Path.Combine(uploadPath, file.FileName);
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            await file.CopyToAsync(stream);
+        //        }
 
-                byte[] fileData;
-                using (var memoryStream = new MemoryStream())
-                {
-                    await file.CopyToAsync(memoryStream);
-                    fileData = memoryStream.ToArray();
-                }
+        //        byte[] fileData;
+        //        using (var memoryStream = new MemoryStream())
+        //        {
+        //            await file.CopyToAsync(memoryStream);
+        //            fileData = memoryStream.ToArray();
+        //        }
 
-                return Ok(new
-                {
-                    Data = file.FileName
-                });
-            }
-            catch (Exception ex)
-            {
-                var errorResponse = new ApiResponse<string>
-                {
-                    Message = "An error occurred while uploading file.",
-                    Data = ex.Message
-                };
+        //        return Ok(new
+        //        {
+        //            Data = file.FileName
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var errorResponse = new ApiResponse<string>
+        //        {
+        //            Message = "An error occurred while uploading file.",
+        //            Data = ex.Message
+        //        };
 
-                return StatusCode(500, errorResponse);
-            }
-        }
+        //        return StatusCode(500, errorResponse);
+        //    }
+        //}
 
         [Authorize(Roles = "Company")]
         [HttpPost("create")]
@@ -194,16 +194,16 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var filePath = Path.Combine("wwwroot/uploads/jobs/files/", input.TestFile);
+                //var filePath = Path.Combine("wwwroot/uploads/jobs/files/", input.TestFile);
 
-                // Initialize 
-                byte[]? fileData = null;
+                //// Initialize 
+                //byte[]? fileData = null;
 
-                // Read content file if it is not null
-                if (!string.IsNullOrEmpty(input.TestFile) && System.IO.File.Exists(filePath))
-                {
-                    fileData = await System.IO.File.ReadAllBytesAsync(filePath);
-                }
+                //// Read content file if it is not null
+                //if (!string.IsNullOrEmpty(input.TestFile) && System.IO.File.Exists(filePath))
+                //{
+                //    fileData = await System.IO.File.ReadAllBytesAsync(filePath);
+                //}
 
                 var jobInfoDto = new CreateJobForCompanyDTO
                 {
@@ -223,7 +223,7 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
                     ProvinceId = input?.ProvinceId,
                 };
 
-                var apiResponse = await _jobService.CreateJobAsync(userId, input?.TestFile, fileData, jobInfoDto);
+                var apiResponse = await _jobService.CreateJobAsync(userId, input?.TestFile, jobInfoDto);
 
                 if (apiResponse.StatusCode == 404)
                 {
@@ -252,13 +252,13 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
                     });
                 }
 
-                if (apiResponse.StatusCode == 200)
-                {
-                    if (fileData != null && System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                }
+                //if (apiResponse.StatusCode == 200)
+                //{
+                //    if (fileData != null && System.IO.File.Exists(filePath))
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //}
 
                 return Ok(new ApiResponse<CreateJobForCompanyDTO>
                 {
@@ -286,16 +286,16 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var filePath = Path.Combine("wwwroot/uploads/jobs/files/", input.TestFile);
+                //var filePath = Path.Combine("wwwroot/uploads/jobs/files/", input.TestFile);
 
-                // Initialize 
-                byte[]? fileData = null;
+                //// Initialize 
+                //byte[]? fileData = null;
 
-                // Read content file if it is not null
-                if (!string.IsNullOrEmpty(input.TestFile) && System.IO.File.Exists(filePath))
-                {
-                    fileData = await System.IO.File.ReadAllBytesAsync(filePath);
-                }
+                //// Read content file if it is not null
+                //if (!string.IsNullOrEmpty(input.TestFile) && System.IO.File.Exists(filePath))
+                //{
+                //    fileData = await System.IO.File.ReadAllBytesAsync(filePath);
+                //}
 
                 var jobInfoDto = new UpdateJobForCompanyDTO
                 {
@@ -314,7 +314,7 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
                     ProvinceId = input?.ProvinceId,
                 };
 
-                var apiResponse = await _jobService.UpdateJobAsync(userId, jobId, input?.TestFile, fileData, jobInfoDto);
+                var apiResponse = await _jobService.UpdateJobAsync(userId, jobId, input?.TestFile, jobInfoDto);
 
                 if (apiResponse.StatusCode == 404)
                 {
@@ -343,13 +343,13 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
                     });
                 }
 
-                if (apiResponse.StatusCode == 200)
-                {
-                    if (fileData != null && System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                }
+                //if (apiResponse.StatusCode == 200)
+                //{
+                //    if (fileData != null && System.IO.File.Exists(filePath))
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //}
 
                 return Ok(new ApiResponse<UpdateJobForCompanyDTO>
                 {

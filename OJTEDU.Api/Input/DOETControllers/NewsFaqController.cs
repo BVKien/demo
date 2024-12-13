@@ -22,7 +22,7 @@
         public class AddChildNewsRequestForDoet
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
+            public string? Image { get; set; }
             public string? ChildNewscontent { get; set; }
             public int? ParentNewsId { get; set; }
         }
@@ -30,7 +30,7 @@
         public class UpdateChildNewsRequestForDoet
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
+            public string? Image { get; set; }
             public string? ChildNewscontent { get; set; }
         }
 
@@ -59,7 +59,7 @@
         public class AddChildFaqRequestForDoet
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
+            public string? Image { get; set; }
             public string? ChildFaqcontent { get; set; }
             public int? ParentFaqId { get; set; }
         }
@@ -67,7 +67,7 @@
         public class UpdateChildFaqRequestForDoet
         {
             public string? Title { get; set; }
-            public IFormFile? Image { get; set; }
+            public string? Image { get; set; }
             public string? ChildFaqcontent { get; set; }
         }
 

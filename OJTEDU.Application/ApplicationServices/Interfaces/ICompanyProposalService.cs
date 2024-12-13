@@ -14,6 +14,6 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         // Student 
         Task<DataResponse<List<CompanyProposalListForStudentDTO>>> GetAllCompanyProposalByStudentIdAsync(int? userId);
         Task<DataResponse<CompanyProposalDetailForStudentDTO>> GetCompanyProposalDetailByIdAsync(int? companyProposalId);
-        Task<DataResponse<CreateCompanyProposalForStudentDTO>> CreateCompanyProposalAsync(int? userId, CreateCompanyProposalForStudentDTO? companyProposalInfo, string? fileName, byte[] fileData);
+        Task<DataResponse<CreateCompanyProposalForStudentDTO>> CreateCompanyProposalAsync(int? userId, CreateCompanyProposalForStudentDTO? companyProposalInfo, string? fileName, string? fileData);
     }
 }

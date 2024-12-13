@@ -97,7 +97,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
-        public async Task<DataResponse<CreateCompanyProposalForStudentDTO>> CreateCompanyProposalAsync(int? userId, CreateCompanyProposalForStudentDTO? companyProposalInfo, string? fileName, byte[] fileData)
+        public async Task<DataResponse<CreateCompanyProposalForStudentDTO>> CreateCompanyProposalAsync(int? userId, CreateCompanyProposalForStudentDTO? companyProposalInfo, string? fileName, string? fileData)
         {
             try
             {

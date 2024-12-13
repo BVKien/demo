@@ -379,51 +379,51 @@ namespace OJTEDU.Api.Controllers.AdminControllers
 
                 string filePath = null;
 
-                if (request.DocumentFile != null && request.DocumentFile.Length > 0)
+                if (request.DocumentFile != null)
                 {
 
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.DocumentFile.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("File size must not exceed 10MB.");
-                    }
+                    //// Giới hạn dung lượng file (tối đa 10MB)
+                    //long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    //if (request.DocumentFile.Length > maxFileSizeInBytes)
+                    //{
+                    //    errorMessages.Add("File size must not exceed 10MB.");
+                    //}
 
-                    // Nếu có lỗi, trả về phản hồi lỗi
-                    if (errorMessages.Any())
-                    {
-                        return BadRequest(new ApiResponse<object>
-                        {
-                            Data = null,
-                            Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
-                        });
-                    }
+                    //// Nếu có lỗi, trả về phản hồi lỗi
+                    //if (errorMessages.Any())
+                    //{
+                    //    return BadRequest(new ApiResponse<object>
+                    //    {
+                    //        Data = null,
+                    //        Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
+                    //    });
+                    //}
 
-                    string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.DocumentFile.FileName}";
-                    string documentsPath = Path.Combine(_webHostEnvironment.WebRootPath, "documents");
+                    //string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.DocumentFile.FileName}";
+                    //string documentsPath = Path.Combine(_webHostEnvironment.WebRootPath, "documents");
 
 
-                    if (!Directory.Exists(documentsPath))
-                    {
-                        Directory.CreateDirectory(documentsPath);
-                    }
+                    //if (!Directory.Exists(documentsPath))
+                    //{
+                    //    Directory.CreateDirectory(documentsPath);
+                    //}
 
-                    filePath = Path.Combine(documentsPath, uniqueFileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await request.DocumentFile.CopyToAsync(fileStream);
-                    }
+                    //filePath = Path.Combine(documentsPath, uniqueFileName);
+                    //using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    //{
+                    //    await request.DocumentFile.CopyToAsync(fileStream);
+                    //}
 
-                    string oldDocumentPath = Path.Combine(_webHostEnvironment.WebRootPath, documentDto.DocumentFile.TrimStart('/'));
-                    if (System.IO.File.Exists(oldDocumentPath))
-                    {
-                        System.IO.File.Delete(oldDocumentPath);
-                    }
+                    //string oldDocumentPath = Path.Combine(_webHostEnvironment.WebRootPath, documentDto.DocumentFile.TrimStart('/'));
+                    //if (System.IO.File.Exists(oldDocumentPath))
+                    //{
+                    //    System.IO.File.Delete(oldDocumentPath);
+                    //}
 
-                    var relativeDocumentPath = $"/documents/{uniqueFileName}";
+                    //var relativeDocumentPath = $"/documents/{uniqueFileName}";
 
                     // Cập nhật tên ảnh mới trong DTO
-                    documentDto.DocumentFile = relativeDocumentPath;
+                    documentDto.DocumentFile = request.DocumentFile;
                 }
 
                 var dataResponse = await _documentService.UpdateDocumentForAdminAsync(documentDto);
@@ -467,11 +467,11 @@ namespace OJTEDU.Api.Controllers.AdminControllers
             }
             catch (Exception ex)
             {
-                // Xóa file nếu đã được tạo nhưng có lỗi xảy ra
-                if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "documents", request.DocumentFile.FileName)))
-                {
-                    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "documents", request.DocumentFile.FileName));
-                }
+                //// Xóa file nếu đã được tạo nhưng có lỗi xảy ra
+                //if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "documents", request.DocumentFile.FileName)))
+                //{
+                //    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "documents", request.DocumentFile.FileName));
+                //}
                 return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,

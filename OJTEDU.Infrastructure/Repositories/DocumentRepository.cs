@@ -413,7 +413,7 @@ namespace OJTEDU.Infrastructure.Repositories
         //}
 
         // Company
-        public async Task<Document> CreateDocumentsByUserIdAsync(int? userId, string? fileName, byte[] fileData, Document? info)
+        public async Task<Document> CreateDocumentsByUserIdAsync(int? userId, string? fileName, string? fileData, Document? info)
         {
             try
             {
@@ -423,29 +423,29 @@ namespace OJTEDU.Infrastructure.Repositories
                     throw new KeyNotFoundException("Not found company.");
                 }
 
-                // Create file name format userId_timestamp_filename
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                var newFileName = fileName != null ? $"{userId}_{timestamp}_{fileName}" : null;
+                //// Create file name format userId_timestamp_filename
+                //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                //var newFileName = fileName != null ? $"{userId}_{timestamp}_{fileName}" : null;
 
-                var filePath = newFileName != null ? Path.Combine(_documentDirectory, newFileName) : null;
+                //var filePath = newFileName != null ? Path.Combine(_documentDirectory, newFileName) : null;
 
-                // Save files to folders
-                if (fileData != null && filePath != null)
-                {
-                    await File.WriteAllBytesAsync(filePath, fileData);
-                }
+                //// Save files to folders
+                //if (fileData != null && filePath != null)
+                //{
+                //    await File.WriteAllBytesAsync(filePath, fileData);
+                //}
 
-                // If null 
-                if (fileName == null || fileData == null)
-                {
-                    filePath = null;
-                }
+                //// If null 
+                //if (fileName == null || fileData == null)
+                //{
+                //    filePath = null;
+                //}
 
                 var document = new Document
                 {
                     UserId = userId,
                     Title = info?.Title,
-                    DocumentFile = filePath?.Replace("wwwroot", ""),
+                    DocumentFile = fileData,
                     Description = info?.Description,
                     Status = "Active",
                     CreatedAt = DateTime.Now,

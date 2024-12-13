@@ -9,7 +9,8 @@ namespace OJTEDU.Api.Input.StudentControllers
         {
             public string? ReportTitle { get; set; }
             public string? ReportContent { get; set; }
-            public string? FileAttachment { get; set; }
+            public string? FileAttachmentName { get; set; }
+            public string? FileAttachmentPath{ get; set; }
         }
 
         public class UpdateWorkingReportInput

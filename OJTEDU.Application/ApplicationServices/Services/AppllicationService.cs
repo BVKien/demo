@@ -27,7 +27,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // Student
-        public async Task<DataResponse<ApplyJobForStudentDTO>> ApplyJobAsync(int? userId, ApplyJobForStudentDTO? applyInfo, string? testFileName, byte[] testFileData, string? cvFileName, byte[] cvFileData)
+        public async Task<DataResponse<ApplyJobForStudentDTO>> ApplyJobAsync(int? userId, ApplyJobForStudentDTO? applyInfo, string? testFileName)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     CvId = applyInfo?.CvId,
                 };
 
-                var application = await _appllicationRepository.ApplyJobAsync(userId, apply, testFileName, testFileData, cvFileName, cvFileData);
+                var application = await _appllicationRepository.ApplyJobAsync(userId, apply, testFileName);
                 var response = _mapper.Map<ApplyJobForStudentDTO>(application);
 
                 return new DataResponse<ApplyJobForStudentDTO>

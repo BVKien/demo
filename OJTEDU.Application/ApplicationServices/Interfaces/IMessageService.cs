@@ -14,11 +14,11 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
     {
         // Admin, DOET, Dean, Lecturer, Mentor, Company, Student
         Task<DataResponse<CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO>> CreateFirstMessageConversationAsync(int? userId, int? receiverId,
-            string? messageFileName, byte[]? messageFileData, string? imageFileName, byte[]? imageFileData,
+            string? messageFileName, string? imageFileName,
             CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO? messageGroupInfo);
 
         Task<DataResponse<CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO>> CreateMessageAsync(int? userId,
-            string? messageFileName, byte[]? messageFileData, string? imageFileName, byte[]? imageFileData,
+            string? messageFileName, string? imageFileName,
             CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO? messageGroupInfo);
         Task<DataResponse<List<MessageListForAdminDOETDeanLecturerMentorCompanyStudentDTO>>> GetAllMessageInConversationAsync(int? conversationId);
     }

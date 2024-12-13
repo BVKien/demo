@@ -41,7 +41,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
 
         // Company 
         Task<DataResponse<List<DocumentTestFilesListForCompanyDTO>>> GetAllDocumentsByUserIdAsync(int? userId);
-        Task<DataResponse<CreateDocumentTestFilesForCompanyDTO>> CreateDocumentsByUserIdAsync(int? userId, string? fileName, byte[] fileData, CreateDocumentTestFilesForCompanyDTO? info);
+        Task<DataResponse<CreateDocumentTestFilesForCompanyDTO>> CreateDocumentsByUserIdAsync(int? userId, string? fileName, string? fileData, CreateDocumentTestFilesForCompanyDTO? info);
         Task<DataResponse<UpdateDocumentTestFilesForCompanyDTO>> UpdateDocumentAsync(int? documentId, string? fileName, byte[] fileData, UpdateDocumentTestFilesForCompanyDTO? info);
         Task<DataResponse<bool>> StoredDocumentsByUserIdAsync(int? documentId);
     }

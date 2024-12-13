@@ -27,7 +27,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // Mentor 
-        public async Task<DataResponse<AssignContractInternshipForMentorDTO>> AssignContractAsync(int? userId, int? internshipId, string? fileName, byte[] fileData, 
+        public async Task<DataResponse<AssignContractInternshipForMentorDTO>> AssignContractAsync(int? userId, int? internshipId, string? fileName,
             AssignContractInternshipForMentorDTO? info)
         {
             try
@@ -57,7 +57,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     Name = info?.Name
                 };
 
-                var contract = await _contractRepository.AssignContractAsync(userId, internshipId, fileName, fileData, contractInfo);
+                var contract = await _contractRepository.AssignContractAsync(userId, internshipId, fileName, contractInfo);
                 var response = _mapper.Map<AssignContractInternshipForMentorDTO>(contract);
 
                 return new DataResponse<AssignContractInternshipForMentorDTO>

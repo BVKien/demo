@@ -24,50 +24,50 @@ namespace OJTEDU.Api.Controllers.StudentControllers
             _appllicationService = appllicationService;
         }
 
-        [Authorize(Roles = "Student")]
-        [HttpPost("files/upload")]
-        public async Task<IActionResult> UploadFile(IFormFile file)
-        {
-            try
-            {
-                if (file == null || file.Length == 0)
-                    return BadRequest("No file uploaded.");
+        //[Authorize(Roles = "Student")]
+        //[HttpPost("files/upload")]
+        //public async Task<IActionResult> UploadFile()
+        //{
+        //    try
+        //    {
+        //        if (file == null || file.Length == 0)
+        //            return BadRequest("No file uploaded.");
 
-                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/applications/files/");
-                if (!Directory.Exists(uploadPath))
-                {
-                    Directory.CreateDirectory(uploadPath);
-                }
+        //        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/applications/files/");
+        //        if (!Directory.Exists(uploadPath))
+        //        {
+        //            Directory.CreateDirectory(uploadPath);
+        //        }
 
-                var filePath = Path.Combine(uploadPath, file.FileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
+        //        var filePath = Path.Combine(uploadPath, file.FileName);
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            await file.CopyToAsync(stream);
+        //        }
 
-                byte[] fileData;
-                using (var memoryStream = new MemoryStream())
-                {
-                    await file.CopyToAsync(memoryStream);
-                    fileData = memoryStream.ToArray();
-                }
+        //        byte[] fileData;
+        //        using (var memoryStream = new MemoryStream())
+        //        {
+        //            await file.CopyToAsync(memoryStream);
+        //            fileData = memoryStream.ToArray();
+        //        }
 
-                return Ok(new
-                {
-                    Data = file.FileName
-                });
-            }
-            catch (Exception ex)
-            {
-                var errorResponse = new ApiResponse<string>
-                {
-                    Message = "An error occurred while uploading file.",
-                    Data = ex.Message
-                };
+        //        return Ok(new
+        //        {
+        //            Data = file.FileName
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var errorResponse = new ApiResponse<string>
+        //        {
+        //            Message = "An error occurred while uploading file.",
+        //            Data = ex.Message
+        //        };
 
-                return StatusCode(500, errorResponse);
-            }
-        }
+        //        return StatusCode(500, errorResponse);
+        //    }
+        //}
 
         [Authorize(Roles = "Student")]
         [HttpPost("apply")]
@@ -77,12 +77,12 @@ namespace OJTEDU.Api.Controllers.StudentControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var testFilePath = input.TestFile; // Path.Combine("wwwroot/uploads/applications/files/", input.TestFile);
-                var cvFilePath = input.CvFilePath; // Path.Combine("wwwroot/uploads/applications/files/", input.CvFile);
+                //var testFilePath = input.TestFile; // Path.Combine("wwwroot/uploads/applications/files/", input.TestFile);
+                //var cvFilePath = input.CvFilePath; // Path.Combine("wwwroot/uploads/applications/files/", input.CvFile);
 
-                // Initialize 
-                byte[]? testFileData = null;
-                byte[]? cvFileData = null;
+                //// Initialize 
+                //byte[]? testFileData = null;
+                //byte[]? cvFileData = null;
 
                 //// Read content file if it is not null
                 //if (!string.IsNullOrEmpty(input.TestFile) && System.IO.File.Exists(testFilePath))
@@ -101,7 +101,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                     CvId = input.CvId
                 };
 
-                var apiResponse = await _appllicationService.ApplyJobAsync(userId, applyInfoDto, input.TestFile, testFileData, input.CvFilePath, cvFileData);
+                var apiResponse = await _appllicationService.ApplyJobAsync(userId, applyInfoDto, input.TestFile);
 
                 if (apiResponse.StatusCode == 404)
                 {
@@ -130,18 +130,18 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                     });
                 }
 
-                if (apiResponse.StatusCode == 200)
-                {
-                    if (testFileData != null && System.IO.File.Exists(testFilePath))
-                    {
-                        System.IO.File.Delete(testFilePath);
-                    }
+                //if (apiResponse.StatusCode == 200)
+                //{
+                //    if (testFileData != null && System.IO.File.Exists(testFilePath))
+                //    {
+                //        System.IO.File.Delete(testFilePath);
+                //    }
 
-                    if (cvFileData != null && System.IO.File.Exists(cvFilePath))
-                    {
-                        System.IO.File.Delete(cvFilePath);
-                    }
-                }
+                //    if (cvFileData != null && System.IO.File.Exists(cvFilePath))
+                //    {
+                //        System.IO.File.Delete(cvFilePath);
+                //    }
+                //}
 
                 return Ok(new ApiResponse<ApplyJobForStudentDTO>
                 {

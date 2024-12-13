@@ -5,7 +5,8 @@
         public class CreateTestFileDocumentInput
         {
             public string? Title { get; set; }
-            public string? DocumentFile { get; set; }
+            public string? DocumentFileName { get; set; }
+            public string? DocumentFilePath { get; set; }
             public string? Description { get; set; }
         }
 

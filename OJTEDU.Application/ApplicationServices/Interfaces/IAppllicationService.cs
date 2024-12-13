@@ -12,7 +12,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
     public interface IAppllicationService
     {
         // Student
-        Task<DataResponse<ApplyJobForStudentDTO>> ApplyJobAsync(int? userId, ApplyJobForStudentDTO? applyInfo, string? testFileName, byte[] testFileData, string? cvFileName, byte[] cvFileData);
+        Task<DataResponse<ApplyJobForStudentDTO>> ApplyJobAsync(int? userId, ApplyJobForStudentDTO? applyInfo, string? testFileName);
         Task<DataResponse<AppllicationDetailForStudentDTO>> GetApplicationDetailByIdAsync(int? applicationId);
         Task<DataResponse<List<AppllicationListForStudentDTO>>> GetAllApplicationsByUserIdAsync(int? userId);
         Task<DataResponse<bool>> CompanyOffersActionsAsync(int? userId, int? applicationId, string? studentRejectReason, string? status);

@@ -21,50 +21,50 @@ namespace OJTEDU.Api.Controllers.MentorControllers
             _contractService = contractService;
         }
 
-        [Authorize(Roles = "Mentor")]
-        [HttpPost("files/upload")]
-        public async Task<IActionResult> UploadFile(IFormFile file)
-        {
-            try
-            {
-                if (file == null || file.Length == 0)
-                    return BadRequest("No file uploaded.");
+        //[Authorize(Roles = "Mentor")]
+        //[HttpPost("files/upload")]
+        //public async Task<IActionResult> UploadFile()
+        //{
+        //    try
+        //    {
+        //        if (file == null || file.Length == 0)
+        //            return BadRequest("No file uploaded.");
 
-                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/contracts/files/");
-                if (!Directory.Exists(uploadPath))
-                {
-                    Directory.CreateDirectory(uploadPath);
-                }
+        //        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/contracts/files/");
+        //        if (!Directory.Exists(uploadPath))
+        //        {
+        //            Directory.CreateDirectory(uploadPath);
+        //        }
 
-                var filePath = Path.Combine(uploadPath, file.FileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
+        //        var filePath = Path.Combine(uploadPath, file.FileName);
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            await file.CopyToAsync(stream);
+        //        }
 
-                byte[] fileData;
-                using (var memoryStream = new MemoryStream())
-                {
-                    await file.CopyToAsync(memoryStream);
-                    fileData = memoryStream.ToArray();
-                }
+        //        byte[] fileData;
+        //        using (var memoryStream = new MemoryStream())
+        //        {
+        //            await file.CopyToAsync(memoryStream);
+        //            fileData = memoryStream.ToArray();
+        //        }
 
-                return Ok(new
-                {
-                    Data = file.FileName
-                });
-            }
-            catch (Exception ex)
-            {
-                var errorResponse = new ApiResponse<string>
-                {
-                    Message = $"An error occurred while uploading file.",
-                    Data = ex.Message
-                };
+        //        return Ok(new
+        //        {
+        //            Data = file.FileName
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var errorResponse = new ApiResponse<string>
+        //        {
+        //            Message = $"An error occurred while uploading file.",
+        //            Data = ex.Message
+        //        };
 
-                return StatusCode(500, errorResponse);
-            }
-        }
+        //        return StatusCode(500, errorResponse);
+        //    }
+        //}
 
         [Authorize(Roles = "Mentor")]
         [HttpPost("assign")]
@@ -74,23 +74,23 @@ namespace OJTEDU.Api.Controllers.MentorControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var filePath = Path.Combine("wwwroot/uploads/contracts/files/", input.ContractFile);
+                //var filePath = Path.Combine("wwwroot/uploads/contracts/files/", input.ContractFile);
 
-                // Initialize 
-                byte[]? fileData = null;
+                //// Initialize 
+                //byte[]? fileData = null;
 
-                // Read content file if it is not null
-                if (!string.IsNullOrEmpty(input.ContractFile) && System.IO.File.Exists(filePath))
-                {
-                    fileData = await System.IO.File.ReadAllBytesAsync(filePath);
-                }
+                //// Read content file if it is not null
+                //if (!string.IsNullOrEmpty(input.ContractFile) && System.IO.File.Exists(filePath))
+                //{
+                //    fileData = await System.IO.File.ReadAllBytesAsync(filePath);
+                //}
 
                 var contractDto = new AssignContractInternshipForMentorDTO
                 {
                     Name = input?.Name
                 };
 
-                var dataResponse = await _contractService.AssignContractAsync(userId, internshipId, input?.ContractFile, fileData, contractDto);
+                var dataResponse = await _contractService.AssignContractAsync(userId, internshipId, input?.ContractFile, contractDto);
 
                 if (dataResponse.StatusCode == 404)
                 {
@@ -119,13 +119,13 @@ namespace OJTEDU.Api.Controllers.MentorControllers
                     });
                 }
 
-                if (dataResponse.StatusCode == 200)
-                {
-                    if (fileData != null && System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                }
+                //if (dataResponse.StatusCode == 200)
+                //{
+                //    if (fileData != null && System.IO.File.Exists(filePath))
+                //    {
+                //        System.IO.File.Delete(filePath);
+                //    }
+                //}
 
                 var apiResponse = new ApiResponse<AssignContractInternshipForMentorDTO>
                 {

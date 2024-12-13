@@ -26,8 +26,8 @@ namespace OJTEDU.Domain.Interfaces
 
         // Company 
         Task<IEnumerable<Job>> GetAllJobsByUserIdAsync(int? userId);
-        Task<Job> CreateJobAsync(int? userId, string? fileName, byte[] fileData, Job? info, Address? addressInfo); // Address new or select company address - done 
-        Task<Job> UpdateJobAsync(int? userId, int? jobId, string? fileName, byte[] fileData, Job? info, Address? addressInfo); // check if file path nnull -> note update file paths
+        Task<Job> CreateJobAsync(int? userId, string? fileName, Job? info, Address? addressInfo); // Address new or select company address - done 
+        Task<Job> UpdateJobAsync(int? userId, int? jobId, string? fileName, Job? info, Address? addressInfo); // check if file path nnull -> note update file paths
         // Thiếu: API xóa mềm lưu trữ job đã xóa mềm
     }
 }

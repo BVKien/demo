@@ -23,8 +23,8 @@ namespace OJTEDU.Domain.Interfaces
         // mentor - mentor, lecturer, company, student
 
         // Admin, DOET, Dean, Lecturer, Mentor, Company, Student
-        Task<Message> CreateFirstMessageConversationAsync(int? userId, int? receiverId, string? messageFileName, byte[]? messageFileData, string? imageFileName, byte[]? imageFileData, Message? messageInfo);
-        Task<Message> CreateMessageAsync(int? userId, string? messageFileName, byte[]? messageFileData, string? imageFileName, byte[]? imageFileData, Message? messageInfo);
+        Task<Message> CreateFirstMessageConversationAsync(int? userId, int? receiverId, string? messageFileName, string? imageFileName, Message? messageInfo);
+        Task<Message> CreateMessageAsync(int? userId, string? messageFileName, string? imageFileName, Message? messageInfo);
         Task<IEnumerable<Message>> GetAllMessageInConversationAsync(int? conversationId);
         // check is read -> is seen
     }

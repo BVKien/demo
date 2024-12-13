@@ -299,7 +299,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
-        public async Task<DataResponse<CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO>> CreateMessageInMessageGroupAsync(int? userId, string? messageFileName, byte[]? messageFileData, string? imageFileName, byte[]? imageFileData,
+        public async Task<DataResponse<CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO>> CreateMessageInMessageGroupAsync(int? userId, string? messageFileName, string? imageFileName,
             CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO? messageGroupInfo)
         {
             try
@@ -320,7 +320,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     MessageContent = messageGroupInfo?.MessageContent
                 };
 
-                var message = await _messageGroupRepository.CreateMessageInMessageGroupAsync(userId, messageFileName, messageFileData, imageFileName, imageFileData, messageInfo);
+                var message = await _messageGroupRepository.CreateMessageInMessageGroupAsync(userId, messageFileName, imageFileName, messageInfo);
                 var response = _mapper.Map<CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO>(message);
 
                 return new DataResponse<CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO>
