@@ -19,7 +19,7 @@ namespace OJTEDU.Domain.Interfaces
         // Student 
         Task<IEnumerable<CompanyProposal>> GetAllCompanyProposalByStudentIdAsync(int? userId);
         Task<CompanyProposal> GetCompanyProposalDetailByIdAsync(int? companyProposalId);
-        Task<CompanyProposal> CreateCompanyProposalAsync(int? userId, CompanyProposal? companyProposalInfo, string? fileName, string? fileData);
+        Task<CompanyProposal> CreateCompanyProposalAsync(int? userId, CompanyProposal? companyProposalInfo, string? fileName);
 
         // University side - missing
     }

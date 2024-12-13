@@ -204,7 +204,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                     ProposalContent = input.ProposalContent
                 };
 
-                var apiResponse = await _companyProposalService.CreateCompanyProposalAsync(userId, companyProposalInfo, input.Contract, input.Contract);
+                var apiResponse = await _companyProposalService.CreateCompanyProposalAsync(userId, companyProposalInfo, input.Contract);
 
                 if (apiResponse.StatusCode == 404)
                 {

@@ -97,7 +97,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
-        public async Task<DataResponse<CreateCompanyProposalForStudentDTO>> CreateCompanyProposalAsync(int? userId, CreateCompanyProposalForStudentDTO? companyProposalInfo, string? fileName, string? fileData)
+        public async Task<DataResponse<CreateCompanyProposalForStudentDTO>> CreateCompanyProposalAsync(int? userId, CreateCompanyProposalForStudentDTO? companyProposalInfo, string? fileName)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     ProposalContent = companyProposalInfo?.ProposalContent,
                 };
 
-                var newCompanyProposal = await _companyProposalRepository.CreateCompanyProposalAsync(userId, companyProposal, fileName, fileData);
+                var newCompanyProposal = await _companyProposalRepository.CreateCompanyProposalAsync(userId, companyProposal, fileName);
                 var response = _mapper.Map<CreateCompanyProposalForStudentDTO>(newCompanyProposal);
 
                 return new DataResponse<CreateCompanyProposalForStudentDTO>

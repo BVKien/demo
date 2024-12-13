@@ -80,7 +80,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
-        public async Task<CompanyProposal> CreateCompanyProposalAsync(int? userId, CompanyProposal? companyProposalInfo, string? fileName, string? fileData)
+        public async Task<CompanyProposal> CreateCompanyProposalAsync(int? userId, CompanyProposal? companyProposalInfo, string? fileName)
         {
             try
             {
@@ -130,7 +130,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     ProposalTitle = companyProposalInfo?.ProposalTitle,
                     ProposalContent = companyProposalInfo?.ProposalContent,
                     ProposalDate = DateTime.Now,
-                    Contract = fileData,
+                    Contract = fileName,
                     Status = "1",
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
