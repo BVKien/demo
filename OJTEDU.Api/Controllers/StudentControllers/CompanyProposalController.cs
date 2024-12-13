@@ -23,7 +23,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
         }
 
         [Authorize(Roles = "Student")]
-        [HttpGet("list/{studentId}")]
+        [HttpGet("list")]
         public async Task<IActionResult> GetAllCompanyProposal()
         {
             try

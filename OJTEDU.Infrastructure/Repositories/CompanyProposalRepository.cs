@@ -41,7 +41,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 var student = await _context.Students
                     .Include(s => s.User).ThenInclude(s => s.Role)
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync(c => c.UserId == userId);
 
                 var companyProposals = await _context.CompanyProposals
                     .Include(c => c.Student).ThenInclude(c => c.User)
