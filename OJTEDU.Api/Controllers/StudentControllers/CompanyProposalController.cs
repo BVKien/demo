@@ -201,10 +201,10 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                 var companyProposalInfo = new CreateCompanyProposalForStudentDTO
                 {
                     ProposalTitle = input.ProposalTitle,
-                    ProposalContent = input.ProposalContentFileName
+                    ProposalContent = input.ProposalContent
                 };
 
-                var apiResponse = await _companyProposalService.CreateCompanyProposalAsync(userId, companyProposalInfo, input.Contract, input.ProposalContentFilePath);
+                var apiResponse = await _companyProposalService.CreateCompanyProposalAsync(userId, companyProposalInfo, input.Contract, input.Contract);
 
                 if (apiResponse.StatusCode == 404)
                 {
