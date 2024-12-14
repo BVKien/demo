@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Aspose.Pdf.Devices;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -67,7 +68,7 @@ namespace OJTEDU.Api.Configuration
             // Services 
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IJobService, JobService>();
-            services.AddScoped<IjobService, jobService>();
+            services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<INewsFaqService, NewsFaqService>();
             services.AddScoped<IPolicyService, PolicyService>();
             services.AddScoped<IBannerService, BannerService>();

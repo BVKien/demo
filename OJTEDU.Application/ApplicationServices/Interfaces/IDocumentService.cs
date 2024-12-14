@@ -8,7 +8,7 @@ using static OJTEDU.Application.DTOs.DocumentDTO;
 
 namespace OJTEDU.Application.ApplicationServices.Interfaces
 {
-    public interface IjobService
+    public interface IDocumentService
     {
         // Admin - Document Management
         Task<DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>> GetAllDocumentsForAdminAsync(string? title, int? roleId, string? status, int pageNumber, int pageSize);
