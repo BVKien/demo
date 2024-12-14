@@ -301,5 +301,60 @@ namespace OJTEDU.Api.Controllers.ComonControllers
                 return StatusCode(500, errorResponse);
             }
         }
+
+        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Company, Student")]
+        [HttpGet("conversation/list")]
+        public async Task<IActionResult> GetAllConversationAsync()
+        {
+            try
+            {
+                int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+                var apiResponse = await _messageService.GetAllConversationAsync(userId);
+
+                if (apiResponse.StatusCode == 404)
+                {
+                    return BadRequest(new ApiResponse<List<ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO>>
+                    {
+                        Message = apiResponse.Message,
+                        Data = null
+                    });
+                }
+
+                if (apiResponse.StatusCode == 400)
+                {
+                    return BadRequest(new ApiResponse<List<ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO>>
+                    {
+                        Message = apiResponse.Message,
+                        Data = null
+                    });
+                }
+
+                if (apiResponse.StatusCode == 500)
+                {
+                    return StatusCode(500, new ApiResponse<List<ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO>>
+                    {
+                        Message = apiResponse.Message,
+                        Data = null
+                    });
+                }
+
+                return Ok(new ApiResponse<List<ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO>>
+                {
+                    Message = apiResponse.Message,
+                    Data = apiResponse.Data
+                });
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new ApiResponse<string>
+                {
+                    Message = "An error occurred while retrieving all conversation.",
+                    Data = ex.Message
+                };
+
+                return StatusCode(500, errorResponse);
+            }
+        }
     }
 }

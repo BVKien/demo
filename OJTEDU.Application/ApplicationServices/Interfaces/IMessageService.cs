@@ -21,5 +21,6 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
             string? messageFileName, string? imageFileName,
             CreateMessageForAdminDOETDeanLecturerMentorCompanyStudentDTO? messageGroupInfo);
         Task<DataResponse<List<MessageListForAdminDOETDeanLecturerMentorCompanyStudentDTO>>> GetAllMessageInConversationAsync(int? conversationId);
+        Task<DataResponse<List<ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO>>> GetAllConversationAsync(int? userId);
     }
 }

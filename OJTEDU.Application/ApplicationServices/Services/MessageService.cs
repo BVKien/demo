@@ -153,5 +153,40 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+
+        public async Task<DataResponse<List<ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO>>> GetAllConversationAsync(int? userId)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return new DataResponse<List<ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO>>
+                    {
+                        StatusCode = 404,
+                        Message = "Not found user.",
+                        Data = null
+                    };
+                }
+
+                var messages = await _messageRepository.GetAllConversationAsync(userId);
+                var response = _mapper.Map<List<ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO>>(messages);
+
+                return new DataResponse<List<ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Retrieving all conversations successfully!",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<List<ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO>>
+                {
+                    StatusCode = 500,
+                    Message = $"Error retrieving all conversations: {ex.Message}.",
+                    Data = null
+                };
+            }
+        }
     }
 }

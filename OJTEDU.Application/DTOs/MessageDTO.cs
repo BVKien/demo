@@ -35,5 +35,10 @@ namespace OJTEDU.Application.DTOs
             public DateTime? CreatedAt { get; set; }
             public DateTime? UpdatedAt { get; set; }
         }
+
+        public class ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO
+        {
+            public int? ConversationId { get; set; }
+        }
     }
 }

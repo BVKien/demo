@@ -802,5 +802,83 @@ namespace OJTEDU.Infrastructure.Repositories
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<IEnumerable<Message>> GetAllConversationAsync(int? userId)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+
+                if (user == null)
+                {
+                    throw new KeyNotFoundException("Not found user.");
+                }
+
+                if (user.Role.Name == "Admin" || user.Role.Name == "DOET" || user.Role.Name == "Dean" || user.Role.Name == "Lecturer")
+                {
+                    var conversation = await _context.Messages
+                        .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.Company).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.Universiry).ThenInclude(m => m.Role)
+                        .Where(m => m.UniversiryId == userId)
+                        .ToListAsync();
+
+                    if (conversation == null)
+                    {
+                        throw new KeyNotFoundException("Not found conversation.");
+                    }
+
+                    return conversation;
+                }
+
+                if (user.Role.Name == "Company" || user.Role.Name == "Mentor")
+                {
+                    var company = await _context.Companies
+                        .Include(c => c.User).ThenInclude(c => c.Role)
+                        .FirstOrDefaultAsync(c => c.UserId == userId);
+
+                    var conversation = await _context.Messages
+                        .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.Company).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.Universiry).ThenInclude(m => m.Role)
+                        .Where(m => m.CompanyId == company.CompanyId)
+                        .ToListAsync();
+
+                    if (conversation == null)
+                    {
+                        throw new KeyNotFoundException("Not found conversation.");
+                    }
+
+                    return conversation;
+                }
+
+                if (user.Role.Name == "Student")
+                {
+                    var student = await _context.Students
+                        .Include(c => c.User).ThenInclude(c => c.Role)
+                        .FirstOrDefaultAsync(c => c.UserId == userId);
+
+                    var conversation = await _context.Messages
+                        .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.Company).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.Universiry).ThenInclude(m => m.Role)
+                        .Where(m => m.StudentId == student.StudentId)
+                        .ToListAsync();
+
+                    if (conversation == null)
+                    {
+                        throw new KeyNotFoundException("Not found conversation.");
+                    }
+
+                    return conversation;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

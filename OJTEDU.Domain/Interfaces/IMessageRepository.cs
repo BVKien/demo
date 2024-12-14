@@ -26,6 +26,7 @@ namespace OJTEDU.Domain.Interfaces
         Task<Message> CreateFirstMessageConversationAsync(int? userId, int? receiverId, string? messageFileName, string? imageFileName, Message? messageInfo);
         Task<Message> CreateMessageAsync(int? userId, string? messageFileName, string? imageFileName, Message? messageInfo);
         Task<IEnumerable<Message>> GetAllMessageInConversationAsync(int? conversationId);
+        Task<IEnumerable<Message>> GetAllConversationAsync(int? userId);
         // check is read -> is seen
     }
 }
