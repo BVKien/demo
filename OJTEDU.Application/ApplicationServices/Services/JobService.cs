@@ -37,9 +37,9 @@ namespace OJTEDU.Application.ApplicationServices.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMajorRepository _majorRepository;
         private readonly IDocumentRepository _documentRepository;
-        public JobService(IJobRepository jobRepository, IMapper mapper, HttpClient httpClient, 
-            IConfiguration config, IGoogleJsonWebSignatureValidator googleValidator, 
-            IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, 
+        public JobService(IJobRepository jobRepository, IMapper mapper, HttpClient httpClient,
+            IConfiguration config, IGoogleJsonWebSignatureValidator googleValidator,
+            IUserRepository userRepository, IHttpContextAccessor httpContextAccessor,
             IMajorRepository majorRepository, IDocumentRepository documentRepository)
         {
             _jobRepository = jobRepository;
@@ -3763,7 +3763,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
-
+        /*
         // === Document ===
         // Admin - DocumentManagement
         public async Task<DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>> GetAllDocumentsForAdminAsync(string? title, int? roleId, string? status, int pageNumber, int pageSize)
@@ -4664,5 +4664,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
         //        };
         //    }
         //}
+        */
     }
 }

@@ -136,6 +136,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<string>> AssignDepartmentToDeanAsync(int deanId, int departmentId);
         Task<DataResponse<string>> AssignMajorToLecturerAsync(int lecturerId, int majorId);
 
+        /*
         // === Document ===
         // Admin - Document Management
         Task<DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>> GetAllDocumentsForAdminAsync(string? title, int? roleId, string? status, int pageNumber, int pageSize);
@@ -171,5 +172,6 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<CreateDocumentTestFilesForCompanyDTO>> CreateDocumentsByUserIdAsync(int? userId, string? fileName, string? fileData, CreateDocumentTestFilesForCompanyDTO? info);
         Task<DataResponse<UpdateDocumentTestFilesForCompanyDTO>> UpdateDocumentAsync(int? documentId, string? fileName, byte[] fileData, UpdateDocumentTestFilesForCompanyDTO? info);
         Task<DataResponse<bool>> StoredDocumentsByUserIdAsync(int? documentId);
+        */
     }
 }

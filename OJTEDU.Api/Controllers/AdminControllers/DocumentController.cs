@@ -16,10 +16,10 @@ namespace OJTEDU.Api.Controllers.AdminControllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly IJobService _jobService;
+        private readonly IDocumentService _jobService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public DocumentController(IJobService jobService, IWebHostEnvironment webHostEnvironment)
+        public DocumentController(IDocumentService jobService, IWebHostEnvironment webHostEnvironment)
         {
             _jobService = jobService;
             _webHostEnvironment = webHostEnvironment;
