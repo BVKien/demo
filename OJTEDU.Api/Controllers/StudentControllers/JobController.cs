@@ -76,7 +76,7 @@ namespace OJTEDU.Api.Controllers.GuestControllers
                 var errorResponse = new ApiResponse<string>
                 {
                     Message = $"An error occurred while get job list by company.",
-                    Data = ex.Message 
+                    Data = ex.Message
                 };
 
                 return StatusCode(500, errorResponse);
@@ -158,7 +158,7 @@ namespace OJTEDU.Api.Controllers.GuestControllers
                     request.Add(new StreamContent(fileStream), "file", Path.GetFileName(filePath));
 
                     // Send the POST request to the Flask API
-                    var response = await client.PostAsync("http://127.0.0.1:5001/api/ai/analyze", request);
+                    var response = await client.PostAsync("https://sep490-g62-ojtedu-be-ai-7.onrender.com/api/ai/analyze", request); //http://127.0.0.1:5001
 
                     // Ensure success status code or throw exception
                     response.EnsureSuccessStatusCode();
