@@ -67,7 +67,7 @@ namespace OJTEDU.Api.Configuration
             // Services 
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IJobService, JobService>();
-            services.AddScoped<IDocumentService, DocumentService>();
+            services.AddScoped<IjobService, jobService>();
             services.AddScoped<INewsFaqService, NewsFaqService>();
             services.AddScoped<IPolicyService, PolicyService>();
             services.AddScoped<IBannerService, BannerService>();

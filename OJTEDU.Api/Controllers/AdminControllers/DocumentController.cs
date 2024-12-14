@@ -16,12 +16,12 @@ namespace OJTEDU.Api.Controllers.AdminControllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly IDocumentService _documentService;
+        private readonly IJobService _jobService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public DocumentController(IDocumentService documentService, IWebHostEnvironment webHostEnvironment)
+        public DocumentController(IJobService jobService, IWebHostEnvironment webHostEnvironment)
         {
-            _documentService = documentService;
+            _jobService = jobService;
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -34,7 +34,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
 
-                var dataResponse = await _documentService.GetAllDocumentsForAdminAsync(title, roleId, status, actualPageNumber, actualPageSize);
+                var dataResponse = await _jobService.GetAllDocumentsForAdminAsync(title, roleId, status, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
@@ -87,7 +87,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     });
                 }
 
-                var dataResponse = await _documentService.GetDocumentDetailByIdForAdminAsync(documentId.Value);
+                var dataResponse = await _jobService.GetDocumentDetailByIdForAdminAsync(documentId.Value);
 
                 if (dataResponse == null)
                 {
@@ -236,7 +236,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     ForRoleIds = forRoleIdsList
                 };
 
-                var dataResponse = await _documentService.AddDocumentForAdminAsync(documentDto);
+                var dataResponse = await _jobService.AddDocumentForAdminAsync(documentDto);
 
                 if (dataResponse == null)
                 {
@@ -347,7 +347,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     });
                 }
 
-                var existingDocuments = await _documentService.GetDocumentDetailByIdForAdminAsync(documentId.Value);
+                var existingDocuments = await _jobService.GetDocumentDetailByIdForAdminAsync(documentId.Value);
                 if (existingDocuments == null || existingDocuments.Data == null)
                 {
                     return NotFound(new ApiResponse<object>
@@ -426,7 +426,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     documentDto.DocumentFile = request.DocumentFile;
                 }
 
-                var dataResponse = await _documentService.UpdateDocumentForAdminAsync(documentDto);
+                var dataResponse = await _jobService.UpdateDocumentForAdminAsync(documentDto);
 
                 if (dataResponse == null)
                 {
@@ -501,7 +501,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 };
 
                 // Gọi dịch vụ để xóa người dùng
-                var dataResponse = await _documentService.DeleteDocumentForAdminAsync(documentDto);
+                var dataResponse = await _jobService.DeleteDocumentForAdminAsync(documentDto);
 
                 if (dataResponse == null)
                 {
@@ -577,7 +577,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     Status = request.Status
                 };
 
-                var dataResponse = await _documentService.UpdateDocumentStatusForAdminAsync(documentDto);
+                var dataResponse = await _jobService.UpdateDocumentStatusForAdminAsync(documentDto);
 
                 if (dataResponse == null)
                 {
@@ -622,7 +622,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         {
             try
             {
-                var dataResponse = await _documentService.GetAllStatusesDocumentForAdminAsync();
+                var dataResponse = await _jobService.GetAllStatusesDocumentForAdminAsync();
 
                 if (dataResponse == null)
                 {
@@ -675,7 +675,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     });
                 }
 
-                var dataResponse = await _documentService.GetDocumentDetailByIdForAdminAsync(documentId.Value);
+                var dataResponse = await _jobService.GetDocumentDetailByIdForAdminAsync(documentId.Value);
 
                 if (dataResponse == null)
                 {

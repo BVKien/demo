@@ -15,11 +15,11 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly IDocumentService _documentService;
+        private readonly IJobService _jobService;
 
-        public DocumentController(IDocumentService documentService)
+        public DocumentController(IJobService jobService)
         {
-            _documentService = documentService;
+            _jobService = jobService;
         }
 
         [Authorize(Roles = "Company")]
@@ -30,7 +30,7 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var dataResponse = await _documentService.GetAllDocumentsByUserIdAsync(userId);
+                var dataResponse = await _jobService.GetAllDocumentsByUserIdAsync(userId);
 
                 if (dataResponse.StatusCode == 404)
                 {
@@ -149,7 +149,7 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
                     Description = input?.Description,
                 };
 
-                var apiResponse = await _documentService.CreateDocumentsByUserIdAsync(userId, input?.DocumentFileName, input?.DocumentFilePath, testDocInfoDto);
+                var apiResponse = await _jobService.CreateDocumentsByUserIdAsync(userId, input?.DocumentFileName, input?.DocumentFilePath, testDocInfoDto);
 
                 if (apiResponse.StatusCode == 404)
                 {
@@ -227,7 +227,7 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
                     Description = input?.Description,
                 };
 
-                var apiResponse = await _documentService.UpdateDocumentAsync(documentId, input?.DocumentFile, fileData, testDocInfoDto);
+                var apiResponse = await _jobService.UpdateDocumentAsync(documentId, input?.DocumentFile, fileData, testDocInfoDto);
 
                 if (apiResponse.StatusCode == 404)
                 {
@@ -288,7 +288,7 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
         {
             try
             {
-                var apiResponse = await _documentService.StoredDocumentsByUserIdAsync(documentId);
+                var apiResponse = await _jobService.StoredDocumentsByUserIdAsync(documentId);
 
                 if (apiResponse.StatusCode == 404)
                 {

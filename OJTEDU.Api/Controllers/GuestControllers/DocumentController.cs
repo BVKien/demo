@@ -9,10 +9,10 @@
 //    [ApiController]
 //    public class DocumentController : ControllerBase
 //    {
-//        private readonly IDocumentService _documentService;
+//        private readonly IDocumentService _jobService;
 //        public DocumentController(IDocumentService documentService)
 //        {
-//            _documentService = documentService;
+//            _jobService = documentService;
 //        }
 
 //        [HttpGet("internship-process")]
@@ -20,7 +20,7 @@
 //        {
 //            try
 //            {
-//                var dataResponse = await _documentService.GetInternshipProcessDocumentAsync();
+//                var dataResponse = await _jobService.GetInternshipProcessDocumentAsync();
 
 //                var apiResponse = new ApiResponse<DocumentInternshipProcessForGuestDTO>
 //                {

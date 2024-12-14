@@ -13,11 +13,11 @@ using static OJTEDU.Application.DTOs.NewsFaqDTO;
 
 namespace OJTEDU.Application.ApplicationServices.Services
 {
-    public class DocumentService : IDocumentService
+    public class jobService : IjobService
     {
         private readonly IDocumentRepository _documentRepository;
         private readonly IMapper _mapper;
-        public DocumentService(IDocumentRepository documentRepository, IMapper mapper)
+        public jobService(IDocumentRepository documentRepository, IMapper mapper)
         {
             _documentRepository = documentRepository;
             _mapper = mapper;

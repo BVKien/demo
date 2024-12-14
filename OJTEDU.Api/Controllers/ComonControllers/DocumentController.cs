@@ -13,12 +13,12 @@ namespace OJTEDU.Api.Controllers.ComonControllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly IDocumentService _documentService;
+        private readonly IJobService _jobService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public DocumentController(IDocumentService documentService, IWebHostEnvironment webHostEnvironment)
+        public DocumentController(IJobService jobService, IWebHostEnvironment webHostEnvironment)
         {
-            _documentService = documentService;
+            _jobService = jobService;
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -32,7 +32,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
 
                 string role = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.Role)?.Value : "guest";
 
-                var dataResponse = await _documentService.GetAllDocumentsAsync(role, title, actualPageNumber, actualPageSize);
+                var dataResponse = await _jobService.GetAllDocumentsAsync(role, title, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
@@ -86,7 +86,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
 
                 string role = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.Role)?.Value : "guest";
 
-                var dataResponse = await _documentService.GetDocumentDetailAsync(documentId.Value, role);
+                var dataResponse = await _jobService.GetDocumentDetailAsync(documentId.Value, role);
 
                 if (dataResponse == null)
                 {
@@ -140,7 +140,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
 
                 string role = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.Role)?.Value : "guest";
 
-                var dataResponse = await _documentService.GetDocumentDetailAsync(documentId.Value, role);
+                var dataResponse = await _jobService.GetDocumentDetailAsync(documentId.Value, role);
 
                 if (dataResponse == null)
                 {
