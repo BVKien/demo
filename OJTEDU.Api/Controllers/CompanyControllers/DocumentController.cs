@@ -15,9 +15,9 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly IContractService _contractService;
+        private readonly IProvinceService _contractService;
 
-        public DocumentController(IContractService contractService)
+        public DocumentController(IProvinceService contractService)
         {
             _contractService = contractService;
         }
