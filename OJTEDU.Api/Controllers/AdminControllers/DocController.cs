@@ -18,7 +18,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         private readonly IAppllicationService _jobService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public DocController(IJobService jobService, IWebHostEnvironment webHostEnvironment)
+        public DocController(IAppllicationService jobService, IWebHostEnvironment webHostEnvironment)
         {
             _jobService = jobService;
             _webHostEnvironment = webHostEnvironment;
