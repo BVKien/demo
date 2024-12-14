@@ -16,12 +16,12 @@ namespace OJTEDU.Api.Controllers.DOETControllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly IJobService _jobService;
+        private readonly IContractService _contractService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public DocumentController(IJobService jobService, IWebHostEnvironment webHostEnvironment)
+        public DocumentController(IContractService contractService, IWebHostEnvironment webHostEnvironment)
         {
-            _jobService = jobService;
+            _contractService = contractService;
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -34,7 +34,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
 
-                var dataResponse = await _jobService.GetAllDocumentsForDoetAsync(title, roleId, status, actualPageNumber, actualPageSize);
+                var dataResponse = await _contractService.GetAllDocumentsForDoetAsync(title, roleId, status, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
@@ -87,7 +87,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                var dataResponse = await _jobService.GetDocumentDetailByIdForDoetAsync(documentId.Value);
+                var dataResponse = await _contractService.GetDocumentDetailByIdForDoetAsync(documentId.Value);
 
                 if (dataResponse == null)
                 {
@@ -236,7 +236,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     ForRoleIds = forRoleIdsList
                 };
 
-                var dataResponse = await _jobService.AddDocumentForDoetAsync(documentDto);
+                var dataResponse = await _contractService.AddDocumentForDoetAsync(documentDto);
 
                 if (dataResponse == null)
                 {
@@ -347,7 +347,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                var existingDocuments = await _jobService.GetDocumentDetailByIdForDoetAsync(documentId.Value);
+                var existingDocuments = await _contractService.GetDocumentDetailByIdForDoetAsync(documentId.Value);
                 if (existingDocuments == null || existingDocuments.Data == null)
                 {
                     return NotFound(new ApiResponse<object>
@@ -426,7 +426,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     documentDto.DocumentFile = request.DocumentFile;
                 }
 
-                var dataResponse = await _jobService.UpdateDocumentForDoetAsync(documentDto);
+                var dataResponse = await _contractService.UpdateDocumentForDoetAsync(documentDto);
 
                 if (dataResponse == null)
                 {
@@ -501,7 +501,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 };
 
                 // Gọi dịch vụ để xóa người dùng
-                var dataResponse = await _jobService.DeleteDocumentForDoetAsync(documentDto);
+                var dataResponse = await _contractService.DeleteDocumentForDoetAsync(documentDto);
 
                 if (dataResponse == null)
                 {
@@ -577,7 +577,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     Status = request.Status
                 };
 
-                var dataResponse = await _jobService.UpdateDocumentStatusForDoetAsync(documentDto);
+                var dataResponse = await _contractService.UpdateDocumentStatusForDoetAsync(documentDto);
 
                 if (dataResponse == null)
                 {
@@ -622,7 +622,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
         {
             try
             {
-                var dataResponse = await _jobService.GetAllStatusesDocumentForDoetAsync();
+                var dataResponse = await _contractService.GetAllStatusesDocumentForDoetAsync();
 
                 if (dataResponse == null)
                 {
@@ -675,7 +675,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                var dataResponse = await _jobService.GetDocumentDetailByIdForDoetAsync(documentId.Value);
+                var dataResponse = await _contractService.GetDocumentDetailByIdForDoetAsync(documentId.Value);
 
                 if (dataResponse == null)
                 {
