@@ -15,7 +15,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
     [ApiController]
     public class DocController : ControllerBase
     {
-        private readonly IJobService _jobService;
+        private readonly IAppllicationService _jobService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         public DocController(IJobService jobService, IWebHostEnvironment webHostEnvironment)
