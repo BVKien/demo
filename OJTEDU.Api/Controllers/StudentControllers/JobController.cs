@@ -6,6 +6,7 @@ using OJTEDU.Api.Controllers.StudentControllers;
 using OJTEDU.Application.ApplicationServices.Interfaces;
 using OJTEDU.Application.ApplicationServices.Services;
 using OJTEDU.Domain.Entities;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using static OJTEDU.Application.DTOs.JobDTO;
 
@@ -138,6 +139,57 @@ namespace OJTEDU.Api.Controllers.GuestControllers
             }
         }
 
+        /*
+                 //private async Task<IEnumerable<JobListSearchForStudentDTO>> GetSuggestedJobsFromAiApiAsync(string? filePath)
+        //{
+        //    if (string.IsNullOrEmpty(filePath))
+        //    {
+        //        _logger.LogError("File path is null or empty.");
+        //        return Enumerable.Empty<JobListSearchForStudentDTO>();
+        //    }
+
+        //    var client = _httpClientFactory.CreateClient();
+        //    var request = new MultipartFormDataContent();
+
+        //    try
+        //    {
+        //        // Truyền đường dẫn file như một tham số chuỗi
+        //        var fileContent = new StringContent(filePath);
+        //        request.Add(fileContent, "filePath");
+
+        //        // Gửi request POST đến Flask API
+        //        var response = await client.PostAsync("http://127.0.0.1:5001/api/ai/analyze", request);
+
+        //        // Đảm bảo mã phản hồi thành công
+        //        response.EnsureSuccessStatusCode();
+
+        //        // Deserialize phản hồi JSON từ Flask API
+        //        var jobSuggestions = await response.Content.ReadFromJsonAsync<IEnumerable<JobListSearchForStudentDTO>>();
+
+        //        if (jobSuggestions == null || !jobSuggestions.Any())
+        //        {
+        //            _logger.LogWarning("No job suggestions returned from AI API.");
+        //            return Enumerable.Empty<JobListSearchForStudentDTO>();
+        //        }
+
+        //        return jobSuggestions;
+        //    }
+        //    catch (HttpRequestException e)
+        //    {
+        //        // Ghi log nếu có lỗi trong request
+        //        _logger.LogError($"Request error: {e.Message}");
+        //        return Enumerable.Empty<JobListSearchForStudentDTO>();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        // Ghi log nếu có lỗi khác
+        //        _logger.LogError($"An unexpected error occurred: {e.Message}");
+        //        return Enumerable.Empty<JobListSearchForStudentDTO>();
+        //    }
+        //}
+         */
+
+        /*
         private async Task<IEnumerable<JobListSearchForStudentDTO>> GetSuggestedJobsFromAiApiAsync(string? filePath)
         {
             if (string.IsNullOrEmpty(filePath))
@@ -151,40 +203,44 @@ namespace OJTEDU.Api.Controllers.GuestControllers
 
             try
             {
-                // Truyền đường dẫn file như một tham số chuỗi
-                var fileContent = new StringContent(filePath);
-                request.Add(fileContent, "filePath");
-
-                // Gửi request POST đến Flask API
-                var response = await client.PostAsync("https://sep490-g62-ojtedu-be-ai-7.onrender.com/api/ai/analyze", request);
-
-                // Đảm bảo mã phản hồi thành công
-                response.EnsureSuccessStatusCode();
-
-                // Deserialize phản hồi JSON từ Flask API
-                var jobSuggestions = await response.Content.ReadFromJsonAsync<IEnumerable<JobListSearchForStudentDTO>>();
-
-                if (jobSuggestions == null || !jobSuggestions.Any())
+                // Open the file stream
+                using (var fileStream = System.IO.File.OpenRead(filePath))
                 {
-                    _logger.LogWarning("No job suggestions returned from AI API.");
-                    return Enumerable.Empty<JobListSearchForStudentDTO>();
-                }
+                    // Add the file content to the request
+                    request.Add(new StreamContent(fileStream), "file", Path.GetFileName(filePath));
 
-                return jobSuggestions;
+                    // Send the POST request to the Flask API
+                    var response = await client.PostAsync("http://127.0.0.1:5001/api/ai/analyze", request);
+
+                    // Ensure success status code or throw exception
+                    response.EnsureSuccessStatusCode();
+
+                    // Deserialize the JSON response into the desired DTO
+                    var jobSuggestions = await response.Content.ReadFromJsonAsync<IEnumerable<JobListSearchForStudentDTO>>();
+
+                    if (jobSuggestions == null || !jobSuggestions.Any())
+                    {
+                        _logger.LogWarning("No job suggestions returned from AI API.");
+                        return Enumerable.Empty<JobListSearchForStudentDTO>();
+                    }
+
+                    return jobSuggestions;
+                }
             }
             catch (HttpRequestException e)
             {
-                // Ghi log nếu có lỗi trong request
+                // Log error and return empty collection if request fails
                 _logger.LogError($"Request error: {e.Message}");
                 return Enumerable.Empty<JobListSearchForStudentDTO>();
             }
             catch (Exception e)
             {
-                // Ghi log nếu có lỗi khác
+                // Log any other unexpected errors
                 _logger.LogError($"An unexpected error occurred: {e.Message}");
                 return Enumerable.Empty<JobListSearchForStudentDTO>();
             }
         }
+        */
 
         //private async Task<IEnumerable<JobListSearchForStudentDTO>> GetSuggestedJobsFromAiApiAsync(string? filePath)
         //{
@@ -199,13 +255,20 @@ namespace OJTEDU.Api.Controllers.GuestControllers
 
         //    try
         //    {
-        //        // Send the POST request to the Flask API
-        //        var response = await client.PostAsync("https://sep490-g62-ojtedu-be-ai-7.onrender.com/api/ai/analyze", filePath); // http://127.0.0.1:5001
+        //        // Truyền đường dẫn file như một tham số chuỗi
+        //        var fileContent = new StringContent(filePath);
+        //        request.Add(fileContent, "filePath");
 
-        //        // Ensure success status code or throw exception
+        //        _logger.LogError("File path content.", fileContent);
+        //        _logger.LogError("File path.", filePath);
+
+        //        // Gửi request POST đến Flask API
+        //        var response = await client.PostAsync("http://127.0.0.1:5001/api/ai/analyze", request);
+
+        //        // Đảm bảo mã phản hồi thành công
         //        response.EnsureSuccessStatusCode();
 
-        //        // Deserialize the JSON response into the desired DTO
+        //        // Deserialize phản hồi JSON từ Flask API
         //        var jobSuggestions = await response.Content.ReadFromJsonAsync<IEnumerable<JobListSearchForStudentDTO>>();
 
         //        if (jobSuggestions == null || !jobSuggestions.Any())
@@ -215,46 +278,80 @@ namespace OJTEDU.Api.Controllers.GuestControllers
         //        }
 
         //        return jobSuggestions;
-
-        //        /*
-        //        // Open the file stream
-        //        using (var fileStream = System.IO.File.OpenRead(filePath))
-        //        {
-        //            // Add the file content to the request
-        //            request.Add(new StreamContent(fileStream), "file", Path.GetFileName(filePath));
-
-        //            // Send the POST request to the Flask API
-        //            var response = await client.PostAsync("https://sep490-g62-ojtedu-be-ai-7.onrender.com/api/ai/analyze", filePath); //http://127.0.0.1:5001
-
-        //            // Ensure success status code or throw exception
-        //            response.EnsureSuccessStatusCode();
-
-        //            // Deserialize the JSON response into the desired DTO
-        //            var jobSuggestions = await response.Content.ReadFromJsonAsync<IEnumerable<JobListSearchForStudentDTO>>();
-
-        //            if (jobSuggestions == null || !jobSuggestions.Any())
-        //            {
-        //                _logger.LogWarning("No job suggestions returned from AI API.");
-        //                return Enumerable.Empty<JobListSearchForStudentDTO>();
-        //            }
-
-        //            return jobSuggestions;
-        //        }
-        //        */
         //    }
         //    catch (HttpRequestException e)
         //    {
-        //        // Log error and return empty collection if request fails
+        //        // Ghi log nếu có lỗi trong request
         //        _logger.LogError($"Request error: {e.Message}");
         //        return Enumerable.Empty<JobListSearchForStudentDTO>();
         //    }
         //    catch (Exception e)
         //    {
-        //        // Log any other unexpected errors
+        //        // Ghi log nếu có lỗi khác
         //        _logger.LogError($"An unexpected error occurred: {e.Message}");
         //        return Enumerable.Empty<JobListSearchForStudentDTO>();
         //    }
         //}
+        
+        private async Task<IEnumerable<JobListSearchForStudentDTO>> GetSuggestedJobsFromAiApiAsync(string? fileUrl)
+        {
+            if (string.IsNullOrEmpty(fileUrl))
+            {
+                _logger.LogError("File URL is null or empty.");
+                return Enumerable.Empty<JobListSearchForStudentDTO>();
+            }
+
+            var client = _httpClientFactory.CreateClient();
+            var request = new MultipartFormDataContent();
+
+            try
+            {
+                // Download the file from the provided URL
+                var fileBytes = await client.GetByteArrayAsync(fileUrl);
+                if (fileBytes == null || fileBytes.Length == 0)
+                {
+                    _logger.LogError("Failed to download file or file is empty.");
+                    return Enumerable.Empty<JobListSearchForStudentDTO>();
+                }
+
+                // Create a file stream content from the downloaded file
+                var fileName = Path.GetFileName(new Uri(fileUrl).LocalPath) ?? "uploaded_file";
+                var fileContent = new ByteArrayContent(fileBytes);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                request.Add(fileContent, "file", fileName);
+
+                _logger.LogInformation($"File downloaded and prepared for upload: {fileName}");
+
+                // Send POST request to the Flask API
+                var response = await client.PostAsync("https://sep490-g62-ojtedu-be-ai-7.onrender.com/api/ai/analyze", request);
+
+                // Ensure the response is successful
+                response.EnsureSuccessStatusCode();
+
+                // Deserialize the JSON response from the Flask API
+                var jobSuggestions = await response.Content.ReadFromJsonAsync<IEnumerable<JobListSearchForStudentDTO>>();
+
+                if (jobSuggestions == null || !jobSuggestions.Any())
+                {
+                    _logger.LogWarning("No job suggestions returned from AI API.");
+                    return Enumerable.Empty<JobListSearchForStudentDTO>();
+                }
+
+                return jobSuggestions;
+            }
+            catch (HttpRequestException e)
+            {
+                // Log the HTTP request error
+                _logger.LogError($"Request error: {e.Message}");
+                return Enumerable.Empty<JobListSearchForStudentDTO>();
+            }
+            catch (Exception e)
+            {
+                // Log other errors
+                _logger.LogError($"An unexpected error occurred: {e.Message}");
+                return Enumerable.Empty<JobListSearchForStudentDTO>();
+            }
+        }
 
         [HttpGet("list")]
         public async Task<IActionResult> GetJobList()
