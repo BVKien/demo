@@ -19,12 +19,14 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         private readonly IDocumentService _contractService;
         //private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ILogger<DocumentController> _logger;
+        private readonly IJobService _jobService;
 
         public DocumentController(IDocumentService contractService,
-            ILogger<DocumentController> logger)
+            ILogger<DocumentController> logger, IJobService jobService)
         {
             _contractService = contractService;
             _logger = logger;
+            _jobService = jobService;
         }
 
         //[HttpGet("list")]
@@ -88,7 +90,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
 
                 _logger.LogDebug("Defaulting actualPageNumber to {PageNumber} and actualPageSize to {PageSize}", actualPageNumber, actualPageSize);
 
-                var dataResponse = await _contractService.GetAllDocumentsForAdminAsync(title, roleId, status, actualPageNumber, actualPageSize);
+                var dataResponse = await _jobService.GetAllDocumentsForAdminAsync(title, roleId, status, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {

@@ -135,5 +135,8 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         bool? isDescending);
         Task<DataResponse<string>> AssignDepartmentToDeanAsync(int deanId, int departmentId);
         Task<DataResponse<string>> AssignMajorToLecturerAsync(int lecturerId, int majorId);
+
+        // Admin - Document Management
+        Task<DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>> GetAllDocumentsForAdminAsync(string? title, int? roleId, string? status, int pageNumber, int pageSize);
     }
 }

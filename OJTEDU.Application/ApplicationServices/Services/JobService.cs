@@ -18,6 +18,8 @@ using OfficeOpenXml;
 using static OJTEDU.Application.DTOs.StudentDTO;
 using System.Text;
 using static OJTEDU.Application.DTOs.DocumentDTO;
+using OJTEDU.Infrastructure.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace OJTEDU.Application.ApplicationServices.Services
 {
@@ -31,11 +33,12 @@ namespace OJTEDU.Application.ApplicationServices.Services
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMajorRepository _majorRepository;
+        private readonly IDocumentRepository _documentRepository;
 
         public JobService(IJobRepository jobRepository, IMapper mapper, HttpClient httpClient,
             IConfiguration config, IGoogleJsonWebSignatureValidator googleValidator,
             IUserRepository userRepository, IHttpContextAccessor httpContextAccessor,
-            IMajorRepository majorRepository)
+            IMajorRepository majorRepository, IDocumentRepository documentRepository)
         {
             _jobRepository = jobRepository;
             _mapper = mapper;
@@ -45,6 +48,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             _userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
             _majorRepository = majorRepository;
+            _documentRepository = documentRepository;
         }
 
         // Student  
@@ -3753,6 +3757,70 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     Data = null,
                     Message = $"Error assigning major: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        // Admin - DocumentManagement
+        public async Task<DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>> GetAllDocumentsForAdminAsync(string? title, int? roleId, string? status, int pageNumber, int pageSize)
+        {
+            try
+            {
+                var documents = await _documentRepository.GetAllDocumentsForAdminAsync(title, roleId, status);
+
+                var totalDocuments = documents.Count();
+                var totalPages = totalDocuments == 0 ? 1 : (int)Math.Ceiling((double)totalDocuments / pageSize);
+
+                // Map thủ công từ Document sang DocumentListForAdminDTO
+                var documentDtos = documents
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(doc => new DocumentListForAdminDTO
+                    {
+                        DocumentId = doc.DocumentId,
+                        University = doc.University?.Name,
+                        Title = doc.Title,
+                        DocumentFile = doc.DocumentFile,
+                        Description = doc.Description,
+                        Status = doc.Status,
+                        ForRole = doc.DocumentRoles != null && doc.DocumentRoles.Any()
+                            ? string.Join(", ", doc.DocumentRoles.Select(dr => dr.Role?.Name ?? "Guest"))
+                            : "Guest" // Nếu không có role, mặc định là Guest
+                    })
+                    .ToList();
+
+                var pagedResponse = new PagedResponse<List<DocumentListForAdminDTO>>
+                {
+                    Items = documentDtos,
+                    TotalCount = totalDocuments,
+                    PageSize = pageSize,
+                    CurrentPage = pageNumber,
+                    TotalPages = totalPages
+                };
+
+                return new DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>
+                {
+                    Data = pagedResponse,
+                    Message = "Document list retrieved successfully!",
+                    StatusCode = 200
+                };
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    StatusCode = 404
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>
+                {
+                    Data = null,
+                    Message = $"Error retrieving document list: {ex.Message}",
                     StatusCode = 500
                 };
             }
