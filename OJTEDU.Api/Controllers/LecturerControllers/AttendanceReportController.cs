@@ -15,8 +15,8 @@ namespace OJTEDU.WebAPI.Controllers.Lecturer
     [Route("api/lecturer/attendance-report")]
     public class AttendanceReportController : ControllerBase
     {
-        private readonly IAttendanceReportService _jobService;
-        public AttendanceReportController(IAttendanceReportService jobService)
+        private readonly IJobService _jobService;
+        public AttendanceReportController(IJobService jobService)
         {
             _jobService = jobService;
         }
