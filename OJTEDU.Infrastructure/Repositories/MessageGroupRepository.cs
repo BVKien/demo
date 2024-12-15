@@ -569,6 +569,7 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Select(g => g.First())
                         .Select(u => new User
                         {
+                            UserId = u.UserId,
                             Name = u.Name,
                             Image = u.Image,
                             UserCode = u.UserCode
@@ -635,6 +636,7 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Select(g => g.First())
                         .Select(u => new User
                         {
+                            UserId = u.UserId,
                             Name = u.Name,
                             Image = u.Image,
                             UserCode = u.UserCode
@@ -740,6 +742,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     var combined = query
                         .Select(u => new User
                         {
+                            UserId = u.User.UserId,
                             Name = u.User.Name,
                             Image = u.User.Image,
                             UserCode = u.User.UserCode,
@@ -882,6 +885,7 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Select(g => g.First())
                         .Select(u => new User
                         {
+                            UserId = u.UserId,
                             Name = u.Name,
                             Image = u.Image,
                             UserCode = u.UserCode
@@ -978,6 +982,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 var combinedValid = lecQueryValid
                     .Select(u => new User
                     {
+                        UserId = u.UserId,
                         Name = u.Name,
                         Image = u.Image,
                         UserCode = u.UserCode,
@@ -990,12 +995,14 @@ namespace OJTEDU.Infrastructure.Repositories
                     }))
                     .Concat(stuQueryValid.Select(m => new User
                     {
+                        UserId = m.User.UserId,
                         Name = m.User.Name,
                         Image = m.User.Image,
                         UserCode = m.User.UserCode,
                     }))
                     .Concat(studentQueryValid.Select(m => new User
                     {
+                        UserId = m.UserId,
                         Name = m.Name,
                         Image = m.Image,
                         UserCode = m.UserCode,
@@ -1830,6 +1837,84 @@ namespace OJTEDU.Infrastructure.Repositories
                 await _context.SaveChangesAsync();
 
                 return studentMemberInfo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<List<MessageGroup>> GetAllGroupChatAsync(int? userId)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(g => g.UserId == userId);
+                if (user == null)
+                {
+                    throw new KeyNotFoundException("Not found group chat.");
+                }
+
+                if (user.Role.Name == "Admin" || user.Role.Name == "DOET" || user.Role.Name == "Dean" || user.Role.Name == "Lecturer")
+                {
+                    var group = await _context.MessageGroups
+                        .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.University).ThenInclude(m => m.Role)
+                        .Where(m => m.UniversityId == userId && m.Status != "0" && m.Status != null)
+                        .ToListAsync();
+
+                    if (group == null)
+                    {
+                        throw new KeyNotFoundException("Not found group chat.");
+                    }
+
+                    return group;
+                }
+
+                if (user.Role.Name == "Company" || user.Role.Name == "Mentor")
+                {
+                    var company = await _context.Companies
+                        .Include(c => c.User).ThenInclude(c => c.Role)
+                        .FirstOrDefaultAsync(c => c.UserId == userId);
+
+                    var group = await _context.MessageGroups
+                        .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.University).ThenInclude(m => m.Role)
+                        .Where(m => m.MentorId == company.CompanyId && m.Status != "0" && m.Status != null)
+                        .ToListAsync();
+
+                    if (group == null)
+                    {
+                        throw new KeyNotFoundException("Not found group chat.");
+                    }
+
+                    return group;
+                }
+
+
+                if (user.Role.Name == "Student")
+                {
+                    var student = await _context.Students
+                        .Include(c => c.User).ThenInclude(c => c.Role)
+                        .FirstOrDefaultAsync(c => c.UserId == userId);
+
+                    var group = await _context.MessageGroups
+                        .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.University).ThenInclude(m => m.Role)
+                        .Where(m => m.StudentId == student.StudentId && m.Status != "0" && m.Status != null)
+                        .ToListAsync();
+
+                    if (group == null)
+                    {
+                        throw new KeyNotFoundException("Not found group chat.");
+                    }
+
+                    return group;
+                }
+
+                return null;
             }
             catch (Exception ex)
             {

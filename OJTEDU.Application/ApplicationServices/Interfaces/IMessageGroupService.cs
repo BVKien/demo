@@ -24,5 +24,6 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<List<MessagesInGroupChatListForForAdminDOETDeanLecturerMentorStudentDTO>>> GetAllMessagesInGroupChatAsync(int? groupChatId);
         Task<DataResponse<CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO>> CreateMessageInMessageGroupAsync(int? userId, string? messageFileName, string? imageFileName,
             CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO? messageGroupInfo);
+        Task<DataResponse<List<GetAllGroupForUserAsyncForAdminDOETDeanLecturerMentorDTO>>> GetAllGroupChatAsync(int? userId);
     }
 }

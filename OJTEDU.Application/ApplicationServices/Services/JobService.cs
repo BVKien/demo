@@ -31,7 +31,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMajorRepository _majorRepository;
-        private readonly IDocumentRepository _documentRepository;
 
         public JobService(IJobRepository jobRepository, IMapper mapper, HttpClient httpClient,
             IConfiguration config, IGoogleJsonWebSignatureValidator googleValidator,

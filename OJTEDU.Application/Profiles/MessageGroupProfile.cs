@@ -16,9 +16,13 @@ namespace OJTEDU.Application.Profiles
             // Admin, DOET, Dean, Lecturer, Mentor
             CreateMap<MessageGroup, CreateMemberMessageGroupForAdminDOETDeanLecturerMentorDTO>().ReverseMap();
             CreateMap<MessageGroup, GetAllMemberForUserAsyncForAdminDOETDeanLecturerMentorDTO>().ReverseMap();
-            CreateMap<MessageGroup, MessagesInGroupChatListForForAdminDOETDeanLecturerMentorStudentDTO>()
+
+        CreateMap<MessageGroup, MessagesInGroupChatListForForAdminDOETDeanLecturerMentorStudentDTO>()
+                .ForMember(dest => dest.StudentAvatar, opt => opt.MapFrom(src => src.Student.User.Image))
                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User.Name))
+                .ForMember(dest => dest.UniversityAvatar, opt => opt.MapFrom(src => src.University.Image))
                 .ForMember(dest => dest.UniversityName, opt => opt.MapFrom(src => src.University.Name))
+                .ForMember(dest => dest.MentorAvatar, opt => opt.MapFrom(src => src.Mentor.User.Image))
                 .ForMember(dest => dest.MentorName, opt => opt.MapFrom(src => src.Mentor.User.Name))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status == "1" ? "Active" : src.Status == "0" ? "Deleted" : "Unknown"))
                 .ReverseMap();

@@ -340,5 +340,40 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+
+        public async Task<DataResponse<List<GetAllGroupForUserAsyncForAdminDOETDeanLecturerMentorDTO>>> GetAllGroupChatAsync(int? userId)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return new DataResponse<List<GetAllGroupForUserAsyncForAdminDOETDeanLecturerMentorDTO>>
+                    {
+                        StatusCode = 404,
+                        Message = "Not found user.",
+                        Data = null
+                    };
+                }
+
+                var messages = await _messageGroupRepository.GetAllGroupChatAsync(userId);
+                var response = _mapper.Map<List<GetAllGroupForUserAsyncForAdminDOETDeanLecturerMentorDTO>>(messages);
+
+                return new DataResponse<List<GetAllGroupForUserAsyncForAdminDOETDeanLecturerMentorDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Retrieving all group chat successfully!",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<List<GetAllGroupForUserAsyncForAdminDOETDeanLecturerMentorDTO>>
+                {
+                    StatusCode = 500,
+                    Message = $"Error retrieving all group chat: {ex.Message}.",
+                    Data = null
+                };
+            }
+        }
     }
 }
