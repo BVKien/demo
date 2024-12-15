@@ -795,6 +795,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Where(m => m.UniversiryId == userId)
                         .ToListAsync();
 
+                    conversation = conversation.GroupBy(m => m.ConversationId).Select(g => g.First()).ToList();
+
                     if (conversation == null)
                     {
                         throw new KeyNotFoundException("Not found conversation.");
@@ -816,6 +818,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Where(m => m.CompanyId == company.CompanyId)
                         .ToListAsync();
 
+                    conversation = conversation.GroupBy(m => m.ConversationId).Select(g => g.First()).ToList();
+
                     if (conversation == null)
                     {
                         throw new KeyNotFoundException("Not found conversation.");
@@ -836,6 +840,8 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Include(m => m.Universiry).ThenInclude(m => m.Role)
                         .Where(m => m.StudentId == student.StudentId)
                         .ToListAsync();
+
+                    conversation = conversation.GroupBy(m => m.ConversationId).Select(g => g.First()).ToList();
 
                     if (conversation == null)
                     {
