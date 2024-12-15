@@ -248,13 +248,31 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         public async Task<DataResponse<WorkingReportResponseDTO>> GetWorkingReportsByStudentIdAsync(
-        int studentId, string? sortBy, bool? isDescending, string? week, int? year = null)
+            int internshipId, string? sortBy, bool? isDescending, string? week, int? year = null)
         {
             try
             {
+                // Lấy thông tin người dùng hiện tại
                 var userId = GetCurrentUserId();
                 var role = GetCurrentUserRole();
 
+                // Lấy thông tin Internship từ database
+                var internship = await _workingReportRepository.GetInternshipByIdAsync(internshipId);
+
+                if (internship == null || internship.StudentId == null)
+                {
+                    return new DataResponse<WorkingReportResponseDTO>
+                    {
+                        StatusCode = 404,
+                        Message = "Internship not found or student not associated.",
+                        Data = null
+                    };
+                }
+
+                // Lấy studentId từ internship
+                int studentId = internship.StudentId.Value;
+
+                // Lấy chi tiết sinh viên bằng studentId
                 var student = await _workingReportRepository.GetStudentDetailsByIdAsync(studentId, userId, role);
 
                 if (student == null)
@@ -267,13 +285,13 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     };
                 }
 
+                // Lấy danh sách WorkingReports
                 var workingReports = await _workingReportRepository.GetWorkingReportsByStudentIdAsync(
-                    studentId, userId, role, sortBy, isDescending, week, year);
+                    internshipId, userId, role, sortBy, isDescending, week, year);
 
                 // Xác định tuần được chọn
                 string selectedWeek = week;
 
-                // Nếu không có tuần được chọn, sử dụng tuần hiện tại
                 if (string.IsNullOrEmpty(week))
                 {
                     TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
@@ -284,11 +302,12 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     selectedWeek = $"{currentWeekStart:dd/MM} to {currentWeekEnd:dd/MM}";
                 }
 
+                // Tạo DTO trả về
                 var response = new WorkingReportResponseDTO
                 {
                     StudentName = student.User.Name,
-                    LecturerName = student.Lecturer.Name,
-                    Week = selectedWeek, 
+                    LecturerName = student.Lecturer?.Name,
+                    Week = selectedWeek,
                     WorkingReports = _mapper.Map<List<WorkingReportDto>>(workingReports)
                 };
 

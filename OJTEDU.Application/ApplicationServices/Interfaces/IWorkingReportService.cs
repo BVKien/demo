@@ -20,7 +20,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         //For Dean
         Task<DataResponse<List<string>>> GetWeeksForStudentAsync(int studentId, int? year = null);
         Task<DataResponse<WorkingReportResponseDTO>> GetWorkingReportsByStudentIdAsync(
-        int studentId, string? sortBy, bool? isDescending, string? week, int? year = null);
+        int internshipId, string? sortBy, bool? isDescending, string? week, int? year = null);
         Task<DataResponse<string>> UpdateWorkingReportAsync(GiveFeedbackOrScoreDto dto);
 
         // Mentor 

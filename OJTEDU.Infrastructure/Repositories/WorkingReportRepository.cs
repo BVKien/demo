@@ -277,9 +277,12 @@ namespace OJTEDU.Infrastructure.Repositories
 
         public async Task<Student> GetStudentDetailsByIdAsync(int studentId, int userId, string role)
         {
-            // Khởi tạo query lấy thông tin sinh viên
+            // Bắt đầu truy vấn
+            Console.WriteLine($"Starting GetStudentDetailsByIdAsync: StudentId={studentId}, UserId={userId}, Role={role}");
+
+            // Truy vấn Student kèm các thực thể liên quan
             var query = _context.Students
-                .Include(s => s.User)
+                .Include(s => s.User) // Bao gồm thông tin User liên quan
                 .Include(s => s.Semester)
                 .Include(s => s.Major)
                 .Include(s => s.Lecturer)
@@ -287,24 +290,28 @@ namespace OJTEDU.Infrastructure.Repositories
                     .ThenInclude(a => a.Ward)
                 .Include(s => s.Address.District)
                 .Include(s => s.Address.Province)
-                .Where(s => s.StudentId == studentId && s.User.Status != "Deleted" && s.Major.Status == "Active");
+                .Where(s => s.StudentId == studentId && s.User.Status != "Deleted");
 
-            // Logic cho Lecturer
+            Console.WriteLine("Initial query built.");
+
+            // Kiểm tra quyền truy cập nếu vai trò là Lecturer
             if (role == "Lecturer")
             {
                 query = query.Where(s => s.LecturerId == userId);
+                Console.WriteLine($"Filtering query for Lecturer with UserId={userId}");
             }
-            // Logic cho Dean
+            // Kiểm tra quyền truy cập nếu vai trò là Dean
             else if (role == "Dean")
             {
-                // Lấy thông tin Dean
                 var dean = await GetDeanByUserIdAsync(userId);
                 if (dean == null || !dean.DepartmentId.HasValue)
                 {
+                    Console.WriteLine("Dean not found or doesn't manage any department.");
                     throw new KeyNotFoundException("Dean not found or doesn't manage any department.");
                 }
 
-                // Lấy danh sách MajorId thuộc Department mà Dean quản lý
+                Console.WriteLine($"Dean found. DepartmentId={dean.DepartmentId}");
+
                 var majorIdsInDepartment = await _context.Majors
                     .Where(m => m.DepartmentId == dean.DepartmentId)
                     .Select(m => m.MajorId)
@@ -312,68 +319,71 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 if (!majorIdsInDepartment.Any())
                 {
+                    Console.WriteLine("Dean does not manage any majors.");
                     throw new KeyNotFoundException("Dean does not manage any majors.");
                 }
 
-                // Kiểm tra MajorId của sinh viên có thuộc MajorId trong Department không
+                Console.WriteLine($"Majors managed by Dean: {string.Join(", ", majorIdsInDepartment)}");
+
                 query = query.Where(s => s.MajorId.HasValue && majorIdsInDepartment.Contains(s.MajorId.Value));
             }
 
-            // Lấy sinh viên đầu tiên phù hợp
+            // Log truy vấn cuối cùng trước khi thực thi
+            Console.WriteLine($"Final query: StudentId={studentId}, Role={role}");
+
+            // Lấy dữ liệu Student
             var student = await query.FirstOrDefaultAsync();
 
-            // Nếu không tìm thấy sinh viên
             if (student == null)
             {
+                Console.WriteLine("Student not found or access denied.");
                 throw new KeyNotFoundException("Student not found or access denied.");
             }
+
+            // Log thông tin Student trước khi trả về
+            Console.WriteLine($"Student found: StudentId={student.StudentId}, UserId={student.User?.UserId}, UserName={student.User?.Name}");
 
             return student;
         }
 
+
         public async Task<List<WorkingReport>> GetWorkingReportsByStudentIdAsync(
-        int internshipId, int userId, string role, string? sortBy, bool? isDescending, string? week, int? year = null)
+            int internshipId, int userId, string role, string? sortBy, bool? isDescending, string? week, int? year = null)
         {
-            // Lấy thông tin Internship và StudentId từ InternshipId
+            // Lấy thông tin Internship
             var internship = await _context.Internships
-                .Include(i => i.Student)
+                .Include(i => i.Student) // Bao gồm Student
+                    .ThenInclude(s => s.User) // Bao gồm User của Student
+                .Include(i => i.Lecturer) // Bao gồm thông tin Lecturer
                 .FirstOrDefaultAsync(i => i.IntershipId == internshipId);
 
-            if (internship == null || internship.StartDate == null || internship.EndDate == null)
+            if (internship == null || internship.StudentId == null)
             {
-                throw new KeyNotFoundException("Internship not found or invalid start/end date.");
+                throw new KeyNotFoundException("Internship not found or does not have a valid StudentId.");
             }
 
-            if (!internship.StudentId.HasValue)
+            Console.WriteLine($"InternshipId: {internship.IntershipId}, StudentId: {internship.StudentId}, StudentUserName: {internship.Student.User.Name}");
+
+            // Xác thực quyền truy cập
+            var studentDetails = await GetStudentDetailsByIdAsync(internship.StudentId.Value, userId, role);
+            if (studentDetails == null)
             {
-                throw new InvalidOperationException("StudentId is null for the given internship.");
+                throw new KeyNotFoundException("Access denied or student details not found.");
             }
 
-            int studentId = internship.StudentId.Value;
+            Console.WriteLine($"StudentId: {studentDetails.StudentId}, UserId: {studentDetails.User.UserId}, UserName: {studentDetails.User.Name}");
 
-            // Kiểm tra quyền truy cập
-            var student = await GetStudentDetailsByIdAsync(studentId, userId, role);
-            if (student == null)
-            {
-                throw new KeyNotFoundException("Student not found or access denied.");
-            }
+            // Lấy thời gian bắt đầu và kết thúc của Internship
+            var internshipStart = internship.StartDate.Value;
+            var internshipEnd = internship.EndDate.Value.AddDays(1).AddSeconds(-1);
 
-            DateTime internshipStart = internship.StartDate.Value;
-            DateTime internshipEnd = internship.EndDate.Value.AddDays(1).AddSeconds(-1);
+            Console.WriteLine($"Internship Start: {internshipStart}, End: {internshipEnd}");
 
+            // Truy vấn WorkingReports theo StudentId
             IQueryable<WorkingReport> query = _context.WorkingReports
-                .Include(w => w.Student)
-                .Where(w => w.StudentId == studentId && w.CreatedAt >= internshipStart && w.CreatedAt <= internshipEnd);
+                .Where(w => w.StudentId == internship.StudentId.Value && w.CreatedAt >= internshipStart && w.CreatedAt <= internshipEnd);
 
-            // Nếu năm không được cung cấp, mặc định là năm hiện tại theo giờ Việt Nam
-            if (!year.HasValue)
-            {
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
-                year = currentVietnamTime.Year;
-            }
-
-            // Mặc định lấy tuần hiện tại nếu không có tuần nào được chọn
+            // Xử lý tuần
             if (string.IsNullOrEmpty(week))
             {
                 TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
@@ -383,33 +393,17 @@ namespace OJTEDU.Infrastructure.Repositories
                 DateTime currentWeekEnd = currentWeekStart.AddDays(6).AddDays(1).AddSeconds(-1);
 
                 query = query.Where(w => w.CreatedAt >= currentWeekStart && w.CreatedAt <= currentWeekEnd);
+                Console.WriteLine($"Query Filter: CurrentWeek Start: {currentWeekStart}, End: {currentWeekEnd}");
             }
             else
             {
                 var weekDates = week.Split(" to ");
                 if (weekDates.Length == 2)
                 {
-                    DateTime weekStart, weekEnd;
-
-                    // Xử lý nếu StartDate và EndDate nằm trong hai năm khác nhau
-                    if (internshipStart.Year != internshipEnd.Year)
-                    {
-                        // Xác định năm dựa trên tháng của tuần
-                        int weekStartMonth = int.Parse(weekDates[0].Split('/')[1]);
-                        int weekEndMonth = int.Parse(weekDates[1].Split('/')[1]);
-
-                        int weekYear = weekStartMonth >= internshipStart.Month ? internshipStart.Year : internshipEnd.Year;
-
-                        weekStart = DateTime.ParseExact($"{weekDates[0]}/{weekYear}", "dd/MM/yyyy", null);
-                        weekEnd = DateTime.ParseExact($"{weekDates[1]}/{weekYear}", "dd/MM/yyyy", null).AddDays(1).AddSeconds(-1);
-                    }
-                    else
-                    {
-                        weekStart = DateTime.ParseExact($"{weekDates[0]}/{internshipStart.Year}", "dd/MM/yyyy", null);
-                        weekEnd = DateTime.ParseExact($"{weekDates[1]}/{internshipStart.Year}", "dd/MM/yyyy", null).AddDays(1).AddSeconds(-1);
-                    }
-
+                    DateTime weekStart = DateTime.ParseExact($"{weekDates[0]}/{year}", "dd/MM/yyyy", null);
+                    DateTime weekEnd = DateTime.ParseExact($"{weekDates[1]}/{year}", "dd/MM/yyyy", null).AddDays(1).AddSeconds(-1);
                     query = query.Where(w => w.CreatedAt >= weekStart && w.CreatedAt <= weekEnd);
+                    Console.WriteLine($"Query Filter: Week Start: {weekStart}, End: {weekEnd}");
                 }
                 else
                 {
@@ -418,22 +412,26 @@ namespace OJTEDU.Infrastructure.Repositories
             }
 
             // Sắp xếp
-            switch (sortBy?.ToLower())
+            query = sortBy?.ToLower() switch
             {
-                case "updatedat":
-                    query = isDescending.GetValueOrDefault()
-                        ? query.OrderByDescending(w => w.UpdatedAt)
-                        : query.OrderBy(w => w.UpdatedAt);
-                    break;
-                case "createdat":
-                default:
-                    query = isDescending.GetValueOrDefault()
-                        ? query.OrderByDescending(w => w.CreatedAt)
-                        : query.OrderBy(w => w.CreatedAt);
-                    break;
-            }
+                "updatedat" => isDescending.GetValueOrDefault()
+                    ? query.OrderByDescending(w => w.UpdatedAt)
+                    : query.OrderBy(w => w.UpdatedAt),
+                "createdat" or _ => isDescending.GetValueOrDefault()
+                    ? query.OrderByDescending(w => w.CreatedAt)
+                    : query.OrderBy(w => w.CreatedAt),
+            };
+
+            Console.WriteLine($"WorkingReports Count: {query.Count()}");
 
             return await query.ToListAsync();
+        }
+
+        public async Task<Internship> GetInternshipByIdAsync(int internshipId)
+        {
+            return await _context.Internships
+                .Include(i => i.Student)
+                .FirstOrDefaultAsync(i => i.IntershipId == internshipId);
         }
 
 
