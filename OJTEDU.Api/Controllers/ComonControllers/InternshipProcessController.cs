@@ -47,26 +47,26 @@ namespace OJTEDU.Api.Controllers.ComonControllers
                 }
 
                 // Đường dẫn đến file PDF trên máy chủ
-                var filePath = Path.Combine(_webHostEnvironment.WebRootPath, dataResponse.Data.FilePath.TrimStart('/'));
+                // var filePath = Path.Combine(_webHostEnvironment.WebRootPath, dataResponse.Data.FilePath.TrimStart('/'));
 
-                // Kiểm tra file tồn tại
-                if (!System.IO.File.Exists(filePath))
-                {
-                    return NotFound(new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = "Internship Process File not found on the server."
-                    });
-                }
+                //// Kiểm tra file tồn tại
+                //if (!System.IO.File.Exists(filePath))
+                //{
+                //    return NotFound(new ApiResponse<object>
+                //    {
+                //        Data = null,
+                //        Message = "Internship Process File not found on the server."
+                //    });
+                //}
 
                 //// Đọc file PDF và trả về
                 //var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
                 //return File(fileBytes, "application/pdf", Path.GetFileName(filePath));
 
                 // Đọc nội dung file
-                var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                // var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
                 // Trả về file dưới dạng stream để tải xuống
-                return File(fileBytes, "application/octet-stream", dataResponse.Data.FilePath);
+                return Ok(dataResponse.Data.FilePath);
             }
             catch (Exception ex)
             {
