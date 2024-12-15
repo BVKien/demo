@@ -12,6 +12,6 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
     public interface IContractService
     {
         // Mentor 
-        Task<DataResponse<AssignContractInternshipForMentorDTO>> AssignContractAsync(int? userId, int? internshipId, string? fileName, AssignContractInternshipForMentorDTO? info);
+        Task<DataResponse<AssignContractInternshipForMentorDTO>> AssignContractAsync(int? userId, int? internshipId, string? fileName, AssignContractInternshipForMentorDTO? info, string? employeeCode);
     }
 }

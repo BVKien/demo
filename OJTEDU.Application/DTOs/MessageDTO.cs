@@ -15,6 +15,8 @@ namespace OJTEDU.Application.DTOs
             public string? MessageFile { get; set; }
             public string? Image { get; set; }
             public bool? IsRead { get; set; }
+            public DateTime? CreatedAt { get; set; }
+            public DateTime? UpdatedAt { get; set; }
         }
 
         public class MessageListForAdminDOETDeanLecturerMentorCompanyStudentDTO
@@ -45,6 +47,8 @@ namespace OJTEDU.Application.DTOs
             public string? UniversiryImage { get; set; }
             public string? CompanyName { get; set; }
             public string? CompanyImage { get; set; }
+            public DateTime? CreatedAt { get; set; }
+            public DateTime? UpdatedAt { get; set; }
         }
     }
 }

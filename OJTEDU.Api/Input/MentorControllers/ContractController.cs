@@ -6,6 +6,7 @@
         {
             public string? Name { get; set; }
             public string? ContractFile { get; set; }
+            public string? EmployeeCode { get; set; }
         }
     }
 }

@@ -11,6 +11,8 @@ namespace OJTEDU.Application.DTOs
         public class CreateMemberMessageGroupForAdminDOETDeanLecturerMentorDTO
         {
             public int? GroupChatId { get; set; }
+            public DateTime? CreatedAt { get; set; }
+            public DateTime? UpdatedAt { get; set; }
         }
 
         public class GetAllMemberForUserAsyncForAdminDOETDeanLecturerMentorDTO
@@ -19,6 +21,8 @@ namespace OJTEDU.Application.DTOs
             public string? Name { get; set; }
             public string? Image { get; set; }
             public string? UserCode { get; set; }
+            public DateTime? CreatedAt { get; set; }
+            public DateTime? UpdatedAt { get; set; }
         }
 
         public class MessagesInGroupChatListForForAdminDOETDeanLecturerMentorStudentDTO
@@ -38,6 +42,8 @@ namespace OJTEDU.Application.DTOs
             public bool? IsAdmin { get; set; }
             public bool? IsRead { get; set; }
             public string? Status { get; set; }
+            public DateTime? CreatedAt { get; set; }
+            public DateTime? UpdatedAt { get; set; }
         }
 
         public class CreateMessageGroupForAdminDOETDeanLecturerMentorStudentDTO
@@ -47,12 +53,16 @@ namespace OJTEDU.Application.DTOs
             public string? MessageFile { get; set; }
             public string? Image { get; set; }
             public bool? IsRead { get; set; }
+            public DateTime? CreatedAt { get; set; }
+            public DateTime? UpdatedAt { get; set; }
         }
 
         public class GetAllGroupForUserAsyncForAdminDOETDeanLecturerMentorDTO
         {
             public int? GroupChatId { get; set; }
             public string? GroupName { get; set; }
+            public DateTime? CreatedAt { get; set; }
+            public DateTime? UpdatedAt { get; set; }
         }
     }
 }
