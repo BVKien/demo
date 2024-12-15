@@ -34,11 +34,12 @@ namespace OJTEDU.Application.ApplicationServices.Services
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMajorRepository _majorRepository;
+        private readonly IAttendanceReportRepository _attendanceReportRepository;
 
         public JobService(IJobRepository jobRepository, IMapper mapper, HttpClient httpClient,
             IConfiguration config, IGoogleJsonWebSignatureValidator googleValidator,
             IUserRepository userRepository, IHttpContextAccessor httpContextAccessor,
-            IMajorRepository majorRepository)
+            IMajorRepository majorRepository, IAttendanceReportRepository attendanceReportRepository)
         {
             _jobRepository = jobRepository;
             _mapper = mapper;
@@ -48,6 +49,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             _userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
             _majorRepository = majorRepository;
+            _attendanceReportRepository = attendanceReportRepository;
         }
 
         // Student  
@@ -5033,7 +5035,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
         {
             try
             {
-                var attendanceReports = await _jobRepository.GetAttendanceReportsByStudentIdAsync(studentId);
+                var attendanceReports = await _attendanceReportRepository.GetAttendanceReportsByStudentIdAsync(studentId);
 
                 var totalReports = attendanceReports.Count();
                 var totalPages = (int)Math.Ceiling((double)totalReports / pageSize);
@@ -5119,7 +5121,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     CheckOutTime = info?.CheckOutTime
                 };
 
-                var setTime = await _jobRepository.SetCheckInCheckOutTimeAsync(userId, setTimeInfo);
+                var setTime = await _attendanceReportRepository.SetCheckInCheckOutTimeAsync(userId, setTimeInfo);
                 var response = _mapper.Map<SetCheckInCheckOutTimeForMentorDTO>(setTime);
 
                 return new DataResponse<SetCheckInCheckOutTimeForMentorDTO>
@@ -5441,7 +5443,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     };
                 }
 
-                var arList = await _jobRepository.GetAllAttendanceReportsForStudentAsync(userId);
+                var arList = await _attendanceReportRepository.GetAllAttendanceReportsForStudentAsync(userId);
                 var response = _mapper.Map<List<AttendanceReportsListForStudentDTO>>(arList);
 
                 return new DataResponse<List<AttendanceReportsListForStudentDTO>>
