@@ -13,14 +13,11 @@ namespace OJTEDU.Api.Controllers.ComonControllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly IDocumentService _contractService;
+        private readonly IJobService _jobService;
 
-        private readonly IWebHostEnvironment _webHostEnvironment;
-
-        public DocumentController(IDocumentService contractService, IWebHostEnvironment webHostEnvironment)
+        public DocumentController(IJobService jobService)
         {
-            _contractService = contractService;
-            _webHostEnvironment = webHostEnvironment;
+            _jobService = jobService;
         }
 
         [HttpGet("list")]
@@ -33,7 +30,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
 
                 string role = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.Role)?.Value : "guest";
 
-                var dataResponse = await _contractService.GetAllDocumentsAsync(role, title, actualPageNumber, actualPageSize);
+                var dataResponse = await _jobService.GetAllDocumentsAsync(role, title, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
@@ -87,7 +84,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
 
                 string role = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.Role)?.Value : "guest";
 
-                var dataResponse = await _contractService.GetDocumentDetailAsync(documentId.Value, role);
+                var dataResponse = await _jobService.GetDocumentDetailAsync(documentId.Value, role);
 
                 if (dataResponse == null)
                 {
@@ -141,7 +138,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
 
                 string role = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.Role)?.Value : "guest";
 
-                var dataResponse = await _contractService.GetDocumentDetailAsync(documentId.Value, role);
+                var dataResponse = await _jobService.GetDocumentDetailAsync(documentId.Value, role);
 
                 if (dataResponse == null)
                 {
@@ -161,24 +158,24 @@ namespace OJTEDU.Api.Controllers.ComonControllers
                     });
                 }
 
-                // Xây dựng đường dẫn đến file
-                var filePath = Path.Combine(_webHostEnvironment.WebRootPath, dataResponse.Data.DocumentFile.TrimStart('/'));
+                //// Xây dựng đường dẫn đến file
+                //var filePath = Path.Combine(_webHostEnvironment.WebRootPath, dataResponse.Data.DocumentFile.TrimStart('/'));
 
-                // Kiểm tra nếu file không tồn tại trên server
-                if (!System.IO.File.Exists(filePath))
-                {
-                    return NotFound(new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = "File not found on the server."
-                    });
-                }
+                //// Kiểm tra nếu file không tồn tại trên server
+                //if (!System.IO.File.Exists(filePath))
+                //{
+                //    return NotFound(new ApiResponse<object>
+                //    {
+                //        Data = null,
+                //        Message = "File not found on the server."
+                //    });
+                //}
 
-                // Đọc nội dung file
-                var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                //// Đọc nội dung file
+                //var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
 
                 // Trả về file dưới dạng stream để tải xuống
-                return File(fileBytes, "application/octet-stream", dataResponse.Data.DocumentFile);
+                return Ok(dataResponse.Data.DocumentFile);
             }
             catch (Exception ex)
             {

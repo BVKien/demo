@@ -15,11 +15,11 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly IDocumentService _contractService;
+        private readonly IJobService _jobService;
 
-        public DocumentController(IDocumentService contractService)
+        public DocumentController(IJobService jobService)
         {
-            _contractService = contractService;
+            _jobService = jobService;
         }
 
 
@@ -31,7 +31,7 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var dataResponse = await _contractService.GetAllDocumentsByUserIdAsync(userId);
+                var dataResponse = await _jobService.GetAllDocumentsByUserIdAsync(userId);
 
                 if (dataResponse.StatusCode == 404)
                 {
@@ -150,7 +150,7 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
                     Description = input?.Description,
                 };
 
-                var apiResponse = await _contractService.CreateDocumentsByUserIdAsync(userId, input?.DocumentFileName, input?.DocumentFilePath, testDocInfoDto);
+                var apiResponse = await _jobService.CreateDocumentsByUserIdAsync(userId, input?.DocumentFileName, input?.DocumentFilePath, testDocInfoDto);
 
                 if (apiResponse.StatusCode == 404)
                 {
@@ -228,7 +228,7 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
                     Description = input?.Description,
                 };
 
-                var apiResponse = await _contractService.UpdateDocumentAsync(documentId, input?.DocumentFile, fileData, testDocInfoDto);
+                var apiResponse = await _jobService.UpdateDocumentAsync(documentId, input?.DocumentFile, fileData, testDocInfoDto);
 
                 if (apiResponse.StatusCode == 404)
                 {
@@ -289,7 +289,7 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
         {
             try
             {
-                var apiResponse = await _contractService.StoredDocumentsByUserIdAsync(documentId);
+                var apiResponse = await _jobService.StoredDocumentsByUserIdAsync(documentId);
 
                 if (apiResponse.StatusCode == 404)
                 {

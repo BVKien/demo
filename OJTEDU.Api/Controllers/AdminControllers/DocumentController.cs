@@ -16,12 +16,10 @@ namespace OJTEDU.Api.Controllers.AdminControllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly ILogger<DocumentController> _logger;
         private readonly IJobService _jobService;
 
-        public DocumentController(ILogger<DocumentController> logger, IJobService jobService)
+        public DocumentController(IJobService jobService)
         {
-            _logger = logger;
             _jobService = jobService;
         }
 
