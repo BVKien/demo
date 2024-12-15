@@ -768,10 +768,11 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 //}
 
                 // Đọc nội dung file
-                var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                // var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
 
                 // Trả về file dưới dạng stream để tải xuống
-                return File(fileBytes, "application/octet-stream", dataResponse.Data.DocumentFile);
+                //return File(fileBytes, "application/octet-stream", dataResponse.Data.DocumentFile);
+                return Ok(dataResponse.Data.DocumentFile);
             }
             catch (Exception ex)
             {
