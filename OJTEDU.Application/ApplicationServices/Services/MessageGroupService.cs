@@ -150,6 +150,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
                 var membersDto = members.Select(member => new GetAllMemberForUserAsyncForAdminDOETDeanLecturerMentorDTO
                 {
+                    UserId = member.UserId,
                     Name = member.Name,
                     Image = member.Image,
                     UserCode = member.UserCode,

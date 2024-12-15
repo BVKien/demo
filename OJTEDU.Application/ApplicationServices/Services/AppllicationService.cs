@@ -20,11 +20,9 @@ namespace OJTEDU.Application.ApplicationServices.Services
     {
         private readonly IAppllicationRepository _appllicationRepository;
         private readonly IMapper _mapper;
-        private readonly IDocumentRepository _documentRepository;
-        public AppllicationService(IAppllicationRepository appllicationRepository, IMapper mapper, IDocumentRepository documentRepository)
+        public AppllicationService(IAppllicationRepository appllicationRepository, IMapper mapper)
         {
             _appllicationRepository = appllicationRepository;
-            _documentRepository = documentRepository;
             _mapper = mapper;
         }
 
