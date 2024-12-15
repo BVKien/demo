@@ -12,12 +12,10 @@ namespace OJTEDU.Api.Controllers.StudentControllers
     [ApiController]
     public class AttendanceReportController : ControllerBase
     {
-        private readonly IAttendanceReportService _attendanceReportService;
-        private readonly IHttpClientFactory _httpClientFactory;
-        public AttendanceReportController(IAttendanceReportService attendanceReportService, IHttpClientFactory httpClientFactory)
+        private readonly IJobService _jobService;
+        public AttendanceReportController(IJobService jobService)
         {
-            _attendanceReportService = attendanceReportService;
-            _httpClientFactory = httpClientFactory;
+            _jobService = jobService;
         }
 
         [Authorize(Roles = "Student")]
@@ -28,7 +26,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var dataResponse = await _attendanceReportService.GetAllAttendanceReportsForStudentAsync(userId);
+                var dataResponse = await _jobService.GetAllAttendanceReportsForStudentAsync(userId);
 
                 if (dataResponse.StatusCode == 404)
                 {

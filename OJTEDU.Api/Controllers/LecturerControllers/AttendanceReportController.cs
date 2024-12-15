@@ -15,12 +15,10 @@ namespace OJTEDU.WebAPI.Controllers.Lecturer
     [Route("api/lecturer/attendance-report")]
     public class AttendanceReportController : ControllerBase
     {
-        private readonly IAttendanceReportService _attendanceReportService;
-        private readonly IHttpClientFactory _httpClientFactory;
-        public AttendanceReportController(IAttendanceReportService attendanceReportService, IHttpClientFactory httpClientFactory)
+        private readonly IJobService _jobService;
+        public AttendanceReportController(IJobService jobService)
         {
-            _attendanceReportService = attendanceReportService;
-            _httpClientFactory = httpClientFactory;
+            _jobService = jobService;
         }
 
         // GET: api/lecturer/attendance-report/{studentId}
@@ -32,7 +30,7 @@ namespace OJTEDU.WebAPI.Controllers.Lecturer
             {
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
-                var dataResponse = await _attendanceReportService.GetAttendanceReportsByStudentIdAsync(studentId, actualPageNumber, actualPageSize);
+                var dataResponse = await _jobService.GetAttendanceReportsByStudentIdAsync(studentId, actualPageNumber, actualPageSize);
 
                 if (dataResponse.Data == null)
                 {
@@ -66,7 +64,7 @@ namespace OJTEDU.WebAPI.Controllers.Lecturer
         {
             try
             {
-                var dataResponse = await _attendanceReportService.GetAllAttendanceReportsByInternshipIdAsync(internshipId);
+                var dataResponse = await _jobService.GetAllAttendanceReportsByInternshipIdAsync(internshipId);
 
                 if (dataResponse.StatusCode == 404)
                 {
@@ -123,7 +121,7 @@ namespace OJTEDU.WebAPI.Controllers.Lecturer
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var dataResponse = await _attendanceReportService.GetAllAttendanceReportsForLecturerAsync(userId);
+                var dataResponse = await _jobService.GetAllAttendanceReportsForLecturerAsync(userId);
 
                 if (dataResponse.StatusCode == 404)
                 {

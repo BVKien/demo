@@ -18,12 +18,10 @@ namespace OJTEDU.Api.Controllers.MentorControllers
     [ApiController]
     public class AttendanceReportController : ControllerBase
     {
-        private readonly IAttendanceReportService _attendanceReportService;
-        private readonly IHttpClientFactory _httpClientFactory;
-        public AttendanceReportController(IAttendanceReportService attendanceReportService, IHttpClientFactory httpClientFactory)
+        private readonly IJobService _jobService;
+        public AttendanceReportController(IJobService jobService)
         {
-            _attendanceReportService = attendanceReportService;
-            _httpClientFactory = httpClientFactory;
+            _jobService = jobService;
         }
 
         [Authorize(Roles = "Mentor")]
@@ -40,7 +38,7 @@ namespace OJTEDU.Api.Controllers.MentorControllers
                     CheckOutTime = input?.CheckOutTime
                 };
 
-                var dataResponse = await _attendanceReportService.SetCheckInCheckOutTimeAsync(userId, setTimeDto);
+                var dataResponse = await _jobService.SetCheckInCheckOutTimeAsync(userId, setTimeDto);
 
                 if (dataResponse.StatusCode == 404)
                 {
@@ -105,7 +103,7 @@ namespace OJTEDU.Api.Controllers.MentorControllers
                     Late = input?.Late,
                 };
 
-                var dataResponse = await _attendanceReportService.UpdateAttendanceReportAsync(attendanceReportId, arDto);
+                var dataResponse = await _jobService.UpdateAttendanceReportAsync(attendanceReportId, arDto);
 
                 if (dataResponse.StatusCode == 404)
                 {
@@ -162,7 +160,7 @@ namespace OJTEDU.Api.Controllers.MentorControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var dataResponse = await _attendanceReportService.CreateAutoAttendanceReportAsync(userId, input?.CheckInTime, input?.CheckOutTime);
+                var dataResponse = await _jobService.CreateAutoAttendanceReportAsync(userId, input?.CheckInTime, input?.CheckOutTime);
 
                 if (dataResponse.StatusCode == 404)
                 {
@@ -275,7 +273,7 @@ namespace OJTEDU.Api.Controllers.MentorControllers
                     fileData = await System.IO.File.ReadAllBytesAsync(filePath);
                 }
 
-                var apiResponse = await _attendanceReportService.ListAttendanceReportsFromExcelAsync(userId, fileName, fileData);
+                var apiResponse = await _jobService.ListAttendanceReportsFromExcelAsync(userId, fileName, fileData);
 
                 if (apiResponse.StatusCode == 404)
                 {
@@ -349,7 +347,7 @@ namespace OJTEDU.Api.Controllers.MentorControllers
                     fileData = await System.IO.File.ReadAllBytesAsync(filePath);
                 }
 
-                var apiResponse = await _attendanceReportService.InsertAttendanceReportsFromExcelAsync(userId, input?.FileName, fileData);
+                var apiResponse = await _jobService.InsertAttendanceReportsFromExcelAsync(userId, input?.FileName, fileData);
 
                 if (apiResponse.StatusCode == 404)
                 {
@@ -443,7 +441,7 @@ namespace OJTEDU.Api.Controllers.MentorControllers
         {
             try
             {
-                var dataResponse = await _attendanceReportService.GetAllAttendanceReportsByInternshipIdAsync(internshipId);
+                var dataResponse = await _jobService.GetAllAttendanceReportsByInternshipIdAsync(internshipId);
 
                 if (dataResponse.StatusCode == 404)
                 {
@@ -500,7 +498,7 @@ namespace OJTEDU.Api.Controllers.MentorControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var dataResponse = await _attendanceReportService.GetAllAttendanceReportsForMentorAsync(userId);
+                var dataResponse = await _jobService.GetAllAttendanceReportsForMentorAsync(userId);
 
                 if (dataResponse.StatusCode == 404)
                 {

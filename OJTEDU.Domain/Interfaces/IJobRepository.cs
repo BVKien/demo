@@ -81,5 +81,26 @@ namespace OJTEDU.Domain.Interfaces
         Task<Major> GetMajorByIdAsync(int majorId);
         Task<Semester> GetSemesterByIdAsync(int semesterId);
         Task UpdateStudentAsync(Student student);
+
+        // === Attendance ===
+        Task<List<AttendanceReport>> GetAttendanceReportsByStudentIdAsync(int studentId); // cân nhắc bỏ 1
+
+        // Mentor 
+        Task<Company> SetCheckInCheckOutTimeAsync(int? userId, Company? info);
+        Task<bool> CreateAutoAttendanceReportAsync(int? userId, TimeSpan? checkInTime, TimeSpan? checkOutTime);
+        Task<AttendanceReport> UpdateAttendanceReportAsync(int? attendanceReportId, AttendanceReport? info);
+        Task<bool> CreateAttendanceReportFileAsync(int? userId, int[]? internshipIds, string? fileName, byte[] fileData);
+        Task<bool> InsertAttendanceReportsFromExcelAsync(int? userId, string fileName, byte[] fileData);
+        Task<IEnumerable<AttendanceReport>> ListAttendanceReportsFromExcelAsync(int? userId, string fileName, byte[] fileData);
+        Task<IEnumerable<AttendanceReport>> GetAllAttendanceReportsForMentorAsync(int? userId);
+
+        // Mentor, Lecturer
+        Task<IEnumerable<AttendanceReport>> GetAllAttendanceReportsByInternshipIdAsync(int? internshipId);
+
+        // Lecturer
+        Task<IEnumerable<AttendanceReport>> GetAllAttendanceReportsForLecturerAsync(int? userId);
+
+        // Student
+        Task<IEnumerable<AttendanceReport>> GetAllAttendanceReportsForStudentAsync(int? userId);
     }
 }

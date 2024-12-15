@@ -64,36 +64,6 @@ namespace OJTEDU.Infrastructure.Repositories
                 // Uni side
                 if (userExists?.Role.Name == "Admin" || userExists?.Role.Name == "DOET" || userExists?.Role.Name == "Dean" || userExists?.Role.Name == "Lecturer")
                 {
-                    //// Create file name format userId_timestamp_filename
-                    //var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                    //var newMessageFileName = messageFileName != null ? $"{userId}_{timestamp}_{messageFileName}" : null;
-                    //var newImageFileName = imageFileName != null ? $"{userId}_{timestamp}_{imageFileName}" : null;
-
-                    //var messageFilePath = newMessageFileName != null ? Path.Combine(_messageFileDirectory, newMessageFileName) : null;
-                    //var imageFilePath = newImageFileName != null ? Path.Combine(_imageFileDirectory, newImageFileName) : null;
-
-                    //// Save files to folders
-                    //if (messageFileData != null && messageFilePath != null)
-                    //{
-                    //    await File.WriteAllBytesAsync(messageFilePath, messageFileData);
-                    //}
-
-                    //if (imageFileData != null && imageFilePath != null)
-                    //{
-                    //    await File.WriteAllBytesAsync(imageFilePath, imageFileData);
-                    //}
-
-                    //// If null 
-                    //if (messageFileName == null || messageFileData == null)
-                    //{
-                    //    messageFilePath = null;
-                    //}
-
-                    //if (imageFileName == null || imageFileData == null)
-                    //{
-                    //    imageFilePath = null;
-                    //}
-
                     int conversationId;
 
                     // check all conversation id in messages list
@@ -807,7 +777,9 @@ namespace OJTEDU.Infrastructure.Repositories
         {
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+                var user = await _context.Users
+                    .Include(u => u.Role)
+                    .FirstOrDefaultAsync(u => u.UserId == userId);
 
                 if (user == null)
                 {
