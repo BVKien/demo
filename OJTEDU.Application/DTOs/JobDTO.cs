@@ -73,6 +73,9 @@ namespace OJTEDU.Application.DTOs
             public string? Deadline { get; set; }
             public string? Major { get; set; }
             public string? Address { get; set; }
+            public int? CompanyId { get; set; }
+            public string? Phone { get; set; }
+            public string? Website { get; set; }
         }
 
         // Company 
