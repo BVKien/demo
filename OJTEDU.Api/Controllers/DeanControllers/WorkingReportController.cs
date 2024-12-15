@@ -82,11 +82,11 @@ namespace OJTEDU.WebAPI.Controllers.Dean
         }
 
         [HttpGet("{internshipId}/weeks")]
-        public async Task<IActionResult> GetWeeksForStudentAsync(int studentId, [FromQuery] int? year)
+        public async Task<IActionResult> GetWeeksForStudentAsync(int internshipId, [FromQuery] int? year)
         {
             try
             {
-                var response = await _workService.GetWeeksForStudentAsync(studentId, year);
+                var response = await _workService.GetWeeksForStudentAsync(internshipId, year);
 
                 if (response.StatusCode != 200)
                 {

@@ -77,6 +77,61 @@ namespace OJTEDU.Api.Controllers.DeanControllers
                 });
             }
         }
+        [HttpGet("list-fordean")]
+        public async Task<IActionResult> GetAllInternshipsForDeanAsync(
+        string? searchTerm,
+        DateTime? startDate,
+        DateTime? endDate,
+        string? statusFilter,
+        string? sortBy,
+        bool? isDescending,
+        int? pageNumber,
+        int? pageSize)
+        {
+            try
+            {
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                var actualPageNumber = pageNumber ?? 1;
+                var actualPageSize = pageSize ?? 15;
+
+                var response = await _internshipService.GetAllInternshipsForDeanAsync(
+                    userId,
+                    role,
+                    searchTerm,
+                    startDate,
+                    endDate,
+                    statusFilter,
+                    sortBy,
+                    isDescending ?? false,
+                    actualPageNumber,
+                    actualPageSize);
+
+                if (response.Data == null)
+                {
+                    return StatusCode(response.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = response.Message
+                    });
+                }
+
+                return Ok(new ApiResponse<PagedResponse<List<InternshipDto>>>
+                {
+                    Data = response.Data,
+                    Message = response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
 
         [HttpPost("assign-internships")]
         public async Task<IActionResult> AssignLecturerForInternships([FromBody] AssignLecturerForInternshipDto dto)

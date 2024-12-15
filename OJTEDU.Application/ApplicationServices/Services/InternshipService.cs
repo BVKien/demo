@@ -793,6 +793,86 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+
+        public async Task<DataResponse<PagedResponse<List<InternshipDto>>>> GetAllInternshipsForDeanAsync(
+   int userId,
+   string role,
+   string? searchTerm,
+   DateTime? startDate,
+   DateTime? endDate,
+   string? statusFilter,
+   string? sortBy,
+   bool isDescending,
+   int pageNumber,
+   int pageSize)
+        {
+            try
+            {
+                // Validate startDate and endDate
+                if (startDate.HasValue && endDate.HasValue && startDate > endDate)
+                {
+                    return new DataResponse<PagedResponse<List<InternshipDto>>>
+                    {
+                        Data = null,
+                        Message = "Start date cannot be later than end date.",
+                        StatusCode = 400
+                    };
+                }
+
+                // Lấy danh sách internships từ repository
+                var internships = await _internshipRepository.GetAllInternshipsForDeanAsync(
+                    userId, role, searchTerm, startDate, endDate, statusFilter, sortBy, isDescending);
+
+                if (internships == null || !internships.Any())
+                {
+                    return new DataResponse<PagedResponse<List<InternshipDto>>>
+                    {
+                        Data = null,
+                        Message = "No internships found.",
+                        StatusCode = 204
+                    };
+                }
+
+                // Phân trang
+                var totalInternships = internships.Count();
+                var totalPages = (int)Math.Ceiling((double)totalInternships / pageSize);
+
+                // Áp dụng phân trang
+                var paginatedInternships = internships
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                // Mapping dữ liệu sang DTO
+                var internshipDtos = _mapper.Map<List<InternshipDto>>(paginatedInternships);
+
+                // Chuẩn bị response
+                var pagedResponse = new PagedResponse<List<InternshipDto>>
+                {
+                    Items = internshipDtos,
+                    TotalCount = totalInternships,
+                    PageSize = pageSize,
+                    CurrentPage = pageNumber,
+                    TotalPages = totalPages
+                };
+
+                return new DataResponse<PagedResponse<List<InternshipDto>>>
+                {
+                    Data = pagedResponse,
+                    Message = "Internships retrieved successfully!",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<PagedResponse<List<InternshipDto>>>
+                {
+                    Data = null,
+                    Message = $"Error retrieving internships: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
         public async Task<DataResponse<InternshipDetailWithReportsDTO>> GetInternshipDetailsAsync(
             int internshipId,
             string? sortBy,
@@ -922,6 +1002,23 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     };
                 }
 
+                // Kiểm tra nếu bất kỳ Internship nào đã có LecturerId
+                var alreadyAssigned = internshipsToUpdate
+                    .Where(i => i.LecturerId != null)
+                    .Select(i => i.Student.User.Name) // Lấy tên sinh viên đã có LecturerId
+                    .ToList();
+
+                if (alreadyAssigned.Any())
+                {
+                    string errorMessage = $"Cannot assign lecturer. The following students already have a lecturer assigned: {string.Join(", ", alreadyAssigned)}.";
+                    return new DataResponse<string>
+                    {
+                        Data = null,
+                        Message = errorMessage,
+                        StatusCode = 400
+                    };
+                }
+
                 // Cập nhật LecturerId cho từng Internship
                 foreach (var internship in internshipsToUpdate)
                 {
@@ -949,5 +1046,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+
     }
 }

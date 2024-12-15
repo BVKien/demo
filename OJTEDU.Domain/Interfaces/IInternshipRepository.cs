@@ -79,6 +79,15 @@ namespace OJTEDU.Domain.Interfaces
         string? statusFilter,
         string? sortBy,
         bool isDescending);
+        Task<List<Internship>> GetAllInternshipsForDeanAsync(
+       int userId,
+string role,
+string? searchTerm,
+DateTime? startDate,
+DateTime? endDate,
+string? statusFilter,
+string? sortBy,
+bool isDescending);
         Task<(Internship, List<WorkingReport>)> GetInternshipDetailsWithWorkingReportsAsync(int internshipId, int userId, string role);
         Task<List<Internship>> GetInternshipsByIdsAsync(List<int> internshipIds);
         Task UpdateInternshipsAsync(List<Internship> internships);

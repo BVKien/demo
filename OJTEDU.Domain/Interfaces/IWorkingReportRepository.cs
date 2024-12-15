@@ -31,7 +31,9 @@ namespace OJTEDU.Domain.Interfaces
         Task<Internship> GetInternshipByIdAsync(int internshipId);
 
         // Mentor 
-        Task<IEnumerable<WorkingReport>> GetAllWorkingReportsByStudentId(int? studentId);
+        Task<List<WorkingReport>> GetAllWorkingReportsByStudentIdAsync(
+             int? studentId, string? sortBy = null, bool? isDescending = null, string? week = null, int? year = null);
+
         Task<WorkingReport> CreateMentorFeedbackAsync(int? workingReportId, WorkingReport? info);
     }
 }

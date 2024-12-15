@@ -24,7 +24,8 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<string>> UpdateWorkingReportAsync(GiveFeedbackOrScoreDto dto);
 
         // Mentor 
-        Task<DataResponse<List<WorkingReportListForMentorDTO>>> GetAllWorkingReportsByStudentId(int? studentId);
+        Task<DataResponse<WorkingReportResponseDTO>> GetAllWorkingReportsByStudentIdAsync(
+                   int studentId, string? sortBy = null, bool? isDescending = null, string? week = null, int? year = null);
         Task<DataResponse<CreateFeedbackWorkingReportForMentorDTO>> CreateMentorFeedbackAsync(int? workingReportId, CreateFeedbackWorkingReportForMentorDTO? info);
         Task<DataResponse<WorkingReportDetailForMentorDTO>> GetWorkingReportDetailForMentorAsync(int? workingReportId); // + Mentor 
     }

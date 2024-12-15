@@ -208,15 +208,10 @@ namespace OJTEDU.Application.ApplicationServices.Services
         {
             try
             {
-                // If year is not provided, default to current year in Vietnam time
-                if (!year.HasValue)
-                {
-                    TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                    DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
-                    year = currentVietnamTime.Year;
-                }
+                // Nếu năm không được cung cấp, mặc định là năm hiện tại
+                year ??= DateTime.Now.Year;
 
-                // Get the list of weeks from the repository
+                // Gọi repository để lấy danh sách tuần
                 var weeks = await _workingReportRepository.GetWeeksForStudentAsync(studentId, year.Value);
 
                 if (weeks == null || !weeks.Any())
@@ -246,6 +241,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+
 
         public async Task<DataResponse<WorkingReportResponseDTO>> GetWorkingReportsByStudentIdAsync(
             int internshipId, string? sortBy, bool? isDescending, string? week, int? year = null)
@@ -394,40 +390,70 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // Mentor 
-        public async Task<DataResponse<List<WorkingReportListForMentorDTO>>> GetAllWorkingReportsByStudentId(int? studentId)
+        public async Task<DataResponse<WorkingReportResponseDTO>> GetAllWorkingReportsByStudentIdAsync(
+           int studentId, string? sortBy = null, bool? isDescending = null, string? week = null, int? year = null)
         {
             try
             {
-                if (studentId == null)
+                // Gọi repository để lấy danh sách báo cáo
+                var workingReports = await _workingReportRepository.GetAllWorkingReportsByStudentIdAsync(studentId, sortBy, isDescending, week, year);
+
+                if (workingReports == null || !workingReports.Any())
                 {
-                    return new DataResponse<List<WorkingReportListForMentorDTO>>
+                    return new DataResponse<WorkingReportResponseDTO>
                     {
                         StatusCode = 204,
-                        Message = "Not found student.",
+                        Message = "No working reports found for the specified student.",
                         Data = null
                     };
                 }
 
-                var workingReport = await _workingReportRepository.GetAllWorkingReportsByStudentId(studentId);
-                var response = _mapper.Map<List<WorkingReportListForMentorDTO>>(workingReport);
+                // Lấy thông tin sinh viên từ báo cáo đầu tiên
+                var student = workingReports.First().Student;
 
-                return new DataResponse<List<WorkingReportListForMentorDTO>>
+                // Xác định tuần được chọn
+                string selectedWeek = week;
+                if (string.IsNullOrEmpty(week))
+                {
+                    // Tính tuần hiện tại nếu không truyền
+                    DateTime now = DateTime.Now;
+                    DateTime currentWeekStart = now.AddDays(-(int)now.DayOfWeek + (int)DayOfWeek.Monday);
+                    DateTime currentWeekEnd = currentWeekStart.AddDays(6);
+                    selectedWeek = $"{currentWeekStart:dd/MM} to {currentWeekEnd:dd/MM}";
+                }
+
+                // Map danh sách báo cáo sang DTO
+                var reportDtos = _mapper.Map<List<WorkingReportDto>>(workingReports);
+
+                // Tạo DTO trả về
+                var response = new WorkingReportResponseDTO
+                {
+                    StudentName = student.User.Name,
+                    LecturerName = student.Lecturer?.Name,
+                    MentorName = workingReports.First().Mentor?.User?.Name,
+                    Week = selectedWeek,
+                    WorkingReports = reportDtos
+                };
+
+                return new DataResponse<WorkingReportResponseDTO>
                 {
                     StatusCode = 200,
-                    Message = "Working report list for a internship retrieved successfully!",
+                    Message = "Working reports retrieved successfully!",
                     Data = response
                 };
             }
             catch (Exception ex)
             {
-                return new DataResponse<List<WorkingReportListForMentorDTO>>
+                return new DataResponse<WorkingReportResponseDTO>
                 {
                     StatusCode = 500,
-                    Message = $"Error retrieved working report list for a internship: {ex.Message}. ",
+                    Message = $"Error retrieving working reports: {ex.Message}",
                     Data = null
                 };
             }
         }
+
+
 
         public async Task<DataResponse<CreateFeedbackWorkingReportForMentorDTO>> CreateMentorFeedbackAsync(int? workingReportId, CreateFeedbackWorkingReportForMentorDTO? info)
         {
