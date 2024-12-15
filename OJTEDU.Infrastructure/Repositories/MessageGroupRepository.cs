@@ -1652,6 +1652,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     .Include(m => m.University).ThenInclude(m => m.Role)
                     .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                     .Where(m => m.GroupChatId == groupChatId)
+                    .OrderByDescending(m => m.CreatedAt)
                     .ToListAsync();
 
                 return messages;

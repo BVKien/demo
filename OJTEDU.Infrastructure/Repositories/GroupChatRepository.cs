@@ -211,7 +211,9 @@ namespace OJTEDU.Infrastructure.Repositories
                 {
                     query = query.Where(g => g.MentorId == mentor.CompanyId);
 
-                    var mentorGroupChats = await query.ToListAsync();
+                    var mentorGroupChats = await query
+                        .OrderBy(m => m.CreatedAt)
+                        .ToListAsync();
 
                     return mentorGroupChats;
                 }
@@ -221,7 +223,9 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 query = query.Where(g => g.UniversityId == userId);
 
-                var groupChats = await query.ToListAsync();
+                var groupChats = await query
+                    .OrderBy(m => m.CreatedAt)
+                    .ToListAsync();
 
                 return groupChats;
             }
