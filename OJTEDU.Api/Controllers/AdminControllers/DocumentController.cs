@@ -76,8 +76,8 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         //    }
         //}
 
+        //[Authorize(Roles = "Admin")]
         [HttpGet("list")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllDocumentsForAdmin(string? title, int? roleId, string? status, int? pageNumber, int? pageSize)
         {
             _logger.LogInformation("GetAllDocumentsForAdmin called with parameters: Title={Title}, RoleId={RoleId}, Status={Status}, PageNumber={PageNumber}, PageSize={PageSize}",
