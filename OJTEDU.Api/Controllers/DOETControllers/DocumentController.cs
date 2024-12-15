@@ -31,7 +31,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
 
-                var dataResponse = await _jobService.GetAllDocumentsForDoetAsync(title, roleId, status, actualPageNumber, actualPageSize);
+                var dataResponse = await _jobService.GetAllDocumentsForAdminAsync(title, roleId, status, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
@@ -51,7 +51,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                var apiResponse = new ApiResponse<PagedResponse<List<DocumentListForDoetDTO>>>
+                var apiResponse = new ApiResponse<PagedResponse<List<DocumentListForAdminDTO>>>
                 {
                     Data = dataResponse.Data,
                     Message = dataResponse.Message
@@ -84,7 +84,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                var dataResponse = await _jobService.GetDocumentDetailByIdForDoetAsync(documentId.Value);
+                var dataResponse = await _jobService.GetDocumentDetailByIdForAdminAsync(documentId.Value);
 
                 if (dataResponse == null)
                 {
@@ -104,7 +104,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                var apiResponse = new ApiResponse<DocumentDetailForDoetDTO>
+                var apiResponse = new ApiResponse<DocumentDetailForAdminDTO>
                 {
                     Data = dataResponse.Data,
                     Message = dataResponse.Message
@@ -224,7 +224,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
             .ToList();
 
                 // Tạo tài liệu để lưu vào cơ sở dữ liệu
-                var documentDto = new AddDocumentForDoetDTO
+                var documentDto = new AddDocumentForAdminDTO
                 {
                     UniversityId = int.Parse(createdByUniversityId),
                     Title = request.Title,
@@ -233,7 +233,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     ForRoleIds = forRoleIdsList
                 };
 
-                var dataResponse = await _jobService.AddDocumentForDoetAsync(documentDto);
+                var dataResponse = await _jobService.AddDocumentForAdminAsync(documentDto);
 
                 if (dataResponse == null)
                 {
@@ -260,7 +260,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 }
 
                 // Successful retrieval of students
-                var apiResponse = new ApiResponse<AddDocumentForDoetDTO>
+                var apiResponse = new ApiResponse<AddDocumentForAdminDTO>
                 {
                     Data = dataResponse.Data,
                     Message = dataResponse.Message
@@ -363,7 +363,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
             })
             .ToList();
 
-                var documentDto = new UpdateDocumentForDoetDTO
+                var documentDto = new UpdateDocumentForAdminDTO
                 {
                     DocumentId = documentId.Value,
                     Title = request.Title,
@@ -423,7 +423,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     documentDto.DocumentFile = request.DocumentFile;
                 }
 
-                var dataResponse = await _jobService.UpdateDocumentForDoetAsync(documentDto);
+                var dataResponse = await _jobService.UpdateDocumentForAdminAsync(documentDto);
 
                 if (dataResponse == null)
                 {
@@ -454,7 +454,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 }
 
                 // Tạo phản hồi thành công
-                var apiResponse = new ApiResponse<UpdateDocumentForDoetDTO>
+                var apiResponse = new ApiResponse<UpdateDocumentForAdminDTO>
                 {
                     Data = dataResponse.Data,
                     Message = dataResponse.Message
@@ -492,13 +492,13 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                var documentDto = new DeleteDocumentForDoetDTO
+                var documentDto = new DeleteDocumentForAdminDTO
                 {
                     DocumentId = documentId.Value
                 };
 
                 // Gọi dịch vụ để xóa người dùng
-                var dataResponse = await _jobService.DeleteDocumentForDoetAsync(documentDto);
+                var dataResponse = await _jobService.DeleteDocumentForAdminAsync(documentDto);
 
                 if (dataResponse == null)
                 {
@@ -526,7 +526,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 //}
 
                 // Tạo phản hồi thành công
-                var apiResponse = new ApiResponse<DeleteDocumentForDoetDTO>
+                var apiResponse = new ApiResponse<DeleteDocumentForAdminDTO>
                 {
                     Data = dataResponse.Data,
                     Message = dataResponse.Message
@@ -568,13 +568,13 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                var documentDto = new UpdateDocumentStatusForDoetDTO
+                var documentDto = new UpdateDocumentStatusForAdminDTO
                 {
                     DocumentId = documentId.Value,
                     Status = request.Status
                 };
 
-                var dataResponse = await _jobService.UpdateDocumentStatusForDoetAsync(documentDto);
+                var dataResponse = await _jobService.UpdateDocumentStatusForAdminAsync(documentDto);
 
                 if (dataResponse == null)
                 {
@@ -595,7 +595,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 }
 
                 // Tạo phản hồi thành công
-                var apiResponse = new ApiResponse<UpdateDocumentStatusForDoetDTO>
+                var apiResponse = new ApiResponse<UpdateDocumentStatusForAdminDTO>
                 {
                     Data = dataResponse.Data,
                     Message = dataResponse.Message
@@ -619,7 +619,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
         {
             try
             {
-                var dataResponse = await _jobService.GetAllStatusesDocumentForDoetAsync();
+                var dataResponse = await _jobService.GetAllStatusesDocumentForAdminAsync();
 
                 if (dataResponse == null)
                 {
@@ -639,7 +639,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                var apiResponse = new ApiResponse<List<StatusDocumentListForDoetDTO>>
+                var apiResponse = new ApiResponse<List<StatusDocumentListForAdminDTO>>
                 {
                     Data = dataResponse.Data,
                     Message = dataResponse.Message
@@ -672,7 +672,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                var dataResponse = await _jobService.GetDocumentDetailByIdForDoetAsync(documentId.Value);
+                var dataResponse = await _jobService.GetDocumentDetailByIdForAdminAsync(documentId.Value);
 
                 if (dataResponse == null)
                 {

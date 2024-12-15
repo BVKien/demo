@@ -26,7 +26,7 @@ namespace OJTEDU.Infrastructure.Repositories
         public async Task<IEnumerable<Document>> GetAllDocumentsForAdminAsync(string? title, int? roleId, string? status)
         {
             IQueryable<Document> query = _context.Documents.Include(d => d.DocumentRoles).ThenInclude(dr => dr.Role).Include(u => u.University)
-                                                       .Where(u => u.University.Role.Name.Equals("Admin"));
+                                                       .Where(u => (u.University.Role.Name.Equals("Admin") || u.University.Role.Name.Equals("DOET")));
 
             // Apply search filters if provided
             if (!string.IsNullOrWhiteSpace(title))
@@ -75,7 +75,7 @@ namespace OJTEDU.Infrastructure.Repositories
         public async Task<Document> GetDocumentByIdForAdminAsync(int documentId)
         {
             var document = await _context.Documents.Include(u => u.DocumentRoles).ThenInclude(dr => dr.Role).Include(u => u.University)
-                                                   .FirstOrDefaultAsync(u => u.University.Role.Name.Equals("Admin") && u.DocumentId == documentId);
+                                                   .FirstOrDefaultAsync(u => (u.University.Role.Name.Equals("Admin") || u.University.Role.Name.Equals("DOET")) && u.DocumentId == documentId);
             if (document == null)
             {
                 throw new KeyNotFoundException("Document not found");
