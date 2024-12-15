@@ -17,27 +17,82 @@ namespace OJTEDU.Api.Controllers.AdminControllers
     public class DocumentController : ControllerBase
     {
         private readonly IDocumentService _contractService;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        //private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ILogger<DocumentController> _logger;
 
-        public DocumentController(IDocumentService contractService, IWebHostEnvironment webHostEnvironment)
+        public DocumentController(IDocumentService contractService,
+            ILogger<DocumentController> logger)
         {
             _contractService = contractService;
-            _webHostEnvironment = webHostEnvironment;
+            _logger = logger;
         }
+
+        //[HttpGet("list")]
+        //[Authorize(Roles = "Admin")]
+        //public async Task<IActionResult> GetAllDocumentsForAdmin(string? title, int? roleId, string? status, int? pageNumber, int? pageSize)
+        //{
+        //    try
+        //    {
+        //        int actualPageNumber = pageNumber ?? 1;
+        //        int actualPageSize = pageSize ?? 15;
+
+        //        var dataResponse = await _contractService.GetAllDocumentsForAdminAsync(title, roleId, status, actualPageNumber, actualPageSize);
+
+        //        if (dataResponse == null)
+        //        {
+        //            return StatusCode(500, new ApiResponse<object>
+        //            {
+        //                Data = null,
+        //                Message = "Unexpected error occurred."
+        //            });
+        //        }
+
+        //        if (dataResponse.Data == null)
+        //        {
+        //            return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
+        //            {
+        //                Data = null,
+        //                Message = dataResponse.Message
+        //            });
+        //        }
+
+        //        var apiResponse = new ApiResponse<PagedResponse<List<DocumentListForAdminDTO>>>
+        //        {
+        //            Data = dataResponse.Data,
+        //            Message = dataResponse.Message
+        //        };
+
+        //        return Ok(apiResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new ApiResponse<object>
+        //        {
+        //            Data = null,
+        //            Message = $"Internal Server Error: {ex.Message}"
+        //        });
+        //    }
+        //}
 
         [HttpGet("list")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllDocumentsForAdmin(string? title, int? roleId, string? status, int? pageNumber, int? pageSize)
         {
+            _logger.LogInformation("GetAllDocumentsForAdmin called with parameters: Title={Title}, RoleId={RoleId}, Status={Status}, PageNumber={PageNumber}, PageSize={PageSize}",
+                title, roleId, status, pageNumber, pageSize);
+
             try
             {
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
 
+                _logger.LogDebug("Defaulting actualPageNumber to {PageNumber} and actualPageSize to {PageSize}", actualPageNumber, actualPageSize);
+
                 var dataResponse = await _contractService.GetAllDocumentsForAdminAsync(title, roleId, status, actualPageNumber, actualPageSize);
 
                 if (dataResponse == null)
                 {
+                    _logger.LogError("Unexpected error: dataResponse is null");
                     return StatusCode(500, new ApiResponse<object>
                     {
                         Data = null,
@@ -47,12 +102,15 @@ namespace OJTEDU.Api.Controllers.AdminControllers
 
                 if (dataResponse.Data == null)
                 {
+                    _logger.LogWarning("No data found: StatusCode={StatusCode}, Message={Message}", dataResponse.StatusCode, dataResponse.Message);
                     return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
                     {
                         Data = null,
                         Message = dataResponse.Message
                     });
                 }
+
+                _logger.LogInformation("Successfully retrieved documents: TotalCount={TotalCount}", dataResponse.Data.TotalCount);
 
                 var apiResponse = new ApiResponse<PagedResponse<List<DocumentListForAdminDTO>>>
                 {
@@ -64,6 +122,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An exception occurred in GetAllDocumentsForAdmin");
                 return StatusCode(500, new ApiResponse<object>
                 {
                     Data = null,
@@ -521,12 +580,12 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     });
                 }
 
-                // Xóa tệp tin vật lý khỏi thư mục nếu xóa trong cơ sở dữ liệu thành công
-                string filePath = Path.Combine(_webHostEnvironment.WebRootPath, dataResponse.Data.DocumentFile.TrimStart('/'));
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
+                //// Xóa tệp tin vật lý khỏi thư mục nếu xóa trong cơ sở dữ liệu thành công
+                //string filePath = Path.Combine(_webHostEnvironment.WebRootPath, dataResponse.Data.DocumentFile.TrimStart('/'));
+                //if (System.IO.File.Exists(filePath))
+                //{
+                //    System.IO.File.Delete(filePath);
+                //}
 
                 // Tạo phản hồi thành công
                 var apiResponse = new ApiResponse<DeleteDocumentForAdminDTO>
@@ -695,18 +754,18 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                     });
                 }
 
-                // Xây dựng đường dẫn đến file
-                var filePath = Path.Combine(_webHostEnvironment.WebRootPath, dataResponse.Data.DocumentFile.TrimStart('/'));
+                //// Xây dựng đường dẫn đến file
+                //var filePath = Path.Combine(_webHostEnvironment.WebRootPath, dataResponse.Data.DocumentFile.TrimStart('/'));
 
-                // Kiểm tra nếu file không tồn tại trên server
-                if (!System.IO.File.Exists(filePath))
-                {
-                    return NotFound(new ApiResponse<object>
-                    {
-                        Data = null,
-                        Message = "File not found on the server."
-                    });
-                }
+                //// Kiểm tra nếu file không tồn tại trên server
+                //if (!System.IO.File.Exists(filePath))
+                //{
+                //    return NotFound(new ApiResponse<object>
+                //    {
+                //        Data = null,
+                //        Message = "File not found on the server."
+                //    });
+                //}
 
                 // Đọc nội dung file
                 var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);

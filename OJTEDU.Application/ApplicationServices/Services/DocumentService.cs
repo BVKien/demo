@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using OJTEDU.Application.ApplicationServices.Interfaces;
 using OJTEDU.Application.DTOs;
 using OJTEDU.Domain.Entities;
@@ -15,25 +16,105 @@ namespace OJTEDU.Application.ApplicationServices.Services
 {
     public class DocumentService : IDocumentService
     {
+        //private readonly IDocumentRepository _documentRepository;
+        //private readonly IMapper _mapper;
+        //public DocumentService(IDocumentRepository documentRepository, IMapper mapper)
+        //{
+        //    _documentRepository = documentRepository;
+        //    _mapper = mapper;
+        //}
+
         private readonly IDocumentRepository _documentRepository;
         private readonly IMapper _mapper;
-        public DocumentService(IDocumentRepository documentRepository, IMapper mapper)
+        private readonly ILogger<DocumentService> _logger; // Add logger
+
+        public DocumentService(IDocumentRepository documentRepository, IMapper mapper, ILogger<DocumentService> logger)
         {
             _documentRepository = documentRepository;
             _mapper = mapper;
+            _logger = logger;
         }
+
+        //// Admin - DocumentManagement
+        //public async Task<DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>> GetAllDocumentsForAdminAsync(string? title, int? roleId, string? status, int pageNumber, int pageSize)
+        //{
+        //    try
+        //    {
+        //        var documents = await _documentRepository.GetAllDocumentsForAdminAsync(title, roleId, status);
+
+        //        var totalDocuments = documents.Count();
+        //        var totalPages = totalDocuments == 0 ? 1 : (int)Math.Ceiling((double)totalDocuments / pageSize);
+
+        //        // Map thủ công từ Document sang DocumentListForAdminDTO
+        //        var documentDtos = documents
+        //            .Skip((pageNumber - 1) * pageSize)
+        //            .Take(pageSize)
+        //            .Select(doc => new DocumentListForAdminDTO
+        //            {
+        //                DocumentId = doc.DocumentId,
+        //                University = doc.University?.Name,
+        //                Title = doc.Title,
+        //                DocumentFile = doc.DocumentFile,
+        //                Description = doc.Description,
+        //                Status = doc.Status,
+        //                ForRole = doc.DocumentRoles != null && doc.DocumentRoles.Any()
+        //                    ? string.Join(", ", doc.DocumentRoles.Select(dr => dr.Role?.Name ?? "Guest"))
+        //                    : "Guest" // Nếu không có role, mặc định là Guest
+        //            })
+        //            .ToList();
+
+        //        var pagedResponse = new PagedResponse<List<DocumentListForAdminDTO>>
+        //        {
+        //            Items = documentDtos,
+        //            TotalCount = totalDocuments,
+        //            PageSize = pageSize,
+        //            CurrentPage = pageNumber,
+        //            TotalPages = totalPages
+        //        };
+
+        //        return new DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>
+        //        {
+        //            Data = pagedResponse,
+        //            Message = "Document list retrieved successfully!",
+        //            StatusCode = 200
+        //        };
+        //    }
+        //    catch (KeyNotFoundException ex)
+        //    {
+        //        return new DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>
+        //        {
+        //            Data = null,
+        //            Message = ex.Message,
+        //            StatusCode = 404
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>
+        //        {
+        //            Data = null,
+        //            Message = $"Error retrieving document list: {ex.Message}",
+        //            StatusCode = 500
+        //        };
+        //    }
+        //}
 
         // Admin - DocumentManagement
         public async Task<DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>> GetAllDocumentsForAdminAsync(string? title, int? roleId, string? status, int pageNumber, int pageSize)
         {
+            _logger.LogInformation("GetAllDocumentsForAdminAsync called with parameters: Title={Title}, RoleId={RoleId}, Status={Status}, PageNumber={PageNumber}, PageSize={PageSize}", title, roleId, status, pageNumber, pageSize);
+
             try
             {
                 var documents = await _documentRepository.GetAllDocumentsForAdminAsync(title, roleId, status);
+                _logger.LogInformation("Fetched {DocumentCount} documents from the repository", documents.Count());
 
                 var totalDocuments = documents.Count();
                 var totalPages = totalDocuments == 0 ? 1 : (int)Math.Ceiling((double)totalDocuments / pageSize);
 
-                // Map thủ công từ Document sang DocumentListForAdminDTO
+                _logger.LogDebug("TotalDocuments={TotalDocuments}, TotalPages={TotalPages}, PageNumber={PageNumber}, PageSize={PageSize}", totalDocuments, totalPages, pageNumber, pageSize);
+
+                // Map manually from Document to DocumentListForAdminDTO
                 var documentDtos = documents
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
@@ -47,9 +128,11 @@ namespace OJTEDU.Application.ApplicationServices.Services
                         Status = doc.Status,
                         ForRole = doc.DocumentRoles != null && doc.DocumentRoles.Any()
                             ? string.Join(", ", doc.DocumentRoles.Select(dr => dr.Role?.Name ?? "Guest"))
-                            : "Guest" // Nếu không có role, mặc định là Guest
+                            : "Guest" // Default to Guest if no role is found
                     })
                     .ToList();
+
+                _logger.LogInformation("Mapped {DocumentCount} documents to DTOs", documentDtos.Count);
 
                 var pagedResponse = new PagedResponse<List<DocumentListForAdminDTO>>
                 {
@@ -60,6 +143,8 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     TotalPages = totalPages
                 };
 
+                _logger.LogInformation("Successfully created a paged response with TotalPages={TotalPages} and CurrentPage={CurrentPage}", totalPages, pageNumber);
+
                 return new DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>
                 {
                     Data = pagedResponse,
@@ -69,6 +154,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
             catch (KeyNotFoundException ex)
             {
+                _logger.LogWarning(ex, "KeyNotFoundException: {Message}", ex.Message);
                 return new DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>
                 {
                     Data = null,
@@ -78,6 +164,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error retrieving document list");
                 return new DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>
                 {
                     Data = null,
@@ -86,7 +173,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
-
 
         public async Task<DataResponse<DocumentDetailForAdminDTO>> GetDocumentDetailByIdForAdminAsync(int documentId)
         {
