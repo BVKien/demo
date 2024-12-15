@@ -601,5 +601,56 @@ namespace OJTEDU.Infrastructure.Repositories
                 throw new Exception(ex.Message);
             }
         }
+
+        // === Document ===
+        // Admin
+        public async Task<IEnumerable<Document>> GetAllDocumentsForAdminAsync(string? title, int? roleId, string? status)
+        {
+            IQueryable<Document> query = _context.Documents.Include(d => d.DocumentRoles).ThenInclude(dr => dr.Role).Include(u => u.University)
+                                                       .Where(u => u.University.Role.Name.Equals("Admin"));
+
+            // Apply search filters if provided
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                title = title.ToLower();
+                query = query.Where(n => n.Title.ToLower().Contains(title));
+            }
+
+            if (roleId.HasValue)
+            {
+                if (roleId.Value == 0)
+                {
+                    // Lọc các Document có RoleId là null
+                    query = query.Where(d => d.DocumentRoles.Any(dr => dr.RoleId == null));
+                }
+                else
+                {
+                    // Lọc các Document có RoleId bằng giá trị roleId
+                    query = query.Where(d => d.DocumentRoles.Any(dr => dr.RoleId == roleId.Value));
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                status = status.ToLower();
+                query = query.Where(u => u.Status.ToLower().Equals(status));
+            }
+
+            // Fetch the filtered result from the database
+            var documents = await query.ToListAsync();
+
+            // If no users match the search criteria, throw an exception
+            if (documents == null)
+            {
+                throw new KeyNotFoundException("Documents not found.");
+            }
+
+            var sortedDocuments = documents.OrderByDescending(u => u.Status == "Active")
+                                           .ThenByDescending(u => u.Status == "Unactive")
+                                           .ThenByDescending(u => u.DocumentId)
+                                           .ToList();
+
+            return sortedDocuments;
+        }
     }
 }

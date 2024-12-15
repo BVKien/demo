@@ -33,12 +33,11 @@ namespace OJTEDU.Application.ApplicationServices.Services
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMajorRepository _majorRepository;
-        private readonly IDocumentRepository _documentRepository;
 
         public JobService(IJobRepository jobRepository, IMapper mapper, HttpClient httpClient,
             IConfiguration config, IGoogleJsonWebSignatureValidator googleValidator,
             IUserRepository userRepository, IHttpContextAccessor httpContextAccessor,
-            IMajorRepository majorRepository, IDocumentRepository documentRepository)
+            IMajorRepository majorRepository)
         {
             _jobRepository = jobRepository;
             _mapper = mapper;
@@ -48,7 +47,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
             _userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
             _majorRepository = majorRepository;
-            _documentRepository = documentRepository;
         }
 
         // Student  
@@ -3762,12 +3760,13 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
+        // === Document ===
         // Admin - DocumentManagement
         public async Task<DataResponse<PagedResponse<List<DocumentListForAdminDTO>>>> GetAllDocumentsForAdminAsync(string? title, int? roleId, string? status, int pageNumber, int pageSize)
         {
             try
             {
-                var documents = await _documentRepository.GetAllDocumentsForAdminAsync(title, roleId, status);
+                var documents = await _jobRepository.GetAllDocumentsForAdminAsync(title, roleId, status);
 
                 var totalDocuments = documents.Count();
                 var totalPages = totalDocuments == 0 ? 1 : (int)Math.Ceiling((double)totalDocuments / pageSize);

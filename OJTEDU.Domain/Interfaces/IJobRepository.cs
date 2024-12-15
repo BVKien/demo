@@ -28,6 +28,9 @@ namespace OJTEDU.Domain.Interfaces
         Task<IEnumerable<Job>> GetAllJobsByUserIdAsync(int? userId);
         Task<Job> CreateJobAsync(int? userId, string? fileName, Job? info, Address? addressInfo); // Address new or select company address - done 
         Task<Job> UpdateJobAsync(int? userId, int? jobId, string? fileName, Job? info, Address? addressInfo); // check if file path nnull -> note update file paths
-        // Thiếu: API xóa mềm lưu trữ job đã xóa mềm
+                                                                                                              // Thiếu: API xóa mềm lưu trữ job đã xóa mềm
+        // === Document ===
+        // CRUD document operations for admin
+        Task<IEnumerable<Document>> GetAllDocumentsForAdminAsync(string? title, int? roleId, string? status);
     }
 }
