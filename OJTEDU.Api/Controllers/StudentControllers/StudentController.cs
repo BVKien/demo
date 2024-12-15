@@ -14,10 +14,11 @@ namespace OJTEDU.Api.Controllers.StudentControllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly IStudentService _studentService;
-        public StudentController(IStudentService studentService)
+        private readonly IJobService _jobService;
+
+        public StudentController(IJobService jobService)
         {
-            _studentService = studentService;
+            _jobService = jobService;
         }
 
         [Authorize(Roles = "Student")]
@@ -28,7 +29,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
             {
                 int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                var dataResponse = await _studentService.GetStudentDetailByUserIdAsync(userId);
+                var dataResponse = await _jobService.GetStudentDetailByUserIdAsync(userId);
 
                 if (dataResponse.StatusCode == 404)
                 {
@@ -99,7 +100,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                     ProvinceId = updateInformation?.ProvinceId
                 };
 
-                var updatedStudentResponse = await _studentService.UpdateStudentByUserIdAsync(userId, updateStudentDto);
+                var updatedStudentResponse = await _jobService.UpdateStudentByUserIdAsync(userId, updateStudentDto);
 
                 if (updatedStudentResponse.StatusCode == 404)
                 {
@@ -130,7 +131,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
 
                 if (updatedStudentResponse.StatusCode == 200)
                 {
-                    var updatedStudentDetail = await _studentService.GetStudentDetailByUserIdAsync(userId);
+                    var updatedStudentDetail = await _jobService.GetStudentDetailByUserIdAsync(userId);
 
                     return Ok(new ApiResponse<StudentDetailForStudentDTO>
                     {

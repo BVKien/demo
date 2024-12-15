@@ -1146,6 +1146,104 @@ namespace OJTEDU.Infrastructure.Repositories
         }
 
         // === Student ===
+        // Student 
+        public async Task<Student> GetStudentDetailByUserIdAsync(int? userId)
+        {
+            try
+            {
+                bool userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
+
+                if (!userExists)
+                {
+                    throw new KeyNotFoundException("Not found user.");
+                }
+
+                var student = await _context.Students
+                    .Include(s => s.User)
+                    .Include(s => s.Lecturer)
+                    .Include(s => s.Semester)
+                    .Include(s => s.Major)
+                    .Include(s => s.Address)
+                        .ThenInclude(a => a.Ward)
+                        .ThenInclude(a => a.District)
+                        .ThenInclude(a => a.Province)
+                    .FirstOrDefaultAsync(u => u.UserId == userId);
+
+                return student;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<Student> UpdateStudentByUserIdAsync(int? userId, User? updateUser, Student? updateInformation, Address? updateAddress)
+        {
+            if (userId == null || updateInformation == null)
+            {
+                throw new ArgumentNullException("User id or update information cannot be null.");
+            }
+
+            try
+            {
+                // Check if user exists
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+
+                if (user == null)
+                {
+                    throw new KeyNotFoundException("Not found user.");
+                }
+
+                // Find the student by userId
+                var student = await _context.Students.FirstOrDefaultAsync(s => s.UserId == userId);
+
+                if (student == null)
+                {
+                    throw new KeyNotFoundException("Not found student.");
+                }
+
+                // Update Student information
+                // TBL User
+                user.Image = updateUser.Image ?? user.Image;
+                user.UpdatedAt = DateTime.Now; // Update the timestamp
+
+                // TBL Student
+                student.AlternativeEmail = updateInformation.AlternativeEmail ?? student.AlternativeEmail;
+                student.Phone = updateInformation.Phone ?? student.Phone;
+                student.Dob = updateInformation.Dob ?? student.Dob;
+                student.Gender = updateInformation.Gender ?? student.Gender;
+
+                // TBL Address
+                if (updateAddress != null && student.AddressId.HasValue)
+                {
+                    var address = await _context.Addresses.FirstOrDefaultAsync(a => a.AddressId == student.AddressId.Value);
+
+                    if (address == null)
+                    {
+                        throw new KeyNotFoundException("Not found address.");
+                    }
+
+                    // Update address details
+                    address.Detail = updateAddress.Detail ?? address.Detail;
+                    address.WardId = updateAddress.WardId ?? address.WardId;
+                    address.DistrictId = updateAddress.DistrictId ?? address.DistrictId;
+                    address.ProvinceId = updateAddress.ProvinceId ?? address.ProvinceId;
+                    address.UpdatedAt = DateTime.Now; // Update the timestamp
+                }
+
+                student.UpdatedAt = DateTime.Now; // Update the timestamp
+
+                // Save all changes to the database
+                await _context.SaveChangesAsync();
+
+                return student;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         //For Dean
         public async Task<User> GetDeanByUserIdAsync(int userId)
         {

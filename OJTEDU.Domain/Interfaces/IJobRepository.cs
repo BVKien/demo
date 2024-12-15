@@ -58,6 +58,10 @@ namespace OJTEDU.Domain.Interfaces
         Task<bool> StoredDocumentsByUserIdAsync(int? documentId);
 
         // === Student ===
+        // Student
+        Task<Student> GetStudentDetailByUserIdAsync(int? userId);
+        Task<Student> UpdateStudentByUserIdAsync(int? userId, User? updateUser, Student? updateInformation, Address? updateAddress);
+
         //For Dean
         Task<User> GetDeanByUserIdAsync(int userId);
         Task<IEnumerable<Student>> GetStudentListAsync(

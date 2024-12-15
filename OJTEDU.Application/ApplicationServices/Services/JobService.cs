@@ -4622,6 +4622,99 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // === Student ===
+        // Student
+        public async Task<DataResponse<StudentDetailForStudentDTO>> GetStudentDetailByUserIdAsync(int? userId)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return new DataResponse<StudentDetailForStudentDTO>
+                    {
+                        StatusCode = 404,
+                        Message = "Not found student.",
+                        Data = null
+                    };
+                }
+
+                var student = await _jobRepository.GetStudentDetailByUserIdAsync(userId);
+                var response = _mapper.Map<StudentDetailForStudentDTO>(student);
+
+                return new DataResponse<StudentDetailForStudentDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Student information retrieved successfully!",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<StudentDetailForStudentDTO>
+                {
+                    StatusCode = 500,
+                    Message = $"Error retrieving student information {ex.Message}. ",
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<DataResponse<UpdateStudentForStudentDTO>> UpdateStudentByUserIdAsync(int? userId, UpdateStudentForStudentDTO? updateInformation)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return new DataResponse<UpdateStudentForStudentDTO>
+                    {
+                        StatusCode = 404,
+                        Message = "Not found student.",
+                        Data = null
+                    };
+                }
+
+                // Create updated entities based on input data
+                var updatedUser = new User
+                {
+                    Image = updateInformation.Image
+                };
+
+                var updatedStudent = new Student
+                {
+                    AlternativeEmail = updateInformation.AlternativeEmail,
+                    Phone = updateInformation.Phone,
+                    Dob = updateInformation.Dob,
+                    Gender = updateInformation.Gender,
+                };
+
+                var updatedAddress = new Address
+                {
+                    Detail = updateInformation.Detail,
+                    WardId = updateInformation.WardId,
+                    DistrictId = updateInformation.DistrictId,
+                    ProvinceId = updateInformation.ProvinceId
+                };
+
+                var updateStudentInfo = await _jobRepository.UpdateStudentByUserIdAsync(userId, updatedUser, updatedStudent, updatedAddress);
+                var response = _mapper.Map<UpdateStudentForStudentDTO>(updateStudentInfo);
+
+                return new DataResponse<UpdateStudentForStudentDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Student information retrieved successfully!",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<UpdateStudentForStudentDTO>
+                {
+                    StatusCode = 500,
+                    Message = $"An error occurred while updating student information for user id {userId}: {ex.Message}.",
+                    Data = null
+                };
+            }
+        }
+
         //For Dean
         public async Task<DataResponse<string>> AssignLecturerForStudentsAsync(AssignLecturerForStudentDto dto)
         {

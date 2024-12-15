@@ -173,6 +173,10 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<bool>> StoredDocumentsByUserIdAsync(int? documentId);
 
         // === Student ===
+        // Student 
+        Task<DataResponse<StudentDetailForStudentDTO>> GetStudentDetailByUserIdAsync(int? userId);
+
+        Task<DataResponse<UpdateStudentForStudentDTO>> UpdateStudentByUserIdAsync(int? userId, UpdateStudentForStudentDTO? updateInformation);
         //For Dean
         // 1. AssignLecturerForStudentsAsync
         Task<DataResponse<string>> AssignLecturerForStudentsAsync(AssignLecturerForStudentDto dto);
