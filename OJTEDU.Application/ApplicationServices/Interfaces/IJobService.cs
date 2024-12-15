@@ -4,6 +4,7 @@ using OJTEDU.Domain.Entities;
 using System.Security.Claims;
 using static OJTEDU.Application.DTOs.DocumentDTO;
 using static OJTEDU.Application.DTOs.JobDTO;
+using static OJTEDU.Application.DTOs.StudentDTO;
 using static OJTEDU.Application.DTOs.UserDTO;
 
 namespace OJTEDU.Application.ApplicationServices.Interfaces
@@ -170,5 +171,28 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<CreateDocumentTestFilesForCompanyDTO>> CreateDocumentsByUserIdAsync(int? userId, string? fileName, string? fileData, CreateDocumentTestFilesForCompanyDTO? info);
         Task<DataResponse<UpdateDocumentTestFilesForCompanyDTO>> UpdateDocumentAsync(int? documentId, string? fileName, byte[] fileData, UpdateDocumentTestFilesForCompanyDTO? info);
         Task<DataResponse<bool>> StoredDocumentsByUserIdAsync(int? documentId);
+
+        // === Student ===
+        //For Dean
+        // 1. AssignLecturerForStudentsAsync
+        Task<DataResponse<string>> AssignLecturerForStudentsAsync(AssignLecturerForStudentDto dto);
+
+        // 2. GetStudentListAsync
+        Task<DataResponse<PagedResponse<List<StudentListDto>>>> GetStudentListAsync(
+        string? code,
+        string? studentName,
+        string? lecturerName,
+        string? majorName,
+        int pageNumber,
+        int pageSize,
+        string? sortBy,
+        bool? isDescending);
+
+        // KienBV - fix
+        Task<DataResponse<List<StudentListDto>>> GetOjtStudentListAsync();
+
+        // 3. GetStudentDetailsAsync
+        Task<DataResponse<StudentDetailsDto>> GetStudentDetailsAsync(int studentId);
+        Task<DataResponse<string>> UpdateStudentAsync(int studentId, UpdateStudentDto dto);
     }
 }

@@ -3336,18 +3336,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
             return userId;
         }
 
-        private string GetCurrentUserRole()
-        {
-            var roleClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
-
-            if (string.IsNullOrEmpty(roleClaim))
-            {
-                throw new UnauthorizedAccessException("User role not found.");
-            }
-
-            return roleClaim;
-        }
-
         public async Task<DataResponse<PagedResponse<List<DeanListForAdminDOETDto>>>> GetAllDeansAsync(
         string? userCode,
         string? name,
@@ -4629,6 +4617,318 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     StatusCode = 500,
                     Message = ex.Message,
                     Data = null
+                };
+            }
+        }
+
+        // === Student ===
+        //For Dean
+        public async Task<DataResponse<string>> AssignLecturerForStudentsAsync(AssignLecturerForStudentDto dto)
+        {
+            try
+            {
+                // Lấy thông tin UserId và Role của người dùng hiện tại
+                var currentUserId = GetCurrentUserId();
+                var currentUserRole = GetCurrentUserRole();
+
+                // Nếu người dùng hiện tại là Dean và không nhập LecturerId, mặc định LecturerId là ID của Dean
+                if (currentUserRole == "Dean" && dto.LecturerId == null)
+                {
+                    dto.LecturerId = currentUserId;
+                }
+
+                // Lấy danh sách sinh viên để kiểm tra vai trò
+                var studentsToUpdate = await _jobRepository.GetStudentsByIdsAsync(dto.StudentIds);
+                if (studentsToUpdate == null || studentsToUpdate.Count == 0)
+                {
+                    return new DataResponse<string>
+                    {
+                        Data = null,
+                        Message = "StudentIds not found.",
+                        StatusCode = 404
+                    };
+                }
+
+                // Lấy thông tin Lecturer từ User dựa trên dto.LecturerId
+                var lecturer = await _userRepository.GetUserByIdAsync(dto.LecturerId);
+                if (lecturer == null)
+                {
+                    return new DataResponse<string>
+                    {
+                        Data = null,
+                        Message = "Lecturer not found.",
+                        StatusCode = 404
+                    };
+                }
+
+                // Nếu nhập LecturerId khác ID hiện tại của Dean, kiểm tra MajorId của Lecturer và Student
+                if (currentUserRole == "Dean" && dto.LecturerId != currentUserId)
+                {
+                    // Kiểm tra MajorId của Lecturer phải trùng với MajorId của các Student
+                    foreach (var student in studentsToUpdate)
+                    {
+                        if (student.MajorId != lecturer.MajorId)
+                        {
+                            return new DataResponse<string>
+                            {
+                                Data = null,
+                                Message = $"Major mismatch. Student has a different major from Lecturer.",
+                                StatusCode = 400
+                            };
+                        }
+                    }
+                }
+
+                // Cập nhật LecturerId cho từng sinh viên
+                foreach (var student in studentsToUpdate)
+                {
+                    student.LecturerId = dto.LecturerId;
+                    student.UpdatedAt = DateTime.Now;
+                }
+
+                // Lưu thay đổi vào repository
+                await _jobRepository.UpdateStudentsAsync(studentsToUpdate);
+
+                // Trả về thành công
+                return new DataResponse<string>
+                {
+                    Data = "Success",
+                    Message = "LecturerId was updated successfully.",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi tại đây nếu cần thiết
+                return new DataResponse<string>
+                {
+                    Data = null,
+                    Message = $"Error: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        // 2. GetStudentListAsync (for Dean and Lecturer)
+        public async Task<DataResponse<PagedResponse<List<StudentListDto>>>> GetStudentListAsync(
+        string? code,
+        string? studentName,
+        string? lecturerName,
+        string? majorName,
+        int pageNumber,
+        int pageSize,
+        string? sortBy,
+        bool? isDescending)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var role = GetCurrentUserRole();
+
+                var students = await _jobRepository.GetStudentListAsync(
+                    userId,
+                    role,
+                    code,
+                    studentName,
+                    lecturerName,
+                    majorName,
+                    sortBy,
+                    isDescending
+                );
+
+                // Phân trang
+                var totalStudents = students.Count();
+                var paginatedStudents = students
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                // Ánh xạ sang DTO
+                var studentDtos = _mapper.Map<List<StudentListDto>>(paginatedStudents);
+
+                var pagedResponse = new PagedResponse<List<StudentListDto>>
+                {
+                    Items = studentDtos,
+                    TotalCount = totalStudents,
+                    PageSize = pageSize,
+                    CurrentPage = pageNumber,
+                    TotalPages = (int)Math.Ceiling((double)totalStudents / pageSize)
+                };
+
+                return new DataResponse<PagedResponse<List<StudentListDto>>>
+                {
+                    Data = pagedResponse,
+                    Message = "Student list retrieved successfully!",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<PagedResponse<List<StudentListDto>>>
+                {
+                    Data = null,
+                    Message = $"Error retrieving student list: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        // KienBV - Fix
+        public async Task<DataResponse<List<StudentListDto>>> GetOjtStudentListAsync()
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+
+                var students = await _jobRepository.GetOjtStudentListAsync(userId);
+                var response = _mapper.Map<List<StudentListDto>>(students);
+
+                return new DataResponse<List<StudentListDto>>
+                {
+                    StatusCode = 200,
+                    Message = "Student list retrieved successfully!",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<List<StudentListDto>>
+                {
+                    Data = null,
+                    Message = $"Error retrieving student list: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        // 3. GetStudentDetailsAsync (for Dean and Lecturer)
+        public async Task<DataResponse<StudentDetailsDto>> GetStudentDetailsAsync(int studentId)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var role = GetCurrentUserRole();
+
+                var student = await _jobRepository.GetStudentDetailsByIdAsync(studentId, userId, role);
+
+                if (student == null)
+                {
+                    return new DataResponse<StudentDetailsDto>
+                    {
+                        Data = null,
+                        Message = "Student not found or access denied.",
+                        StatusCode = 204
+                    };
+                }
+
+                var studentDetailsDto = _mapper.Map<StudentDetailsDto>(student);
+
+                return new DataResponse<StudentDetailsDto>
+                {
+                    Data = studentDetailsDto,
+                    Message = "Student details retrieved successfully.",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<StudentDetailsDto>
+                {
+                    Data = null,
+                    Message = $"Error retrieving student details: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        private string GetCurrentUserRole()
+        {
+            var roleClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (string.IsNullOrEmpty(roleClaim))
+            {
+                throw new UnauthorizedAccessException("User role not found.");
+            }
+
+            return roleClaim;
+        }
+        public async Task<DataResponse<string>> UpdateStudentAsync(int studentId, UpdateStudentDto dto)
+        {
+            try
+            {
+                // Lấy thông tin sinh viên
+                var student = await _jobRepository.GetStudentByIdAsync(studentId);
+
+                if (student == null)
+                {
+                    return new DataResponse<string>
+                    {
+                        Data = null,
+                        Message = "Student not found.",
+                        StatusCode = 204
+                    };
+                }
+
+                // Cập nhật Information
+                if (!string.IsNullOrWhiteSpace(dto.Information))
+                {
+                    student.User.Information = dto.Information;
+                }
+
+                // Kiểm tra MajorId
+                if (dto.MajorId.HasValue)
+                {
+                    var major = await _jobRepository.GetMajorByIdAsync(dto.MajorId.Value);
+                    if (major == null || major.Status != "Active")
+                    {
+                        return new DataResponse<string>
+                        {
+                            Data = null,
+                            Message = "Major not found or inactive.",
+                            StatusCode = 400
+                        };
+                    }
+
+                    student.MajorId = major.MajorId;
+                }
+
+                // Kiểm tra SemesterId
+                if (dto.SemesterId.HasValue)
+                {
+                    var semester = await _jobRepository.GetSemesterByIdAsync(dto.SemesterId.Value);
+                    if (semester == null || semester.Status != "Active")
+                    {
+                        return new DataResponse<string>
+                        {
+                            Data = null,
+                            Message = "Semester not found or inactive.",
+                            StatusCode = 400
+                        };
+                    }
+
+                    student.SemesterId = semester.SemesterId;
+                }
+
+                // Cập nhật thời gian chỉnh sửa
+                student.UpdatedAt = DateTime.Now;
+
+                // Lưu thay đổi
+                await _jobRepository.UpdateStudentAsync(student);
+
+                return new DataResponse<string>
+                {
+                    Data = "Success",
+                    Message = "Student updated successfully.",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<string>
+                {
+                    Data = null,
+                    Message = $"Error updating student: {ex.Message}",
+                    StatusCode = 500
                 };
             }
         }

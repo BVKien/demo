@@ -14,12 +14,11 @@ namespace OJTEDU.Api.Controllers.AdminControllers
     [Route("api/admin/student")]
     public class StudentController : ControllerBase
     {
+        private readonly IJobService _jobService;
 
-        private readonly IStudentService _stuService;
-
-        public StudentController(IStudentService stuService)
+        public StudentController(IJobService jobService)
         {
-            _stuService = stuService;
+            _jobService = jobService;
         }
 
         [HttpGet("list")]
@@ -38,7 +37,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
                 int actualPageNumber = pageNumber ?? 1;
                 int actualPageSize = pageSize ?? 15;
 
-                var response = await _stuService.GetStudentListAsync(
+                var response = await _jobService.GetStudentListAsync(
                     code,
                     studentName,
                     lecturerName,
@@ -77,7 +76,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         [HttpGet("details/{studentId}")]
         public async Task<IActionResult> GetStudentDetails(int studentId)
         {
-            var dataResponse = await _stuService.GetStudentDetailsAsync(studentId);
+            var dataResponse = await _jobService.GetStudentDetailsAsync(studentId);
 
             if (dataResponse.Data == null)
             {
@@ -99,7 +98,7 @@ namespace OJTEDU.Api.Controllers.AdminControllers
         {
             try
             {
-                var response = await _stuService.UpdateStudentAsync(studentId, dto);
+                var response = await _jobService.UpdateStudentAsync(studentId, dto);
 
                 if (response.StatusCode != 200)
                 {

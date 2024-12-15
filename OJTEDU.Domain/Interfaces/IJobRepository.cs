@@ -56,5 +56,26 @@ namespace OJTEDU.Domain.Interfaces
         Task<Document> CreateDocumentsByUserIdAsync(int? userId, string? fileName, string? fileData, Document? info);
         Task<Document> UpdateDocumentAsync(int? documentId, string? fileName, byte[] fileData, Document? info);
         Task<bool> StoredDocumentsByUserIdAsync(int? documentId);
+
+        // === Student ===
+        //For Dean
+        Task<User> GetDeanByUserIdAsync(int userId);
+        Task<IEnumerable<Student>> GetStudentListAsync(
+        int userId,
+        string role,
+        string? code,
+        string? studentName,
+        string? lecturerName,
+        string? majorName,
+        string? sortBy,
+        bool? isDescending);
+        Task<List<Student>> GetStudentsByIdsAsync(List<int> studentIds);
+        Task UpdateStudentsAsync(List<Student> students);
+        Task<Student> GetStudentDetailsByIdAsync(int studentId, int userId, string role);
+        Task<IEnumerable<Student>> GetOjtStudentListAsync(int userId);
+        Task<Student> GetStudentByIdAsync(int studentId);
+        Task<Major> GetMajorByIdAsync(int majorId);
+        Task<Semester> GetSemesterByIdAsync(int semesterId);
+        Task UpdateStudentAsync(Student student);
     }
 }
