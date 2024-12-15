@@ -57,6 +57,7 @@ namespace OJTEDU.Application.Profiles
                 .ForMember(dest => dest.JobTitle, opt => opt.MapFrom(src => src.Job.Title))
                 .ForMember(dest => dest.InterviewDate, opt => opt.MapFrom(src => src.InterviewDate.Value.ToString("dd-MM-yyyy")))
                 .ForMember(dest => dest.CvName, opt => opt.MapFrom(src => src.Cv.Name))
+                .ForMember(dest => dest.CvFile, opt => opt.MapFrom(src => src.Cv.CvFile))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
                 src.Status == "1" ? "Reviewing"
                 : src.Status == "0" ? "Rejected"
