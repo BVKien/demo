@@ -1637,7 +1637,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
-        public async Task<List<MessageGroup>> GetAllMessagesInGroupChatAsync(int? groupChatId)
+        public async Task<IEnumerable<MessageGroup>> GetAllMessagesInGroupChatAsync(int? groupChatId)
         {
             try
             {
@@ -1845,7 +1845,7 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
-        public async Task<List<MessageGroup>> GetAllGroupChatAsync(int? userId)
+        public async Task<IEnumerable<MessageGroup>> GetAllGroupChatAsync(int? userId)
         {
             try
             {
