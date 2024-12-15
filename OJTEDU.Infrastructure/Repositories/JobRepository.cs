@@ -17,7 +17,6 @@ namespace OJTEDU.Infrastructure.Repositories
     {
         private readonly OJTEDU_DB_V1Context _context;
         private readonly string _testFileDirectory = "wwwroot/uploads/jobs/testfiles/";
-        private readonly string _attendanceReportDirectory = "wwwroot/uploads/attendancereports/files/";
         private readonly IAddressRepository _addressRepository;
         public JobRepository(OJTEDU_DB_V1Context context, IAddressRepository addressRepository)
         {
@@ -27,11 +26,6 @@ namespace OJTEDU.Infrastructure.Repositories
             if (!Directory.Exists(_testFileDirectory))
             {
                 Directory.CreateDirectory(_testFileDirectory);
-            }
-
-            if (!Directory.Exists(_attendanceReportDirectory))
-            {
-                Directory.CreateDirectory(_attendanceReportDirectory);
             }
         }
 

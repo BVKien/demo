@@ -34,12 +34,11 @@ namespace OJTEDU.Application.ApplicationServices.Services
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMajorRepository _majorRepository;
-        private readonly IAttendanceReportRepository _attendanceReportRepository;
 
         public JobService(IJobRepository jobRepository, IMapper mapper, HttpClient httpClient,
             IConfiguration config, IGoogleJsonWebSignatureValidator googleValidator,
             IUserRepository userRepository, IHttpContextAccessor httpContextAccessor,
-            IMajorRepository majorRepository, IAttendanceReportRepository attendanceReportRepository)
+            IMajorRepository majorRepository)
         {
             _jobRepository = jobRepository;
             _mapper = mapper;
@@ -49,7 +48,6 @@ namespace OJTEDU.Application.ApplicationServices.Services
             _userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
             _majorRepository = majorRepository;
-            _attendanceReportRepository = attendanceReportRepository;
         }
 
         // Student  
