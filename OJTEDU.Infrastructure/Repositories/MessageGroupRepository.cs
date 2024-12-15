@@ -1849,7 +1849,9 @@ namespace OJTEDU.Infrastructure.Repositories
         {
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(g => g.UserId == userId);
+                var user = await _context.Users
+                    .Include(u => u.Role)
+                    .FirstOrDefaultAsync(g => g.UserId == userId);
                 if (user == null)
                 {
                     throw new KeyNotFoundException("Not found group chat.");
