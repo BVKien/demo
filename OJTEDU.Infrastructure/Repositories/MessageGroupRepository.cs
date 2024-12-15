@@ -1861,6 +1861,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 if (user.Role.Name == "Admin" || user.Role.Name == "DOET" || user.Role.Name == "Dean" || user.Role.Name == "Lecturer")
                 {
                     var group = await _context.MessageGroups
+                        .Include(m => m.GroupChat)
                         .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.University).ThenInclude(m => m.Role)
@@ -1884,6 +1885,7 @@ namespace OJTEDU.Infrastructure.Repositories
                         .FirstOrDefaultAsync(c => c.UserId == userId);
 
                     var group = await _context.MessageGroups
+                        .Include(m => m.GroupChat)
                         .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.University).ThenInclude(m => m.Role)
@@ -1908,6 +1910,7 @@ namespace OJTEDU.Infrastructure.Repositories
                         .FirstOrDefaultAsync(c => c.UserId == userId);
 
                     var group = await _context.MessageGroups
+                        .Include(m => m.GroupChat)
                         .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.University).ThenInclude(m => m.Role)
