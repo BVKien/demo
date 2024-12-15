@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OJTEDU.Api.Configuration;
 using OJTEDU.Application.ApplicationServices.Interfaces;
@@ -7,7 +6,6 @@ using OJTEDU.Application.DTOs;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using static OJTEDU.Api.Input.AdminControllers.DocumentController;
-using static OJTEDU.Api.Input.DOETControllers.DocumentController;
 using static OJTEDU.Application.DTOs.DocumentDTO;
 
 namespace OJTEDU.Api.Controllers.DOETControllers
@@ -17,6 +15,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
     public class DocumentController : ControllerBase
     {
         private readonly IJobService _jobService;
+
         public DocumentController(IJobService jobService)
         {
             _jobService = jobService;
@@ -24,7 +23,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
         [HttpGet("list")]
         [Authorize(Roles = "DOET")]
-        public async Task<IActionResult> GetAllDocumentsForDoet(string? title, int? roleId, string? status, int? pageNumber, int? pageSize)
+        public async Task<IActionResult> GetAllDocumentsForAdmin(string? title, int? roleId, string? status, int? pageNumber, int? pageSize)
         {
             try
             {
@@ -71,7 +70,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
         [HttpGet("details/{documentId}")]
         [Authorize(Roles = "DOET")]
-        public async Task<IActionResult> GetDocumentDetailForDoet(int? documentId)
+        public async Task<IActionResult> GetDocumentDetailForAdmin(int? documentId)
         {
             try
             {
@@ -104,6 +103,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
+                // Successful retrieval of users
                 var apiResponse = new ApiResponse<DocumentDetailForAdminDTO>
                 {
                     Data = dataResponse.Data,
@@ -124,14 +124,13 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
         [HttpPost]
         [Authorize(Roles = "DOET")]
-        public async Task<IActionResult> AddDocumentForDoet([FromForm] AddDocumentRequestForDoet request)
+        public async Task<IActionResult> AddDocumentForAdmin([FromForm] AddDocumentRequestForAdmin request)
         {
             try
             {
                 // Danh sách để lưu thông báo lỗi
                 var errorMessages = new List<string>();
 
-                // Kiểm tra từng thuộc tính
                 if (string.IsNullOrWhiteSpace(request.Title))
                 {
                     errorMessages.Add("Title is required.");
@@ -146,19 +145,19 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     errorMessages.Add("Description is required.");
                 }
 
-                if (request.DocumentFile == null || request.DocumentFile.Length == 0)
+                if (request.DocumentFile == null)
                 {
                     errorMessages.Add("DocumentFile is required.");
                 }
-                else
-                {
-                    // Giới hạn dung lượng file (tối đa 10MB)
-                    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    if (request.DocumentFile.Length > maxFileSizeInBytes)
-                    {
-                        errorMessages.Add("File size must not exceed 10MB.");
-                    }
-                }
+                //else
+                //{
+                //    // Giới hạn dung lượng file (tối đa 10MB)
+                //    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                //    if (request.DocumentFile.Length > maxFileSizeInBytes)
+                //    {
+                //        errorMessages.Add("File size must not exceed 10MB.");
+                //    }
+                //}
 
                 //if (request.ForRoleIds == null || !request.ForRoleIds.Any())
                 //{
@@ -238,7 +237,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 if (dataResponse == null)
                 {
                     // Xóa file nếu có lỗi
-                    // System.IO.File.Delete(filePath);
+                    //System.IO.File.Delete(filePath);
 
                     return StatusCode(500, new ApiResponse<object>
                     {
@@ -250,7 +249,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 if (dataResponse.Data == null)
                 {
                     // Xóa file nếu có lỗi
-                    // System.IO.File.Delete(filePath);
+                    //System.IO.File.Delete(filePath);
 
                     return StatusCode(dataResponse.StatusCode, new ApiResponse<object>
                     {
@@ -270,7 +269,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
             }
             catch (Exception ex)
             {
-                // Xóa file nếu đã được tạo nhưng có lỗi xảy ra
+                //// Xóa file nếu đã được tạo nhưng có lỗi xảy ra
                 //if (System.IO.File.Exists(Path.Combine(_webHostEnvironment.WebRootPath, "documents", request.DocumentFile.FileName)))
                 //{
                 //    System.IO.File.Delete(Path.Combine(_webHostEnvironment.WebRootPath, "documents", request.DocumentFile.FileName));
@@ -286,7 +285,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
         [HttpPut("{documentId}")]
         [Authorize(Roles = "DOET")]
-        public async Task<IActionResult> UpdateDocumentForDoet(int? documentId, [FromForm] UpdateDocumentRequestForDoet request)
+        public async Task<IActionResult> UpdateDocumentForAdmin(int? documentId, [FromForm] UpdateDocumentRequestForAdmin request)
         {
             try
             {
@@ -344,7 +343,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                     });
                 }
 
-                var existingDocuments = await _jobService.GetDocumentDetailByIdForDoetAsync(documentId.Value);
+                var existingDocuments = await _jobService.GetDocumentDetailByIdForAdminAsync(documentId.Value);
                 if (existingDocuments == null || existingDocuments.Data == null)
                 {
                     return NotFound(new ApiResponse<object>
@@ -378,46 +377,46 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
                 if (request.DocumentFile != null)
                 {
+
+                    //// Giới hạn dung lượng file (tối đa 10MB)
+                    //long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
+                    //if (request.DocumentFile.Length > maxFileSizeInBytes)
                     //{
-                    //    // Giới hạn dung lượng file (tối đa 10MB)
-                    //    long maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
-                    //    if (request.DocumentFile.Length > maxFileSizeInBytes)
+                    //    errorMessages.Add("File size must not exceed 10MB.");
+                    //}
+
+                    //// Nếu có lỗi, trả về phản hồi lỗi
+                    //if (errorMessages.Any())
+                    //{
+                    //    return BadRequest(new ApiResponse<object>
                     //    {
-                    //        errorMessages.Add("File size must not exceed 10MB.");
-                    //    }
+                    //        Data = null,
+                    //        Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
+                    //    });
+                    //}
 
-                    //    // Nếu có lỗi, trả về phản hồi lỗi
-                    //    if (errorMessages.Any())
-                    //    {
-                    //        return BadRequest(new ApiResponse<object>
-                    //        {
-                    //            Data = null,
-                    //            Message = $"Validation errors occurred: {string.Join(", ", errorMessages)}"
-                    //        });
-                    //    }
-
-                    //    string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.DocumentFile.FileName}";
-                    //    string documentsPath = Path.Combine(_webHostEnvironment.WebRootPath, "documents");
+                    //string uniqueFileName = $"{createdByUniversityId}_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}_{request.DocumentFile.FileName}";
+                    //string documentsPath = Path.Combine(_webHostEnvironment.WebRootPath, "documents");
 
 
-                    //    if (!Directory.Exists(documentsPath))
-                    //    {
-                    //        Directory.CreateDirectory(documentsPath);
-                    //    }
+                    //if (!Directory.Exists(documentsPath))
+                    //{
+                    //    Directory.CreateDirectory(documentsPath);
+                    //}
 
-                    //    filePath = Path.Combine(documentsPath, uniqueFileName);
-                    //    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    //    {
-                    //        await request.DocumentFile.CopyToAsync(fileStream);
-                    //    }
+                    //filePath = Path.Combine(documentsPath, uniqueFileName);
+                    //using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    //{
+                    //    await request.DocumentFile.CopyToAsync(fileStream);
+                    //}
 
-                    //    string oldDocumentPath = Path.Combine(_webHostEnvironment.WebRootPath, documentDto.DocumentFile.TrimStart('/'));
-                    //    if (System.IO.File.Exists(oldDocumentPath))
-                    //    {
-                    //        System.IO.File.Delete(oldDocumentPath);
-                    //    }
+                    //string oldDocumentPath = Path.Combine(_webHostEnvironment.WebRootPath, documentDto.DocumentFile.TrimStart('/'));
+                    //if (System.IO.File.Exists(oldDocumentPath))
+                    //{
+                    //    System.IO.File.Delete(oldDocumentPath);
+                    //}
 
-                    //    var relativeDocumentPath = $"/documents/{uniqueFileName}";
+                    //var relativeDocumentPath = $"/documents/{uniqueFileName}";
 
                     // Cập nhật tên ảnh mới trong DTO
                     documentDto.DocumentFile = request.DocumentFile;
@@ -479,7 +478,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
         [HttpDelete("{documentId}")]
         [Authorize(Roles = "DOET")]
-        public async Task<IActionResult> DeleteDocumentForDoet(int? documentId)
+        public async Task<IActionResult> DeleteDocumentForAdmin(int? documentId)
         {
             try
             {
@@ -546,7 +545,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
         [HttpPatch("{documentId}/status")]
         [Authorize(Roles = "DOET")]
-        public async Task<IActionResult> UpdateDocumentStatusForDoet(int? documentId, UpdateDocumentStatusRequestForDoet request)
+        public async Task<IActionResult> UpdateDocumentStatusForAdmin(int? documentId, UpdateDocumentStatusRequestForAdmin request)
         {
             try
             {
@@ -615,7 +614,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
         [HttpGet("status-list")]
         [Authorize(Roles = "DOET")]
-        public async Task<IActionResult> GetAllStatusesForDoet()
+        public async Task<IActionResult> GetAllStatusesForAdmin()
         {
             try
             {
@@ -659,7 +658,7 @@ namespace OJTEDU.Api.Controllers.DOETControllers
 
         [HttpGet("download-file/{documentId}")]
         [Authorize(Roles = "DOET")]
-        public async Task<IActionResult> DownloadDocumentForDoet(int? documentId)
+        public async Task<IActionResult> DownloadDocumentForAdmin(int? documentId)
         {
             try
             {
@@ -705,10 +704,11 @@ namespace OJTEDU.Api.Controllers.DOETControllers
                 //    });
                 //}
 
-                //// Đọc nội dung file
-                //var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                // Đọc nội dung file
+                // var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
 
                 // Trả về file dưới dạng stream để tải xuống
+                //return File(fileBytes, "application/octet-stream", dataResponse.Data.DocumentFile);
                 return Ok(dataResponse.Data.DocumentFile);
             }
             catch (Exception ex)
