@@ -24,7 +24,7 @@ namespace OJTEDU.WebAPI.Controllers.Dean
         // GET: api/dean/working-report/{studentId}
         [HttpGet("list/{internshipId}")]
         public async Task<IActionResult> GetWorkingReportsByStudentIdAsync(
-        int studentId,
+        int internshipId,
         string? sortBy,
         bool? isDescending,
         string? week,
@@ -32,7 +32,7 @@ namespace OJTEDU.WebAPI.Controllers.Dean
         {
             try
             {
-                var response = await _workService.GetWorkingReportsByStudentIdAsync(studentId, sortBy, isDescending, week, year);
+                var response = await _workService.GetWorkingReportsByStudentIdAsync(internshipId, sortBy, isDescending, week, year);
 
                 if (response.StatusCode != 200)
                 {

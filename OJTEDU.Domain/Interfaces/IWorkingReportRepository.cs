@@ -28,6 +28,7 @@ namespace OJTEDU.Domain.Interfaces
         Task<List<WorkingReport>> GetWorkingReportsByStudentIdAsync(
         int internshipId, int userId, string role, string? sortBy, bool? isDescending, string? week, int? year = null);
         Task<bool> UpdateWorkingReportAsync(int workingReportId, int userId, string role, string? feedback, double? score);
+        Task<Internship> GetInternshipByIdAsync(int internshipId);
 
         // Mentor 
         Task<IEnumerable<WorkingReport>> GetAllWorkingReportsByStudentId(int? studentId);
