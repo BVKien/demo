@@ -18,9 +18,6 @@ using OfficeOpenXml;
 using static OJTEDU.Application.DTOs.StudentDTO;
 using System.Text;
 using static OJTEDU.Application.DTOs.DocumentDTO;
-using OJTEDU.Infrastructure.Repositories;
-using Microsoft.Extensions.Logging;
-using static OJTEDU.Application.DTOs.AttendanceReportDTO;
 
 namespace OJTEDU.Application.ApplicationServices.Services
 {

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Http;
 using OJTEDU.Application.DTOs;
 using OJTEDU.Domain.Entities;
 using System.Security.Claims;
-using static OJTEDU.Application.DTOs.AttendanceReportDTO;
 using static OJTEDU.Application.DTOs.DocumentDTO;
 using static OJTEDU.Application.DTOs.JobDTO;
 using static OJTEDU.Application.DTOs.StudentDTO;
