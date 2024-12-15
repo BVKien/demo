@@ -5140,293 +5140,293 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
 
-        public async Task<DataResponse<bool>> CreateAutoAttendanceReportAsync(int? userId, TimeSpan? checkInTime, TimeSpan? checkOutTime)
-        {
-            try
-            {
-                if (userId == null)
-                {
-                    return new DataResponse<bool>
-                    {
-                        StatusCode = 404,
-                        Message = "Not found mentor.",
-                        Data = false
-                    };
-                }
+        //public async Task<DataResponse<bool>> CreateAutoAttendanceReportAsync(int? userId, TimeSpan? checkInTime, TimeSpan? checkOutTime)
+        //{
+        //    try
+        //    {
+        //        if (userId == null)
+        //        {
+        //            return new DataResponse<bool>
+        //            {
+        //                StatusCode = 404,
+        //                Message = "Not found mentor.",
+        //                Data = false
+        //            };
+        //        }
 
-                if (checkInTime == null)
-                {
-                    return new DataResponse<bool>
-                    {
-                        StatusCode = 404,
-                        Message = "Check in time is required.",
-                        Data = false
-                    };
-                }
+        //        if (checkInTime == null)
+        //        {
+        //            return new DataResponse<bool>
+        //            {
+        //                StatusCode = 404,
+        //                Message = "Check in time is required.",
+        //                Data = false
+        //            };
+        //        }
 
-                if (checkOutTime == null)
-                {
-                    return new DataResponse<bool>
-                    {
-                        StatusCode = 404,
-                        Message = "Check out time is required.",
-                        Data = false
-                    };
-                }
+        //        if (checkOutTime == null)
+        //        {
+        //            return new DataResponse<bool>
+        //            {
+        //                StatusCode = 404,
+        //                Message = "Check out time is required.",
+        //                Data = false
+        //            };
+        //        }
 
-                var response = await _jobRepository.CreateAutoAttendanceReportAsync(userId, checkInTime, checkOutTime);
+        //        var response = await _jobRepository.CreateAutoAttendanceReportAsync(userId, checkInTime, checkOutTime);
 
-                if (!response)
-                {
-                    return new DataResponse<bool>
-                    {
-                        StatusCode = 400,
-                        Message = "Failed to auto create attendance report.",
-                        Data = false
-                    };
-                }
+        //        if (!response)
+        //        {
+        //            return new DataResponse<bool>
+        //            {
+        //                StatusCode = 400,
+        //                Message = "Failed to auto create attendance report.",
+        //                Data = false
+        //            };
+        //        }
 
-                return new DataResponse<bool>
-                {
-                    StatusCode = 200,
-                    Message = "Create auto attendance report successfully.",
-                    Data = true
-                };
-            }
-            catch (Exception ex)
-            {
-                return new DataResponse<bool>
-                {
-                    StatusCode = 500,
-                    Message = ex.Message,
-                    Data = false
-                };
-            }
-        }
+        //        return new DataResponse<bool>
+        //        {
+        //            StatusCode = 200,
+        //            Message = "Create auto attendance report successfully.",
+        //            Data = true
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new DataResponse<bool>
+        //        {
+        //            StatusCode = 500,
+        //            Message = ex.Message,
+        //            Data = false
+        //        };
+        //    }
+        //}
 
-        public async Task<DataResponse<UpdateAttendanceReportForMentorDTO>> UpdateAttendanceReportAsync(int? attendanceReportId, UpdateAttendanceReportForMentorDTO? info)
-        {
-            try
-            {
-                if (attendanceReportId == null)
-                {
-                    return new DataResponse<UpdateAttendanceReportForMentorDTO>
-                    {
-                        StatusCode = 404,
-                        Message = "Not found attendance report.",
-                        Data = null
-                    };
-                }
+        //public async Task<DataResponse<UpdateAttendanceReportForMentorDTO>> UpdateAttendanceReportAsync(int? attendanceReportId, UpdateAttendanceReportForMentorDTO? info)
+        //{
+        //    try
+        //    {
+        //        if (attendanceReportId == null)
+        //        {
+        //            return new DataResponse<UpdateAttendanceReportForMentorDTO>
+        //            {
+        //                StatusCode = 404,
+        //                Message = "Not found attendance report.",
+        //                Data = null
+        //            };
+        //        }
 
-                var arInfo = new AttendanceReport
-                {
-                    CheckInTime = info?.CheckInTime,
-                    CheckOutTime = info?.CheckOutTime,
-                    Reason = info?.Reason,
-                    Status = info?.Status,
-                    EarlyLeave = info?.EarlyLeave,
-                    Late = info?.Late,
-                };
+        //        var arInfo = new AttendanceReport
+        //        {
+        //            CheckInTime = info?.CheckInTime,
+        //            CheckOutTime = info?.CheckOutTime,
+        //            Reason = info?.Reason,
+        //            Status = info?.Status,
+        //            EarlyLeave = info?.EarlyLeave,
+        //            Late = info?.Late,
+        //        };
 
-                var ar = await _jobRepository.UpdateAttendanceReportAsync(attendanceReportId, arInfo);
-                var response = _mapper.Map<UpdateAttendanceReportForMentorDTO>(ar);
+        //        var ar = await _jobRepository.UpdateAttendanceReportAsync(attendanceReportId, arInfo);
+        //        var response = _mapper.Map<UpdateAttendanceReportForMentorDTO>(ar);
 
-                return new DataResponse<UpdateAttendanceReportForMentorDTO>
-                {
-                    StatusCode = 200,
-                    Message = "Update attendance report successfully.",
-                    Data = response
-                };
-            }
-            catch (Exception ex)
-            {
-                return new DataResponse<UpdateAttendanceReportForMentorDTO>
-                {
-                    StatusCode = 500,
-                    Message = ex.Message,
-                    Data = null
-                };
-            }
-        }
+        //        return new DataResponse<UpdateAttendanceReportForMentorDTO>
+        //        {
+        //            StatusCode = 200,
+        //            Message = "Update attendance report successfully.",
+        //            Data = response
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new DataResponse<UpdateAttendanceReportForMentorDTO>
+        //        {
+        //            StatusCode = 500,
+        //            Message = ex.Message,
+        //            Data = null
+        //        };
+        //    }
+        //}
 
-        public async Task<DataResponse<bool>> InsertAttendanceReportsFromExcelAsync(int? userId, string fileName, byte[] fileData)
-        {
-            try
-            {
-                if (userId == null)
-                {
-                    return new DataResponse<bool>
-                    {
-                        StatusCode = 404,
-                        Message = "Not found mentor.",
-                        Data = false
-                    };
-                }
+        //public async Task<DataResponse<bool>> InsertAttendanceReportsFromExcelAsync(int? userId, string fileName, byte[] fileData)
+        //{
+        //    try
+        //    {
+        //        if (userId == null)
+        //        {
+        //            return new DataResponse<bool>
+        //            {
+        //                StatusCode = 404,
+        //                Message = "Not found mentor.",
+        //                Data = false
+        //            };
+        //        }
 
-                var arList = await _jobRepository.InsertAttendanceReportsFromExcelAsync(userId, fileName, fileData);
-                var response = _mapper.Map<bool>(arList);
+        //        var arList = await _jobRepository.InsertAttendanceReportsFromExcelAsync(userId, fileName, fileData);
+        //        var response = _mapper.Map<bool>(arList);
 
-                return new DataResponse<bool>
-                {
-                    StatusCode = 200,
-                    Message = "Attendance reports list inserted from attendace file successfully.",
-                    Data = response
-                };
-            }
-            catch (Exception ex)
-            {
-                return new DataResponse<bool>
-                {
-                    StatusCode = 500,
-                    Message = ex.Message,
-                    Data = false
-                };
-            }
-        }
+        //        return new DataResponse<bool>
+        //        {
+        //            StatusCode = 200,
+        //            Message = "Attendance reports list inserted from attendace file successfully.",
+        //            Data = response
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new DataResponse<bool>
+        //        {
+        //            StatusCode = 500,
+        //            Message = ex.Message,
+        //            Data = false
+        //        };
+        //    }
+        //}
 
-        public async Task<DataResponse<List<AttendanceReportListFromCsvFileForMentorDTO>>> ListAttendanceReportsFromExcelAsync(int? userId, string fileName, byte[] fileData)
-        {
-            try
-            {
-                if (userId == null)
-                {
-                    return new DataResponse<List<AttendanceReportListFromCsvFileForMentorDTO>>
-                    {
-                        StatusCode = 404,
-                        Message = "Not found mentor.",
-                        Data = null
-                    };
-                }
+        //public async Task<DataResponse<List<AttendanceReportListFromCsvFileForMentorDTO>>> ListAttendanceReportsFromExcelAsync(int? userId, string fileName, byte[] fileData)
+        //{
+        //    try
+        //    {
+        //        if (userId == null)
+        //        {
+        //            return new DataResponse<List<AttendanceReportListFromCsvFileForMentorDTO>>
+        //            {
+        //                StatusCode = 404,
+        //                Message = "Not found mentor.",
+        //                Data = null
+        //            };
+        //        }
 
-                var arList = await _jobRepository.ListAttendanceReportsFromExcelAsync(userId, fileName, fileData);
-                var response = _mapper.Map<List<AttendanceReportListFromCsvFileForMentorDTO>>(arList);
+        //        var arList = await _jobRepository.ListAttendanceReportsFromExcelAsync(userId, fileName, fileData);
+        //        var response = _mapper.Map<List<AttendanceReportListFromCsvFileForMentorDTO>>(arList);
 
-                return new DataResponse<List<AttendanceReportListFromCsvFileForMentorDTO>>
-                {
-                    StatusCode = 200,
-                    Message = "Attendance reports list from csv file retrieved successfully!",
-                    Data = response
-                };
-            }
-            catch (Exception ex)
-            {
-                return new DataResponse<List<AttendanceReportListFromCsvFileForMentorDTO>>
-                {
-                    StatusCode = 500,
-                    Message = ex.Message,
-                    Data = null
-                };
-            }
-        }
+        //        return new DataResponse<List<AttendanceReportListFromCsvFileForMentorDTO>>
+        //        {
+        //            StatusCode = 200,
+        //            Message = "Attendance reports list from csv file retrieved successfully!",
+        //            Data = response
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new DataResponse<List<AttendanceReportListFromCsvFileForMentorDTO>>
+        //        {
+        //            StatusCode = 500,
+        //            Message = ex.Message,
+        //            Data = null
+        //        };
+        //    }
+        //}
 
-        public async Task<DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>> GetAllAttendanceReportsForMentorAsync(int? userId)
-        {
-            try
-            {
-                if (userId == null)
-                {
-                    return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
-                    {
-                        StatusCode = 404,
-                        Message = "Not found intern.",
-                        Data = null
-                    };
-                }
+        //public async Task<DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>> GetAllAttendanceReportsForMentorAsync(int? userId)
+        //{
+        //    try
+        //    {
+        //        if (userId == null)
+        //        {
+        //            return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
+        //            {
+        //                StatusCode = 404,
+        //                Message = "Not found intern.",
+        //                Data = null
+        //            };
+        //        }
 
-                var arList = await _jobRepository.GetAllAttendanceReportsForMentorAsync(userId);
-                var response = _mapper.Map<List<AttendanceReportsListForMentorLecturerDTO>>(arList);
+        //        var arList = await _jobRepository.GetAllAttendanceReportsForMentorAsync(userId);
+        //        var response = _mapper.Map<List<AttendanceReportsListForMentorLecturerDTO>>(arList);
 
-                return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
-                {
-                    StatusCode = 200,
-                    Message = "Attendance reports list retrieved successfully!",
-                    Data = response
-                };
-            }
-            catch (Exception ex)
-            {
-                return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
-                {
-                    StatusCode = 500,
-                    Message = ex.Message,
-                    Data = null
-                };
-            }
-        }
+        //        return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
+        //        {
+        //            StatusCode = 200,
+        //            Message = "Attendance reports list retrieved successfully!",
+        //            Data = response
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
+        //        {
+        //            StatusCode = 500,
+        //            Message = ex.Message,
+        //            Data = null
+        //        };
+        //    }
+        //}
 
-        // Mentor, Lecturer
-        public async Task<DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>> GetAllAttendanceReportsByInternshipIdAsync(int? internshipId)
-        {
-            try
-            {
-                if (internshipId == null)
-                {
-                    return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
-                    {
-                        StatusCode = 404,
-                        Message = "Not found internship.",
-                        Data = null
-                    };
-                }
+        //// Mentor, Lecturer
+        //public async Task<DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>> GetAllAttendanceReportsByInternshipIdAsync(int? internshipId)
+        //{
+        //    try
+        //    {
+        //        if (internshipId == null)
+        //        {
+        //            return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
+        //            {
+        //                StatusCode = 404,
+        //                Message = "Not found internship.",
+        //                Data = null
+        //            };
+        //        }
 
-                var arList = await _jobRepository.GetAllAttendanceReportsByInternshipIdAsync(internshipId);
-                var response = _mapper.Map<List<AttendanceReportsListForMentorLecturerDTO>>(arList);
+        //        var arList = await _jobRepository.GetAllAttendanceReportsByInternshipIdAsync(internshipId);
+        //        var response = _mapper.Map<List<AttendanceReportsListForMentorLecturerDTO>>(arList);
 
-                return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
-                {
-                    StatusCode = 200,
-                    Message = "Attendance reports list retrieved successfully!",
-                    Data = response
-                };
-            }
-            catch (Exception ex)
-            {
-                return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
-                {
-                    StatusCode = 500,
-                    Message = ex.Message,
-                    Data = null
-                };
-            }
-        }
+        //        return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
+        //        {
+        //            StatusCode = 200,
+        //            Message = "Attendance reports list retrieved successfully!",
+        //            Data = response
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
+        //        {
+        //            StatusCode = 500,
+        //            Message = ex.Message,
+        //            Data = null
+        //        };
+        //    }
+        //}
 
-        // Lecturer
-        public async Task<DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>> GetAllAttendanceReportsForLecturerAsync(int? userId)
-        {
-            try
-            {
-                if (userId == null)
-                {
-                    return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
-                    {
-                        StatusCode = 404,
-                        Message = "Not found lecturer.",
-                        Data = null
-                    };
-                }
+        //// Lecturer
+        //public async Task<DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>> GetAllAttendanceReportsForLecturerAsync(int? userId)
+        //{
+        //    try
+        //    {
+        //        if (userId == null)
+        //        {
+        //            return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
+        //            {
+        //                StatusCode = 404,
+        //                Message = "Not found lecturer.",
+        //                Data = null
+        //            };
+        //        }
 
-                var arList = await _jobRepository.GetAllAttendanceReportsForLecturerAsync(userId);
-                var response = _mapper.Map<List<AttendanceReportsListForMentorLecturerDTO>>(arList);
+        //        var arList = await _jobRepository.GetAllAttendanceReportsForLecturerAsync(userId);
+        //        var response = _mapper.Map<List<AttendanceReportsListForMentorLecturerDTO>>(arList);
 
-                return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
-                {
-                    StatusCode = 200,
-                    Message = "Attendance reports list retrieved successfully!",
-                    Data = response
-                };
-            }
-            catch (Exception ex)
-            {
-                return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
-                {
-                    StatusCode = 500,
-                    Message = ex.Message,
-                    Data = null
-                };
-            }
-        }
+        //        return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
+        //        {
+        //            StatusCode = 200,
+        //            Message = "Attendance reports list retrieved successfully!",
+        //            Data = response
+        //        };
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new DataResponse<List<AttendanceReportsListForMentorLecturerDTO>>
+        //        {
+        //            StatusCode = 500,
+        //            Message = ex.Message,
+        //            Data = null
+        //        };
+        //    }
+        //}
 
-        // Student
+        //// Student
         public async Task<DataResponse<List<AttendanceReportsListForStudentDTO>>> GetAllAttendanceReportsForStudentAsync(int? userId)
         {
             try
