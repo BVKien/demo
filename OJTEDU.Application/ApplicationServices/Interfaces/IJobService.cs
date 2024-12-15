@@ -4,6 +4,7 @@ using OJTEDU.Domain.Entities;
 using System.Security.Claims;
 using static OJTEDU.Application.DTOs.DocumentDTO;
 using static OJTEDU.Application.DTOs.JobDTO;
+using static OJTEDU.Application.DTOs.NotificationDTO;
 using static OJTEDU.Application.DTOs.StudentDTO;
 using static OJTEDU.Application.DTOs.UserDTO;
 
@@ -198,5 +199,9 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         // 3. GetStudentDetailsAsync
         Task<DataResponse<StudentDetailsDto>> GetStudentDetailsAsync(int studentId);
         Task<DataResponse<string>> UpdateStudentAsync(int studentId, UpdateStudentDto dto);
+
+        // === Notificaiton ===
+        // Uni, Company, Student
+        Task<DataResponse<List<NotificationForUniCompanyStudentDTO>>> GetAllNotificationsByUserIdAsync(int? userId);
     }
 }

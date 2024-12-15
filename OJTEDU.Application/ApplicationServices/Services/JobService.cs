@@ -18,6 +18,8 @@ using OfficeOpenXml;
 using static OJTEDU.Application.DTOs.StudentDTO;
 using System.Text;
 using static OJTEDU.Application.DTOs.DocumentDTO;
+using OJTEDU.Infrastructure.Repositories;
+using static OJTEDU.Application.DTOs.NotificationDTO;
 
 namespace OJTEDU.Application.ApplicationServices.Services
 {
@@ -5020,6 +5022,43 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     Data = null,
                     Message = $"Error updating student: {ex.Message}",
                     StatusCode = 500
+                };
+            }
+        }
+
+        // === Notificaiton ===
+        // Uni, Company, Student
+        public async Task<DataResponse<List<NotificationForUniCompanyStudentDTO>>> GetAllNotificationsByUserIdAsync(int? userId)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return new DataResponse<List<NotificationForUniCompanyStudentDTO>>
+                    {
+                        StatusCode = 404,
+                        Message = "Not found user.",
+                        Data = null
+                    };
+                }
+
+                var notis = await _jobRepository.GetAllNotificationsByUserIdAsync(userId);
+                var response = _mapper.Map<List<NotificationForUniCompanyStudentDTO>>(notis);
+
+                return new DataResponse<List<NotificationForUniCompanyStudentDTO>>
+                {
+                    StatusCode = 200,
+                    Message = "Notifications list retrieved successfully!",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<List<NotificationForUniCompanyStudentDTO>>
+                {
+                    StatusCode = 500,
+                    Message = $"Error retrieving notifications list: {ex.Message}.",
+                    Data = null
                 };
             }
         }

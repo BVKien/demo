@@ -12,9 +12,9 @@ namespace OJTEDU.Api.Controllers.ComonControllers
     [ApiController]
     public class NotificationController : ControllerBase
     {
-        private readonly INotificationService _notificationService;
+        private readonly IJobService _notificationService;
 
-        public NotificationController(INotificationService notificationService)
+        public NotificationController(IJobService notificationService)
         {
             _notificationService = notificationService;
         }

@@ -81,5 +81,10 @@ namespace OJTEDU.Domain.Interfaces
         Task<Major> GetMajorByIdAsync(int majorId);
         Task<Semester> GetSemesterByIdAsync(int semesterId);
         Task UpdateStudentAsync(Student student);
+
+        // === Notificaiton ===
+        // Student, University, Company
+        Task<Notification> CreateNotificationAsync(Notification? info);
+        Task<IEnumerable<Notification>> GetAllNotificationsByUserIdAsync(int? userId);
     }
 }
