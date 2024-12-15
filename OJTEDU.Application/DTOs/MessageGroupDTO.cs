@@ -52,6 +52,7 @@ namespace OJTEDU.Application.DTOs
         public class GetAllGroupForUserAsyncForAdminDOETDeanLecturerMentorDTO
         {
             public int? GroupChatId { get; set; }
+            public string? GroupName { get; set; }
         }
     }
 }

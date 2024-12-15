@@ -1864,7 +1864,7 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.University).ThenInclude(m => m.Role)
-                        .Where(m => m.UniversityId == userId && m.Status != "0")
+                        .Where(m => m.UniversityId == userId)
                         .ToListAsync();
 
                     group = group.GroupBy(m => m.GroupChatId).Select(g => g.First()).ToList();
@@ -1887,7 +1887,7 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.University).ThenInclude(m => m.Role)
-                        .Where(m => m.MentorId == company.CompanyId && m.Status != "0")
+                        .Where(m => m.MentorId == company.CompanyId)
                         .ToListAsync();
 
                     group = group.GroupBy(m => m.GroupChatId).Select(g => g.First()).ToList();
@@ -1911,7 +1911,7 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.University).ThenInclude(m => m.Role)
-                        .Where(m => m.StudentId == student.StudentId && m.Status != "0")
+                        .Where(m => m.StudentId == student.StudentId)
                     .ToListAsync();
 
                     group = group.GroupBy(m => m.GroupChatId).Select(g => g.First()).ToList();
