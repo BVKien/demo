@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.HttpOverrides;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using OfficeOpenXml;
 using OJTEDU.Api.Configuration;
 using OJTEDU.Application.ApplicationServices.Interfaces;
 using OJTEDU.Application.ApplicationServices.Services;
+using OJTEDU.Application.Profiles;
 using OJTEDU.Domain.Interfaces;
 using OJTEDU.Infrastructure.Repositories;
 
@@ -66,6 +68,12 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(DocumentProfile));
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Thiết lập LicenseContext cho EPPlus
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
