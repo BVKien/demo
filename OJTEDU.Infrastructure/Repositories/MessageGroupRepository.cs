@@ -9,7 +9,6 @@ using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace OJTEDU.Infrastructure.Repositories
 {
@@ -1852,30 +1851,27 @@ namespace OJTEDU.Infrastructure.Repositories
             {
                 var user = await _context.Users
                     .Include(u => u.Role)
-                    .FirstOrDefaultAsync(u => u.UserId == userId);
-
+                    .FirstOrDefaultAsync(g => g.UserId == userId);
                 if (user == null)
                 {
-                    throw new KeyNotFoundException("Not found user.");
+                    throw new KeyNotFoundException("Not found group chat.");
                 }
 
                 if (user.Role.Name == "Admin" || user.Role.Name == "DOET" || user.Role.Name == "Dean" || user.Role.Name == "Lecturer")
                 {
-                    var grs = await _context.MessageGroups
+                    var group = await _context.MessageGroups
                         .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                         .Include(m => m.University).ThenInclude(m => m.Role)
-                        .Where(m => m.UniversityId == userId)
+                        .Where(m => m.UniversityId == userId && m.Status != "0" && m.Status != null)
                         .ToListAsync();
 
-                    grs = grs.GroupBy(m => m.GroupChatId).Select(g => g.First()).ToList();
-
-                    if (grs == null)
+                    if (group == null)
                     {
                         throw new KeyNotFoundException("Not found group chat.");
                     }
 
-                    return grs;
+                    return group;
                 }
 
                 if (user.Role.Name == "Company" || user.Role.Name == "Mentor")
@@ -1884,22 +1880,21 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Include(c => c.User).ThenInclude(c => c.Role)
                         .FirstOrDefaultAsync(c => c.UserId == userId);
 
-                    var grs = await _context.MessageGroups
-    .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
-    .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
-    .Include(m => m.University).ThenInclude(m => m.Role)
-    .Where(m => m.MentorId == company.CompanyId)
-    .ToListAsync();
+                    var group = await _context.MessageGroups
+                        .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.University).ThenInclude(m => m.Role)
+                        .Where(m => m.MentorId == company.CompanyId && m.Status != "0" && m.Status != null)
+                        .ToListAsync();
 
-                    grs = grs.GroupBy(m => m.GroupChatId).Select(g => g.First()).ToList();
-
-                    if (grs == null)
+                    if (group == null)
                     {
                         throw new KeyNotFoundException("Not found group chat.");
                     }
 
-                    return grs;
+                    return group;
                 }
+
 
                 if (user.Role.Name == "Student")
                 {
@@ -1907,21 +1902,19 @@ namespace OJTEDU.Infrastructure.Repositories
                         .Include(c => c.User).ThenInclude(c => c.Role)
                         .FirstOrDefaultAsync(c => c.UserId == userId);
 
-                    var grs = await _context.MessageGroups
-    .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
-    .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
-    .Include(m => m.University).ThenInclude(m => m.Role)
-    .Where(m => m.StudentId == student.StudentId)
-    .ToListAsync();
+                    var group = await _context.MessageGroups
+                        .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.Mentor).ThenInclude(m => m.User).ThenInclude(m => m.Role)
+                        .Include(m => m.University).ThenInclude(m => m.Role)
+                        .Where(m => m.StudentId == student.StudentId && m.Status != "0" && m.Status != null)
+                        .ToListAsync();
 
-                    grs = grs.GroupBy(m => m.GroupChatId).Select(g => g.First()).ToList();
-
-                    if (grs == null)
+                    if (group == null)
                     {
                         throw new KeyNotFoundException("Not found group chat.");
                     }
 
-                    return grs;
+                    return group;
                 }
 
                 return null;
