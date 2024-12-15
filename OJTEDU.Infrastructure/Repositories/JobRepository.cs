@@ -652,5 +652,128 @@ namespace OJTEDU.Infrastructure.Repositories
 
             return sortedDocuments;
         }
+
+        public async Task<Document> GetDocumentByIdForAdminAsync(int documentId)
+        {
+            var document = await _context.Documents.Include(u => u.DocumentRoles).ThenInclude(dr => dr.Role).Include(u => u.University)
+                                                   .FirstOrDefaultAsync(u => u.University.Role.Name.Equals("Admin") && u.DocumentId == documentId);
+            if (document == null)
+            {
+                throw new KeyNotFoundException("Document not found");
+            }
+            return document;
+        }
+
+        public async Task<Document> AddDocumentForAdminAsync(Document document, List<int?> roleIds)
+        {
+            // Bắt đầu transaction
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // Thêm tài liệu vào bảng Document
+                document.CreatedAt = DateTime.Now;
+                document.UpdatedAt = DateTime.Now;
+                document.Status = "Active"; // Mặc định trạng thái là Active
+                await _context.Documents.AddAsync(document);
+                await _context.SaveChangesAsync();
+
+                // Thêm các bản ghi vào bảng DocumentRoles
+                foreach (var roleId in roleIds)
+                {
+                    var documentRole = new DocumentRole
+                    {
+                        DocumentId = document.DocumentId,
+                        RoleId = roleId == 0 ? null : roleId
+                    };
+                    await _context.DocumentRoles.AddAsync(documentRole);
+                }
+
+                await _context.SaveChangesAsync();
+
+                // Commit transaction
+                await transaction.CommitAsync();
+
+                return document;
+            }
+            catch (Exception ex)
+            {
+                // Rollback transaction nếu có lỗi
+                await transaction.RollbackAsync();
+                throw new Exception($"Error adding document with roles: {ex.Message}");
+            }
+        }
+
+        public async Task UpdateDocumentRolesAsync(int documentId, List<int?> newRoleIds)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // Xóa các DocumentRoles hiện tại
+                var existingRoles = _context.DocumentRoles.Where(dr => dr.DocumentId == documentId).ToList();
+                _context.DocumentRoles.RemoveRange(existingRoles);
+                await _context.SaveChangesAsync();
+
+                // Thêm mới DocumentRoles
+                foreach (var roleId in newRoleIds)
+                {
+                    var documentRole = new DocumentRole
+                    {
+                        DocumentId = documentId,
+                        RoleId = roleId == 0 ? null : roleId
+                    };
+                    await _context.DocumentRoles.AddAsync(documentRole);
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception($"Error updating roles for document: {ex.Message}");
+            }
+        }
+
+        public async Task<Document> UpdateDocumentForAdminAsync(Document document)
+        {
+            var existingDocument = await GetDocumentByIdForAdminAsync(document.DocumentId);
+            if (existingDocument == null)
+            {
+                throw new KeyNotFoundException("Document not found");
+            }
+
+            existingDocument.Title = document.Title ?? existingDocument.Title;
+            existingDocument.DocumentFile = document.DocumentFile ?? existingDocument.DocumentFile;
+            existingDocument.Description = document.Description ?? existingDocument.Description;
+            existingDocument.UniversityId = document.UniversityId ?? existingDocument.UniversityId;
+            existingDocument.Status = document.Status ?? existingDocument.Status;
+            existingDocument.UpdatedAt = DateTime.Now;
+
+            _context.Documents.Update(existingDocument);
+            await _context.SaveChangesAsync();
+            return existingDocument;
+        }
+
+        public async Task<Document> DeleteDocumentForAdminAsync(int documentId)
+        {
+            var document = await GetDocumentByIdForAdminAsync(documentId);
+            if (document == null)
+            {
+                throw new KeyNotFoundException("Document not found in the list.");
+            }
+
+            var documentRoles = _context.DocumentRoles.Where(dr => dr.DocumentId == documentId).ToList();
+            if (documentRoles.Any())
+            {
+                _context.DocumentRoles.RemoveRange(documentRoles);
+            }
+
+            document.DeletedAt = DateTime.Now; // Cập nhật thời gian xóa
+
+            _context.Documents.Remove(document);
+            await _context.SaveChangesAsync();
+            return document;
+        }
     }
 }

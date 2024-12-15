@@ -3824,5 +3824,257 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+        public async Task<DataResponse<DocumentDetailForAdminDTO>> GetDocumentDetailByIdForAdminAsync(int documentId)
+        {
+            try
+            {
+                var document = await _jobRepository.GetDocumentByIdForAdminAsync(documentId);
+
+                var documentDto = _mapper.Map<DocumentDetailForAdminDTO>(document);
+
+                return new DataResponse<DocumentDetailForAdminDTO>
+                {
+                    Data = documentDto,
+                    Message = "Document details retrieved successfully!",
+                    StatusCode = 200
+                };
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new DataResponse<DocumentDetailForAdminDTO>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    StatusCode = 404
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<DocumentDetailForAdminDTO>
+                {
+                    Data = null,
+                    Message = $"Error retrieving document details: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        public async Task<DataResponse<AddDocumentForAdminDTO>> AddDocumentForAdminAsync(AddDocumentForAdminDTO addDocumentForAdminDTO)
+        {
+            try
+            {
+                // Kiểm tra nếu danh sách RoleIds có chứa null hoặc 0 (tương ứng với role Guest)
+                if (addDocumentForAdminDTO.ForRoleIds.Contains(null) || addDocumentForAdminDTO.ForRoleIds.Contains(0))
+                {
+                    // Nếu role Guest tồn tại, chỉ giữ lại role Guest (loại bỏ các role khác)
+                    addDocumentForAdminDTO.ForRoleIds = new List<int?> { null };
+                }
+
+                // Tạo tài liệu mới
+                var document = new Document
+                {
+                    UniversityId = addDocumentForAdminDTO.UniversityId,
+                    Title = addDocumentForAdminDTO.Title,
+                    Description = addDocumentForAdminDTO.Description,
+                    DocumentFile = addDocumentForAdminDTO.DocumentFile
+                };
+
+                // Gọi repository để thêm document và các RoleIds
+                var addedDocument = await _jobRepository.AddDocumentForAdminAsync(document, addDocumentForAdminDTO.ForRoleIds);
+
+                var resultDto = _mapper.Map<AddDocumentForAdminDTO>(addedDocument);
+
+                return new DataResponse<AddDocumentForAdminDTO>
+                {
+                    Data = resultDto,
+                    Message = "Document added successfully!",
+                    StatusCode = 201
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<AddDocumentForAdminDTO>
+                {
+                    Data = null,
+                    Message = $"Error adding document: {ex.Message}",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        public async Task<DataResponse<DeleteDocumentForAdminDTO>> DeleteDocumentForAdminAsync(DeleteDocumentForAdminDTO deleteDocumentForAdminDTO)
+        {
+            try
+            {
+                var deletedDocumentResult = await _jobRepository.DeleteDocumentForAdminAsync(deleteDocumentForAdminDTO.DocumentId);
+
+                var documentDto = _mapper.Map<DeleteDocumentForAdminDTO>(deletedDocumentResult);
+
+                return new DataResponse<DeleteDocumentForAdminDTO>
+                {
+                    Data = documentDto,
+                    Message = "Document has been permanently deleted successfully.",
+                    StatusCode = 200 // OK
+                };
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new DataResponse<DeleteDocumentForAdminDTO>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    StatusCode = 404
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<DeleteDocumentForAdminDTO>
+                {
+                    Data = null,
+                    Message = $"Error permanently deleting document: {ex.Message}",
+                    StatusCode = 500 // Internal Server Error
+                };
+            }
+        }
+
+        public async Task<DataResponse<UpdateDocumentForAdminDTO>> UpdateDocumentForAdminAsync(UpdateDocumentForAdminDTO updateDocumentForAdminDTO)
+        {
+            try
+            {
+                var existingDocument = await _jobRepository.GetDocumentByIdForAdminAsync(updateDocumentForAdminDTO.DocumentId);
+                if (existingDocument == null)
+                {
+                    throw new KeyNotFoundException("Document not found");
+                }
+
+                // Kiểm tra nếu danh sách RoleIds có chứa null hoặc 0 (tương ứng với role Guest)
+                if (updateDocumentForAdminDTO.ForRoleIds.Contains(null) || updateDocumentForAdminDTO.ForRoleIds.Contains(0))
+                {
+                    // Nếu role Guest tồn tại, chỉ giữ lại role Guest (loại bỏ các role khác)
+                    updateDocumentForAdminDTO.ForRoleIds = new List<int?> { null };
+                }
+
+                // Cập nhật thông tin
+                existingDocument.Title = updateDocumentForAdminDTO.Title ?? existingDocument.Title;
+                existingDocument.Description = updateDocumentForAdminDTO.Description ?? existingDocument.Description;
+                existingDocument.DocumentFile = updateDocumentForAdminDTO.DocumentFile ?? existingDocument.DocumentFile;
+                existingDocument.UpdatedAt = DateTime.Now;
+
+                // Xử lý DocumentRoles
+                if (updateDocumentForAdminDTO.ForRoleIds != null)
+                {
+                    await _jobRepository.UpdateDocumentRolesAsync(existingDocument.DocumentId, updateDocumentForAdminDTO.ForRoleIds);
+                }
+
+                var updatedDocumentResult = await _jobRepository.UpdateDocumentForAdminAsync(existingDocument);
+
+                var documentDto = _mapper.Map<UpdateDocumentForAdminDTO>(updatedDocumentResult);
+
+                return new DataResponse<UpdateDocumentForAdminDTO>
+                {
+                    Data = documentDto,
+                    Message = "Document updated successfully!",
+                    StatusCode = 200 // OK
+                };
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new DataResponse<UpdateDocumentForAdminDTO>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    StatusCode = 404
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<UpdateDocumentForAdminDTO>
+                {
+                    Data = null,
+                    Message = $"Error updating document: {ex.Message}",
+                    StatusCode = 500 // Internal Server Error
+                };
+            }
+        }
+
+        public async Task<DataResponse<UpdateDocumentStatusForAdminDTO>> UpdateDocumentStatusForAdminAsync(UpdateDocumentStatusForAdminDTO updateDocumentStatusForAdminDTO)
+        {
+            try
+            {
+                var document = new Document
+                {
+                    DocumentId = updateDocumentStatusForAdminDTO.DocumentId,
+                    Status = updateDocumentStatusForAdminDTO.Status
+                };
+
+                var updatedDocumentStatusResult = await _jobRepository.UpdateDocumentForAdminAsync(document);
+
+                var documentDto = _mapper.Map<UpdateDocumentStatusForAdminDTO>(updatedDocumentStatusResult);
+
+                return new DataResponse<UpdateDocumentStatusForAdminDTO>
+                {
+                    Data = documentDto,
+                    Message = "Document updated successfully!",
+                    StatusCode = 200 // OK
+                };
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new DataResponse<UpdateDocumentStatusForAdminDTO>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    StatusCode = 404
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<UpdateDocumentStatusForAdminDTO>
+                {
+                    Data = null,
+                    Message = $"Error updating document: {ex.Message}",
+                    StatusCode = 500 // Internal Server Error
+                };
+            }
+        }
+
+        public async Task<DataResponse<List<StatusDocumentListForAdminDTO>>> GetAllStatusesDocumentForAdminAsync()
+        {
+            try
+            {
+                // Tạo danh sách trạng thái
+                var statuses = new List<StatusDocumentListForAdminDTO>
+                {
+                    new StatusDocumentListForAdminDTO { Status = "Active" },
+                    new StatusDocumentListForAdminDTO { Status = "Inactive" }
+                };
+
+                return new DataResponse<List<StatusDocumentListForAdminDTO>>
+                {
+                    Data = statuses,
+                    Message = "Status List retrieved successfully!",
+                    StatusCode = 200 // Có thể tùy chỉnh theo nhu cầu
+                };
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new DataResponse<List<StatusDocumentListForAdminDTO>>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    StatusCode = 404
+                };
+            }
+            catch (Exception ex)
+            {
+                // Xử lý ngoại lệ nếu có
+                return new DataResponse<List<StatusDocumentListForAdminDTO>>
+                {
+                    Data = null,
+                    Message = $"Error occurred while retrieving statuses: {ex.Message}",
+                    StatusCode = 500 // Lỗi server
+                };
+            }
+        }
     }
 }

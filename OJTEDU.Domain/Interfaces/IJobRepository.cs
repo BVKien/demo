@@ -32,5 +32,10 @@ namespace OJTEDU.Domain.Interfaces
         // === Document ===
         // CRUD document operations for admin
         Task<IEnumerable<Document>> GetAllDocumentsForAdminAsync(string? title, int? roleId, string? status);
+        Task<Document> GetDocumentByIdForAdminAsync(int documentId);
+        Task<Document> AddDocumentForAdminAsync(Document document, List<int?> roleIds);
+        Task<Document> UpdateDocumentForAdminAsync(Document document);
+        Task<Document> DeleteDocumentForAdminAsync(int documentId);
+        Task UpdateDocumentRolesAsync(int documentId, List<int?> newRoleIds);
     }
 }
