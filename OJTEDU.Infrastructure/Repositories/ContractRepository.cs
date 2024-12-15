@@ -27,7 +27,7 @@ namespace OJTEDU.Infrastructure.Repositories
         }
 
         // Mentor 
-        public async Task<Contract> AssignContractAsync(int? userId, int? internshipId, string? fileName, Contract? info)
+        public async Task<Contract> AssignContractAsync(int? userId, int? internshipId, string? fileName, Contract? info, string? employeeCode)
         {
             try
             {
@@ -87,6 +87,7 @@ namespace OJTEDU.Infrastructure.Repositories
 
                 // Assign for internship 
                 internshipExists.ContractId = contract.ContractId;
+                internshipExists.Code = employeeCode;
                 internshipExists.UpdatedAt = DateTime.Now;
 
                 await _context.SaveChangesAsync();

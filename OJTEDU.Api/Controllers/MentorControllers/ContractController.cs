@@ -90,7 +90,7 @@ namespace OJTEDU.Api.Controllers.MentorControllers
                     Name = input?.Name
                 };
 
-                var dataResponse = await _contractService.AssignContractAsync(userId, internshipId, input?.ContractFile, contractDto);
+                var dataResponse = await _contractService.AssignContractAsync(userId, internshipId, input?.ContractFile, contractDto, input?.EmployeeCode);
 
                 if (dataResponse.StatusCode == 404)
                 {
