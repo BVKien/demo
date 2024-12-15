@@ -21,7 +21,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             _groupChatService = groupChatService;
         }
 
-        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor")]
+        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Student")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateGroupChat([FromBody] CreateGroupChatInput? input)
         {
@@ -81,7 +81,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             }
         }
 
-        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor")]
+        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Student")]
         [HttpGet("search")]
         public async Task<IActionResult> SearchGroupChat(string? groupName)
         {
@@ -136,7 +136,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             }
         }
 
-        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor")]
+        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Student")]
         [HttpGet("list")]
         public async Task<IActionResult> GetGroupChatList()
         {
@@ -191,7 +191,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             }
         }
 
-        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor")]
+        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Student")]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateGroupChat(int? groupChatId, [FromBody] UpdateGroupChatInput? input)
         {
