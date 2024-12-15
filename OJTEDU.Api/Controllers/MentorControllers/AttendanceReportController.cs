@@ -18,8 +18,8 @@ namespace OJTEDU.Api.Controllers.MentorControllers
     [ApiController]
     public class AttendanceReportController : ControllerBase
     {
-        private readonly IJobService _jobService;
-        public AttendanceReportController(IJobService jobService)
+        private readonly IAttendanceReportService _jobService;
+        public AttendanceReportController(IAttendanceReportService jobService)
         {
             _jobService = jobService;
         }
