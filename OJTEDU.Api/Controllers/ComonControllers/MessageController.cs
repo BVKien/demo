@@ -302,13 +302,15 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             }
         }
 
-        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Company, Student")]
+        //[Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Company, Student")]
         [HttpGet("conversation/list")]
         public async Task<IActionResult> GetAllConversationAsync()
         {
             try
             {
-                int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                //int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+                int userId = 419;
 
                 var apiResponse = await _messageService.GetAllConversationAsync(userId);
 
