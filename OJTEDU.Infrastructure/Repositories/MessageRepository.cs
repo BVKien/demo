@@ -757,7 +757,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     .Include(m => m.Company).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                     .Include(m => m.Student).ThenInclude(m => m.User).ThenInclude(m => m.Role)
                     .Where(m => m.ConversationId == conversationId)
-                    .OrderByDescending(m => m.CreatedAt)
+                    .OrderBy(m => m.CreatedAt)
                     .ToListAsync();
 
                 if (conversation == null)

@@ -39,6 +39,12 @@ namespace OJTEDU.Application.DTOs
         public class ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO
         {
             public int? ConversationId { get; set; }
+            public string? StudentName { get; set; }
+            public string? StudentImage { get; set; }
+            public string? UniversiryName { get; set; }
+            public string? UniversiryImage { get; set; }
+            public string? CompanyName { get; set; }
+            public string? CompanyImage { get; set; }
         }
     }
 }

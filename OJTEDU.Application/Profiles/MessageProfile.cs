@@ -24,7 +24,14 @@ namespace OJTEDU.Application.Profiles
                 .ForMember(dest => dest.CompanyImage, opt => opt.MapFrom(src => src.Company.User.Image))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status == "1" ? "Active" : src.Status == "0" ? "Deleted" : "Unknown"))
                 .ReverseMap();
-            CreateMap<Message, ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO>().ReverseMap();
+            CreateMap<Message, ConversationListForAdminDOETDeanLecturerMentorCompanyStudentDTO>()
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User.Name))
+                .ForMember(dest => dest.StudentImage, opt => opt.MapFrom(src => src.Student.User.Image))
+                .ForMember(dest => dest.UniversiryName, opt => opt.MapFrom(src => src.Universiry.Name))
+                .ForMember(dest => dest.UniversiryImage, opt => opt.MapFrom(src => src.Universiry.Image))
+                .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Company.User.Name))
+                .ForMember(dest => dest.CompanyImage, opt => opt.MapFrom(src => src.Company.User.Image))
+                .ReverseMap();
         }
     }
 }

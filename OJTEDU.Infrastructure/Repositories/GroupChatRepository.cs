@@ -212,7 +212,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     query = query.Where(g => g.MentorId == mentor.CompanyId);
 
                     var mentorGroupChats = await query
-                        .OrderBy(m => m.CreatedAt)
+                        .OrderByDescending(m => m.CreatedAt)
                         .ToListAsync();
 
                     return mentorGroupChats;
