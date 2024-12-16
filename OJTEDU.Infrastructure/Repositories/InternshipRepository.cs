@@ -782,7 +782,7 @@ bool isDescending)
             IQueryable<Internship> query = _context.Internships
                 .Include(i => i.Student)
                     .ThenInclude(s => s.User)
-                .Include(i => i.Student.Lecturer)
+                .Include(i => i.Student).ThenInclude(s => s.User)
                 .Include(i => i.Company)
                    .ThenInclude(c => c.User)
                 .Include(i => i.Job)
