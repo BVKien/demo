@@ -28,7 +28,11 @@ namespace OJTEDU.Application.Profiles
             .ForMember(dest => dest.ProposalContent, opt => opt.MapFrom(src => src.ProposalContent))
             .ForMember(dest => dest.ProposalDate, opt => opt.MapFrom(src => src.ProposalDate))
             .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+    .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
+        src.Status == "0" ? "Rejected" :
+        src.Status == "1" ? "Reviewing" :
+        src.Status == "2" ? "Accepted" :
+        "Unknown"))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
         }
     }
