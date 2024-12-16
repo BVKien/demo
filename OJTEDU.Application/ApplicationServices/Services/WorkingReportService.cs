@@ -287,12 +287,11 @@ namespace OJTEDU.Application.ApplicationServices.Services
 
                 // Xác định tuần được chọn
                 string selectedWeek = week;
-
                 if (string.IsNullOrEmpty(week))
                 {
-                    TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                    DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
-                    DateTime currentWeekStart = currentVietnamTime.AddDays(-(int)currentVietnamTime.DayOfWeek + (int)DayOfWeek.Monday);
+                    // Tính tuần hiện tại dựa trên `DateTime.Now`
+                    DateTime now = DateTime.Now;
+                    DateTime currentWeekStart = now.AddDays(-(int)now.DayOfWeek + (int)DayOfWeek.Monday);
                     DateTime currentWeekEnd = currentWeekStart.AddDays(6);
 
                     selectedWeek = $"{currentWeekStart:dd/MM} to {currentWeekEnd:dd/MM}";
@@ -324,6 +323,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+
 
 
         public async Task<DataResponse<string>> UpdateWorkingReportAsync(GiveFeedbackOrScoreDto dto)
