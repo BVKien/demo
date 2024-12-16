@@ -4,6 +4,7 @@ using OJTEDU.Domain.Entities;
 using System.Security.Claims;
 using static OJTEDU.Application.DTOs.AttendanceReportDTO;
 using static OJTEDU.Application.DTOs.DocumentDTO;
+using static OJTEDU.Application.DTOs.EvaluationDTO;
 using static OJTEDU.Application.DTOs.JobDTO;
 using static OJTEDU.Application.DTOs.NotificationDTO;
 using static OJTEDU.Application.DTOs.StudentDTO;
@@ -225,5 +226,14 @@ int studentId, int pageNumber, int pageSize);
 
         // Student
         Task<DataResponse<List<AttendanceReportsListForStudentDTO>>> GetAllAttendanceReportsForStudentAsync(int? userId);
+
+        // ===
+        // University, Company
+        Task<DataResponse<CreateEvaluationForUniversityCompanyDTO>> CreateEvaluationAsync(int? userId, int? internshipId, CreateEvaluationForUniversityCompanyDTO? info);
+
+        // University, Company, Student
+        Task<DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>> GetEvaluationDetailByUserId(int? userId);
+        Task<DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>> GetEvaluationDetailByInternshipId(int? internshipId);
+        Task<DataResponse<GetEvaluationStudentDTO>> GetEvaluationScoreAsync(int? userId);
     }
 }

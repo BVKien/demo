@@ -13,8 +13,8 @@ namespace OJTEDU.Api.Controllers.StudentControllers
     [ApiController]
     public class EvaluationController : ControllerBase
     {
-        private readonly IEvaluationService _evaluationService;
-        public EvaluationController(IEvaluationService evaluationService)
+        private readonly IJobService _evaluationService;
+        public EvaluationController(IJobService evaluationService)
         {
             _evaluationService = evaluationService;
         }

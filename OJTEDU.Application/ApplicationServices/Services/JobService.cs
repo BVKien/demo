@@ -21,6 +21,7 @@ using static OJTEDU.Application.DTOs.DocumentDTO;
 using OJTEDU.Infrastructure.Repositories;
 using static OJTEDU.Application.DTOs.NotificationDTO;
 using static OJTEDU.Application.DTOs.AttendanceReportDTO;
+using static OJTEDU.Application.DTOs.EvaluationDTO;
 
 namespace OJTEDU.Application.ApplicationServices.Services
 {
@@ -5494,6 +5495,207 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     StatusCode = 500,
                     Message = ex.Message,
+                    Data = null
+                };
+            }
+        }
+
+        // === 
+        // Univeristy, Company, Student
+        public async Task<DataResponse<CreateEvaluationForUniversityCompanyDTO>> CreateEvaluationAsync(int? userId, int? internshipId,
+            CreateEvaluationForUniversityCompanyDTO? info)
+        {
+            try
+            {
+                if (internshipId == null)
+                {
+                    return new DataResponse<CreateEvaluationForUniversityCompanyDTO>
+                    {
+                        StatusCode = 400,
+                        Message = "Internship is required.",
+                        Data = null
+                    };
+                }
+
+                if (info?.CompanyComment == null)
+                {
+                    return new DataResponse<CreateEvaluationForUniversityCompanyDTO>
+                    {
+                        StatusCode = 400,
+                        Message = "Final assessment is required.",
+                        Data = null
+                    };
+                }
+
+                if (info?.CompanyScore == null)
+                {
+                    return new DataResponse<CreateEvaluationForUniversityCompanyDTO>
+                    {
+                        StatusCode = 400,
+                        Message = "Final score is required.",
+                        Data = null
+                    };
+                }
+
+                if (internshipId == null)
+                {
+                    return new DataResponse<CreateEvaluationForUniversityCompanyDTO>
+                    {
+                        StatusCode = 400,
+                        Message = "Participation ccore is required.",
+                        Data = null
+                    };
+                }
+
+                if (info?.DeanComment == null)
+                {
+                    return new DataResponse<CreateEvaluationForUniversityCompanyDTO>
+                    {
+                        StatusCode = 400,
+                        Message = "Final assessment is required.",
+                        Data = null
+                    };
+                }
+
+                if (info?.CompanyScore == null)
+                {
+                    return new DataResponse<CreateEvaluationForUniversityCompanyDTO>
+                    {
+                        StatusCode = 400,
+                        Message = "Final score is required.",
+                        Data = null
+                    };
+                }
+
+                var evaluationInfo = new Evaluation
+                {
+                    CompanyComment = info?.CompanyComment,
+                    CompanyScore = info?.CompanyScore,
+                    DeanComment = info?.DeanComment,
+                    DeanScore = info?.CompanyScore,
+                };
+
+                var evaluation = await _jobRepository.CreateEvaluationAsync(userId, internshipId, evaluationInfo);
+                var response = _mapper.Map<CreateEvaluationForUniversityCompanyDTO>(evaluation);
+
+                return new DataResponse<CreateEvaluationForUniversityCompanyDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Evaluation created successfully.",
+                    Data = response
+                };
+            }
+            catch (Exception)
+            {
+                return new DataResponse<CreateEvaluationForUniversityCompanyDTO>
+                {
+                    StatusCode = 500,
+                    Message = "Error creating evaluation.",
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>> GetEvaluationDetailByUserId(int? userId)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return new DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>
+                    {
+                        StatusCode = 400,
+                        Message = "Not found student.",
+                        Data = null
+                    };
+                }
+
+                var evaluation = await _jobRepository.GetEvaluationDetailByUserId(userId);
+                var response = _mapper.Map<GetEvaluationDetailForUniversityCompanyStudentDTO>(evaluation);
+
+                return new DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Evaluation for student retrieved successfully.",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>
+                {
+                    StatusCode = 500,
+                    Message = "Error retrieving evaluation for student.",
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>> GetEvaluationDetailByInternshipId(int? internshipId)
+        {
+            try
+            {
+                if (internshipId == null)
+                {
+                    return new DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>
+                    {
+                        StatusCode = 400,
+                        Message = "Not found internship.",
+                        Data = null
+                    };
+                }
+
+                var evaluation = await _jobRepository.GetEvaluationDetailByInternshipId(internshipId);
+                var response = _mapper.Map<GetEvaluationDetailForUniversityCompanyStudentDTO>(evaluation);
+
+                return new DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Evaluation for student retrieved successfully.",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>
+                {
+                    StatusCode = 500,
+                    Message = "Error retrieving evaluation for student.",
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<DataResponse<GetEvaluationStudentDTO>> GetEvaluationScoreAsync(int? userId)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return new DataResponse<GetEvaluationStudentDTO>
+                    {
+                        StatusCode = 400,
+                        Message = "Not found student.",
+                        Data = null
+                    };
+                }
+
+                var evaluation = await _jobRepository.GetEvaluationScoreAsync(userId);
+                var response = _mapper.Map<GetEvaluationStudentDTO>(evaluation);
+
+                return new DataResponse<GetEvaluationStudentDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Evaluation for student retrieved successfully.",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<GetEvaluationStudentDTO>
+                {
+                    StatusCode = 500,
+                    Message = "Error retrieving evaluation for student.",
                     Data = null
                 };
             }
