@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static OJTEDU.Application.DTOs.CompanyDTO;
 using static OJTEDU.Application.DTOs.JobDTO;
+using static OJTEDU.Application.DTOs.StudentDTO;
 
 namespace OJTEDU.Application.Profiles
 {
@@ -83,6 +84,18 @@ namespace OJTEDU.Application.Profiles
 
             CreateMap<Company, MentorsInfoListForCompanyDTO>().ReverseMap();
             CreateMap<Company, UpdateCompanyForCompanyDTO>().ReverseMap();
+
+            // Company
+            CreateMap<Student, CompanyDetailForCompanyDTO>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.User.Name))
+                .ForMember(dest => dest.CompanyCode, opt => opt.MapFrom(src => src.User.UserCode))
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.User.Image))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address.Detail + ", "
+                + src.Address.Ward.Name + ", "
+                + src.Address.District.Name + ", "
+                + src.Address.Province.Name))
+                .ReverseMap();
         }
     }
 }

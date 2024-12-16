@@ -158,6 +158,58 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
+        public async Task<Evaluation> GetEvaluationScoreAsync(int? userId, int? internshipId, Evaluation? info)
+        {
+            try
+            {
+                var user = await _context.Users.Include(s => s.Role)
+                    .FirstOrDefaultAsync(s => s.UserId == userId);
+
+                if (user == null)
+                {
+                    throw new Exception("Not found user.");
+                }
+
+                // Internship 
+                var internship = await _context.Internships.FirstOrDefaultAsync(i => i.IntershipId == internshipId);
+
+                if (internship == null)
+                {
+                    throw new Exception("Not found internship.");
+                }
+
+                // Check evaluation exist
+                var evaluationExist = await _context.Evaluations.FirstOrDefaultAsync(e => e.StudentId == internship.StudentId);
+
+                if (evaluationExist == null)
+                {
+                    throw new Exception("Not found working report list for this evaluation.");
+                }
+
+                if (user.Role.Name == "Mentor")
+                {
+                    // Update 
+                    evaluationExist.CompanyComment = info.CompanyComment;
+                    evaluationExist.CompanyScore = info.CompanyScore;
+                    evaluationExist.UpdatedAt = DateTime.Now;
+                }
+
+                if (user.Role.Name == "Dean" || user.Role.Name == "Lecturer")
+                {
+                    // Update 
+                    evaluationExist.DeanComment = info.DeanComment;
+                    evaluationExist.DeanScore = info.DeanScore;
+                    evaluationExist.UpdatedAt = DateTime.Now;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         // University, Company, Student
         public async Task<Evaluation> GetEvaluationDetailByUserId(int? userId)
         {

@@ -38,6 +38,7 @@ namespace OJTEDU.Application.Profiles
                 .ForMember(dest => dest.SemesterName, opt => opt.MapFrom(src => src.Semester.Name))
                 .ForMember(dest => dest.MajorName, opt => opt.MapFrom(src => src.Major.Name))
                 .ForMember(dest => dest.MajorCode, opt => opt.MapFrom(src => src.Major.MajorCode))
+                .ForMember(dest => dest.Evaluation, opt => opt.MapFrom(src => src.Evaluation.EvaluationScore))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt.Value.ToString("dd-MM-yyyy HH:mm:ss")))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt.Value.ToString("dd-MM-yyyy HH:mm:ss")))
                 .ForMember(dest => dest.IsMajorActive, opt => opt.MapFrom(src => src.Major != null && src.Major.Status == "Active"))

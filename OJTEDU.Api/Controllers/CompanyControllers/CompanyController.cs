@@ -161,5 +161,62 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
                 return StatusCode(500, errorResponse);
             }
         }
+
+        [Authorize(Roles = "Company")]
+        [HttpGet("company-detail")]
+        public async Task<IActionResult> GetStudentCompany()
+        {
+            try
+            {
+                int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+                var dataResponse = await _companyService.GetCompanyDetailByUserIdAsync(userId);
+
+                if (dataResponse.StatusCode == 404)
+                {
+                    return BadRequest(new ApiResponse<CompanyDetailForCompanyDTO>
+                    {
+                        Message = dataResponse.Message,
+                        Data = null
+                    });
+                }
+
+                if (dataResponse.StatusCode == 400)
+                {
+                    return BadRequest(new ApiResponse<CompanyDetailForCompanyDTO>
+                    {
+                        Message = dataResponse.Message,
+                        Data = null
+                    });
+                }
+
+                if (dataResponse.StatusCode == 500)
+                {
+                    return StatusCode(500, new ApiResponse<CompanyDetailForCompanyDTO>
+                    {
+                        Message = dataResponse.Message,
+                        Data = null
+                    });
+                }
+
+                var apiResponse = new ApiResponse<CompanyDetailForCompanyDTO>
+                {
+                    Message = dataResponse.Message,
+                    Data = dataResponse.Data
+                };
+
+                return Ok(apiResponse);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new ApiResponse<string>
+                {
+                    Message = "An error occurred while get student information.",
+                    Data = ex.Message
+                };
+
+                return StatusCode(500, errorResponse);
+            }
+        }
     }
 }

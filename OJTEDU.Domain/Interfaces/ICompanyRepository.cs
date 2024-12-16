@@ -21,6 +21,7 @@ namespace OJTEDU.Domain.Interfaces
         // Company 
         Task<IEnumerable<Company>> GetMentorsListAsync(int? userId);
         Task<IEnumerable<Company>> GetAllMentorsInfoAsync();
+        Task<Company> GetCompanyDetailByUserIdAsync(int? userId);
         Task<Company> UpdateCompanyByUserIdAsync(int? userId, User? updateUser, Company? updateInformation, Address? updateAddress);
     }
 }

@@ -447,6 +447,41 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // information 
+        public async Task<DataResponse<CompanyDetailForCompanyDTO>> GetCompanyDetailByUserIdAsync(int? userId)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return new DataResponse<CompanyDetailForCompanyDTO>
+                    {
+                        StatusCode = 404,
+                        Message = "Not found student.",
+                        Data = null
+                    };
+                }
+
+                var student = await _companyRepository.GetCompanyDetailByUserIdAsync(userId);
+                var response = _mapper.Map<CompanyDetailForCompanyDTO>(student);
+
+                return new DataResponse<CompanyDetailForCompanyDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Student information retrieved successfully!",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<CompanyDetailForCompanyDTO>
+                {
+                    StatusCode = 500,
+                    Message = $"Error retrieving student information {ex.Message}. ",
+                    Data = null
+                };
+            }
+        }
+
         public async Task<DataResponse<UpdateCompanyForCompanyDTO>> UpdateCompanyByUserIdAsync(int? userId, UpdateCompanyForCompanyDTO? updateInformation)
         {
             try

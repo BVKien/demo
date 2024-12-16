@@ -158,5 +158,26 @@ namespace OJTEDU.Application.DTOs
             public int? DistrictId { get; set; }
             public int? ProvinceId { get; set; }
         }
+
+        public class CompanyDetailForCompanyDTO
+        {
+            public int CompanyId { get; set; }
+            public string? Email { get; set; }
+            public string? AlternativeEmail { get; set; }
+            public string? Phone { get; set; }
+            public string? Name { get; set; }
+            public string? CompanyCode { get; set; }
+            public string? Image { get; set; }
+            public string? TaxCode { get; set; }
+            public string? Website { get; set; }
+            public string? Description { get; set; }
+            public int? UserId { get; set; }
+            public string? Address { get; set; }
+            public TimeSpan? CheckInTime { get; set; }
+            public TimeSpan? CheckOutTime { get; set; }
+            public DateTime? CreatedAt { get; set; }
+            public DateTime? UpdatedAt { get; set; }
+            public DateTime? DeletedAt { get; set; }
+        }
     }
 }

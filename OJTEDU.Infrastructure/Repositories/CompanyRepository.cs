@@ -289,6 +289,34 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
+        // Student 
+        public async Task<Company> GetCompanyDetailByUserIdAsync(int? userId)
+        {
+            try
+            {
+                bool userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
+
+                if (!userExists)
+                {
+                    throw new KeyNotFoundException("Not found user.");
+                }
+
+                var student = await _context.Companies
+                    .Include(s => s.User)
+                    .Include(s => s.Address)
+                        .ThenInclude(a => a.Ward)
+                        .ThenInclude(a => a.District)
+                        .ThenInclude(a => a.Province)
+                    .FirstOrDefaultAsync(u => u.UserId == userId);
+
+                return student;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         // profile 
         public async Task<Company> UpdateCompanyByUserIdAsync(int? userId, User? updateUser, Company? updateInformation, Address? updateAddress)
         {

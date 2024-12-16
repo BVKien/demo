@@ -874,17 +874,17 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
         }
         public async Task<DataResponse<InternshipDetailWithReportsDTO>> GetInternshipDetailsAsync(
-            int internshipId,
-            string? sortBy,
-            bool? isDescending,
-            string? week,
-            int userId,
-            string role,
-            int? year = null)
+    int internshipId,
+    string? sortBy,
+    bool? isDescending,
+    string? week,
+    int userId,
+    string role,
+    int? year = null)
         {
             try
             {
-                // Lấy thông tin Internship và danh sách WorkingReports từ repository
+                // Fetch Internship and WorkingReports data from the repository
                 var (internship, workingReports) = await _internshipRepository.GetInternshipDetailsWithWorkingReportsAsync(internshipId, userId, role);
 
                 if (internship == null)
@@ -897,24 +897,23 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     };
                 }
 
-                // Lấy múi giờ Việt Nam
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
+                // Get the current date and time
+                DateTime currentTime = DateTime.Now;
 
-                // Nếu không có năm, mặc định lấy năm hiện tại
-                year ??= currentVietnamTime.Year;
+                // Default to the current year if no year is specified
+                year ??= currentTime.Year;
 
-                // Mặc định lấy tuần hiện tại nếu không có tuần nào được chọn
+                // Default to the current week if no specific week is provided
                 string selectedWeek = week;
                 if (string.IsNullOrEmpty(week))
                 {
-                    DateTime currentWeekStart = currentVietnamTime.AddDays(-(int)currentVietnamTime.DayOfWeek + (int)DayOfWeek.Monday);
+                    DateTime currentWeekStart = currentTime.AddDays(-(int)currentTime.DayOfWeek + (int)DayOfWeek.Monday);
                     DateTime currentWeekEnd = currentWeekStart.AddDays(6);
 
                     selectedWeek = $"{currentWeekStart:dd/MM} to {currentWeekEnd:dd/MM}";
                 }
 
-                // Lọc WorkingReports theo tuần được chọn
+                // Filter WorkingReports by the selected week
                 var weekDates = selectedWeek.Split(" to ");
                 if (weekDates.Length == 2)
                 {
@@ -930,7 +929,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     throw new ArgumentException("Invalid week format. Expected format: 'dd/MM to dd/MM'.");
                 }
 
-                // Sắp xếp danh sách WorkingReports
+                // Sort the WorkingReports
                 switch (sortBy?.ToLower())
                 {
                     case "updatedat":
@@ -946,15 +945,15 @@ namespace OJTEDU.Application.ApplicationServices.Services
                         break;
                 }
 
-                // Mapping dữ liệu
+                // Map data to DTOs
                 var internshipDto = _mapper.Map<InternshipDetailForMentorDTO>(internship);
                 var workingReportsDto = _mapper.Map<List<WorkingReportDto>>(workingReports);
 
-                // Tạo đối tượng DTO chứa thông tin Internship và WorkingReports
+                // Create the response DTO
                 var responseDto = new InternshipDetailWithReportsDTO
                 {
                     Internship = internshipDto,
-                    Week = selectedWeek, // Gán tuần được chọn
+                    Week = selectedWeek,
                     WorkingReports = workingReportsDto
                 };
 
@@ -975,6 +974,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+
         public async Task<DataResponse<string>> AssignLecturerForInternshipsAsync(string role, AssignLecturerForInternshipDto dto)
         {
             try

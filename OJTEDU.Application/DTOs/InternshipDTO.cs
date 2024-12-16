@@ -190,6 +190,7 @@ namespace OJTEDU.Application.DTOs
             public string? CreatedAt { get; set; }
             public string? UpdatedAt { get; set; }
             public bool IsMajorActive { get; set; }
+            public double? Evaluation { get; set;}
         }
 
         // Company 

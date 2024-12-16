@@ -29,5 +29,6 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         Task<DataResponse<List<MentorListForCompanyDTO>>> GetMentorsListAsync(int? userId);
         Task<DataResponse<List<MentorsInfoListForCompanyDTO>>> GetAllMentorsInfoAsync();
         Task<DataResponse<UpdateCompanyForCompanyDTO>> UpdateCompanyByUserIdAsync(int? userId, UpdateCompanyForCompanyDTO? updateInformation);
+        Task<DataResponse<CompanyDetailForCompanyDTO>> GetCompanyDetailByUserIdAsync(int? userId);
     }
 }
