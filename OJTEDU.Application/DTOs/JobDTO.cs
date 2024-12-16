@@ -38,7 +38,7 @@ namespace OJTEDU.Application.DTOs
             public string? Deadline { get; set; }
             public string? Major { get; set; }
             public string? Address { get; set; }
-            public float? Similarity { get; set; }
+            public float? MatchPercent { get; set; }
         }
 
         public class JobListForStudentDTO
