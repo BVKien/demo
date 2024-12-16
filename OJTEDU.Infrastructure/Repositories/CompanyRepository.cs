@@ -148,7 +148,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 // Name 
                 if (!string.IsNullOrEmpty(name))
                 {
-                    query = query.Where(c => c.User.Name.Contains(name));
+                    query = query.Where(c => c.User.Name.Contains(name) && c.User.Role.Name == "Company");
                 }
 
                 // Province 

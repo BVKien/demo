@@ -23,7 +23,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             _messageGroupService = messageGroupService;
         }
 
-        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor")]
+        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Student")]
         [HttpPost("member/create")]
         public async Task<IActionResult> CreateMemberGroupMessage(int? memberId, [FromBody] CreateMemberGroupMessageInput? input)
         {
@@ -83,7 +83,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             }
         }
 
-        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor")]
+        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Student")]
         [HttpPut("member/delete")]
         public async Task<IActionResult> DeleteMemberGroupMessage(int? groupChatId, int? memberId)
         {
@@ -221,7 +221,7 @@ namespace OJTEDU.Api.Controllers.ComonControllers
             }
         }
 
-        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor")]
+        [Authorize(Roles = "Admin, DOET, Dean, Lecturer, Mentor, Student")]
         [HttpPut("member/admin-permission")]
         public async Task<IActionResult> SetAdminGroupMessage(int? memberId)
         {
