@@ -159,5 +159,32 @@ namespace OJTEDU.Infrastructure.Repositories
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<List<CompanyProposal>> GetAllCompanyProposalsForDoetAsync()
+        {
+            return await _context.CompanyProposals
+                .Include(cp => cp.Student).ThenInclude(s => s.User)
+                .OrderByDescending(cp => cp.CreatedAt) // Sắp xếp theo CreatedAt giảm dần
+                .ToListAsync();
+        }
+        public async Task<bool> IsUserDoetAsync(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.UserId == userId && u.Role.Name == "DOET");
+            return user != null;
+        }
+
+        public async Task<CompanyProposal> GetCompanyProposalByIdAsync(int proposalId)
+        {
+            return await _context.CompanyProposals
+                .FirstOrDefaultAsync(cp => cp.CompanyProposalId == proposalId);
+        }
+
+        public async Task UpdateCompanyProposalAsync(CompanyProposal proposal)
+        {
+            _context.CompanyProposals.Update(proposal);
+            await _context.SaveChangesAsync();
+        }
     }
 }

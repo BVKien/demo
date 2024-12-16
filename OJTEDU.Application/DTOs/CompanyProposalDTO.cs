@@ -39,5 +39,25 @@ namespace OJTEDU.Application.DTOs
             public string? ProposalContent { get; set; }
             public string? Contract { get; set; }
         }
+
+        public class CompanyProposalDto
+        {
+            public int CompanyProposalId { get; set; }
+            public string? StudentName { get; set; }
+            public string? ProposalTitle { get; set; }
+            public string? ProposalContent { get; set; }
+            public DateTime? ProposalDate { get; set; }
+            public string? Contract { get; set; }
+            public string? Status { get; set; }
+            public DateTime? CreatedAt { get; set; }
+        }
+        public class UpdateCompanyProposalStatusDto
+        {
+            public int CompanyProposalId { get; set; }
+            public string Status { get; set; } // 0: Rejected, 1: Reviewing, 2: Accepted
+            public string? ResponseContent { get; set; } // Nội dung phản hồi
+        }
+
+
     }
 }

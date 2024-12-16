@@ -21,6 +21,15 @@ namespace OJTEDU.Application.Profiles
                 .ReverseMap();
 
             CreateMap<CompanyProposal, CreateCompanyProposalForStudentDTO>().ReverseMap();
+            CreateMap<CompanyProposal, CompanyProposalDto>()
+            .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User.Name))
+            .ForMember(dest => dest.CompanyProposalId, opt => opt.MapFrom(src => src.CompanyProposalId))
+            .ForMember(dest => dest.ProposalTitle, opt => opt.MapFrom(src => src.ProposalTitle))
+            .ForMember(dest => dest.ProposalContent, opt => opt.MapFrom(src => src.ProposalContent))
+            .ForMember(dest => dest.ProposalDate, opt => opt.MapFrom(src => src.ProposalDate))
+            .ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.Contract))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
         }
     }
 }
