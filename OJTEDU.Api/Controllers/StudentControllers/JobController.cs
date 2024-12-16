@@ -169,7 +169,7 @@ namespace OJTEDU.Api.Controllers.GuestControllers
                 _logger.LogInformation($"File downloaded and prepared for upload: {fileName}");
 
                 // Send POST request to the Flask API
-                var response = await client.PostAsync("http://127.0.0.1:5001/api/ai/analyze", request); //https://sep490-g62-ojtedu-be-ai-7.onrender.com/
+                var response = await client.PostAsync("https://sep490-g62-ojtedu-be-ai-7.onrender.com/api/ai/analyze", request); //https://sep490-g62-ojtedu-be-ai-7.onrender.com/
 
                 // Ensure the response is successful
                 response.EnsureSuccessStatusCode();
