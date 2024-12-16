@@ -62,6 +62,7 @@ namespace OJTEDU.Api.Configuration
             services.AddScoped<ISemesterRepository, SemesterRepository>();
             services.AddScoped<IUserGuideRepository, UserGuideRepository>();
             services.AddScoped<IInternshipProcessRepository, InternshipProcessRepository>();
+            services.AddScoped<IEvaluationRepository, EvaluationRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<IGoogleJsonWebSignatureValidator, GoogleJsonWebSignatureValidator>();
 
@@ -93,6 +94,7 @@ namespace OJTEDU.Api.Configuration
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<ISemesterService, SemesterService>();
             services.AddScoped<IUserGuideService, UserGuideService>();
+            services.AddScoped<IEvaluationService, EvaluationService>();
             services.AddScoped<IInternshipProcessService, InternshipProcessService>();
             services.AddHostedService<AutoAttendanceReportService>();
         }

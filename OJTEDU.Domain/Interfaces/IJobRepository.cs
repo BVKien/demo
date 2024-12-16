@@ -107,5 +107,15 @@ namespace OJTEDU.Domain.Interfaces
 
         // Student
         Task<IEnumerable<AttendanceReport>> GetAllAttendanceReportsForStudentAsync(int? userId);
+
+        // ===
+        // University, Company
+        Task<Evaluation> CreateEvaluationAsync(int? userId, int? internshipId, Evaluation? info);
+        Task<Evaluation> UpdateEvaluationAsync(int? userId, int? internshipId, Evaluation? info);
+
+        // University, Company, Student
+        Task<Evaluation> GetEvaluationDetailByUserId(int? userId);
+        Task<Evaluation> GetEvaluationDetailByInternshipId(int? internshipId);
+        Task<Evaluation> GetEvaluationScoreAsync(int? userId);
     }
 }
