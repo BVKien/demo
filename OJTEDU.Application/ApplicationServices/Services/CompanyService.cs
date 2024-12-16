@@ -447,13 +447,13 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // information 
-        public async Task<DataResponse<UpdateStudentForStudentDTO>> UpdateStudentByUserIdAsync(int? userId, UpdateStudentForStudentDTO? updateInformation)
+        public async Task<DataResponse<UpdateCompanyForCompanyDTO>> UpdateCompanyByUserIdAsync(int? userId, UpdateCompanyForCompanyDTO? updateInformation)
         {
             try
             {
                 if (userId == null)
                 {
-                    return new DataResponse<UpdateStudentForStudentDTO>
+                    return new DataResponse<UpdateCompanyForCompanyDTO>
                     {
                         StatusCode = 404,
                         Message = "Not found student.",
@@ -467,12 +467,13 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     Image = updateInformation.Image
                 };
 
-                var updatedStudent = new Student
+                var updatedStudent = new Company
                 {
                     AlternativeEmail = updateInformation.AlternativeEmail,
                     Phone = updateInformation.Phone,
-                    Dob = updateInformation.Dob,
-                    Gender = updateInformation.Gender,
+                    TaxCode = updateInformation.TaxCode,
+                    Website = updateInformation.Website,
+                    Description = updateInformation.Description,
                 };
 
                 var updatedAddress = new Address
@@ -484,9 +485,9 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
 
                 var updateStudentInfo = await _companyRepository.UpdateCompanyByUserIdAsync(userId, updatedUser, updatedStudent, updatedAddress);
-                var response = _mapper.Map<UpdateStudentForStudentDTO>(updateStudentInfo);
+                var response = _mapper.Map<UpdateCompanyForCompanyDTO>(updateStudentInfo);
 
-                return new DataResponse<UpdateStudentForStudentDTO>
+                return new DataResponse<UpdateCompanyForCompanyDTO>
                 {
                     StatusCode = 200,
                     Message = "Student information retrieved successfully!",
@@ -495,7 +496,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
             }
             catch (Exception ex)
             {
-                return new DataResponse<UpdateStudentForStudentDTO>
+                return new DataResponse<UpdateCompanyForCompanyDTO>
                 {
                     StatusCode = 500,
                     Message = $"An error occurred while updating student information for user id {userId}: {ex.Message}.",

@@ -12,7 +12,7 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
     public interface IEvaluationService
     {
         // University, Company
-        Task<DataResponse<CreateEvaluationForUniversityCompanyDTO>> CreateEvaluationAsync(int? internshipId, CreateEvaluationForUniversityCompanyDTO? info);
+        Task<DataResponse<CreateEvaluationForUniversityCompanyDTO>> CreateEvaluationAsync(int? userId, int? internshipId, CreateEvaluationForUniversityCompanyDTO? info);
 
         // University, Company, Student
         Task<DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>> GetEvaluationDetailByUserId(int? userId);

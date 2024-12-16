@@ -24,7 +24,8 @@ namespace OJTEDU.Domain.Interfaces
         // Nếu fail -> điểm = 0 -> đánh trường lý do từ công ty vào evaluation
 
         // University, Company
-        Task<Evaluation> CreateEvaluationAsync(int? internshipId, Evaluation? info);
+        Task<Evaluation> CreateEvaluationAsync(int? userId, int? internshipId, Evaluation? info);
+        Task<Evaluation> UpdateEvaluationAsync(int? userId, int? internshipId, Evaluation? info);
 
         // University, Company, Student
         Task<Evaluation> GetEvaluationDetailByUserId(int? userId);

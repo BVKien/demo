@@ -13,10 +13,9 @@ namespace OJTEDU.Application.DTOs
         public partial class CreateEvaluationForUniversityCompanyDTO
         {
             public string? CompanyComment { get; set; }
-            public string? DeanComment { get; set; }
             public double? CompanyScore { get; set; }
+            public string? DeanComment { get; set; }
             public double? DeanScore { get; set; }
-            public double? EvaluationScore { get; set; }
         }
 
         // University, Company, Student
