@@ -22,5 +22,9 @@ namespace OJTEDU.Domain.Interfaces
         Task<CompanyProposal> CreateCompanyProposalAsync(int? userId, CompanyProposal? companyProposalInfo, string? fileName);
 
         // University side - missing
+        Task<List<CompanyProposal>> GetAllCompanyProposalsForDoetAsync();
+        Task<bool> IsUserDoetAsync(int userId);
+        Task<CompanyProposal> GetCompanyProposalByIdAsync(int proposalId);
+        Task UpdateCompanyProposalAsync(CompanyProposal proposal);
     }
 }
