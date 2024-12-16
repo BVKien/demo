@@ -82,6 +82,7 @@ namespace OJTEDU.Application.Profiles
                 .ReverseMap();
 
             CreateMap<Company, MentorsInfoListForCompanyDTO>().ReverseMap();
+            CreateMap<Company, UpdateCompanyForCompanyDTO>().ReverseMap();
         }
     }
 }

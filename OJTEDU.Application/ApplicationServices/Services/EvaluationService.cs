@@ -25,7 +25,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
         }
 
         // Univeristy, Company, Student
-        public async Task<DataResponse<CreateEvaluationForUniversityCompanyDTO>> CreateEvaluationAsync(int? internshipId,
+        public async Task<DataResponse<CreateEvaluationForUniversityCompanyDTO>> CreateEvaluationAsync(int? userId, int? internshipId,
             CreateEvaluationForUniversityCompanyDTO? info)
         {
             try
@@ -93,12 +93,12 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 var evaluationInfo = new Evaluation
                 {
                     CompanyComment = info?.CompanyComment,
-                    DeanComment = info?.DeanComment,
                     CompanyScore = info?.CompanyScore,
+                    DeanComment = info?.DeanComment,
                     DeanScore = info?.CompanyScore,
                 };
 
-                var evaluation = await _evaluationRepository.CreateEvaluationAsync(internshipId, evaluationInfo);
+                var evaluation = await _evaluationRepository.CreateEvaluationAsync(userId, internshipId, evaluationInfo);
                 var response = _mapper.Map<CreateEvaluationForUniversityCompanyDTO>(evaluation);
 
                 return new DataResponse<CreateEvaluationForUniversityCompanyDTO>
@@ -108,7 +108,7 @@ namespace OJTEDU.Application.ApplicationServices.Services
                     Data = response
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new DataResponse<CreateEvaluationForUniversityCompanyDTO>
                 {

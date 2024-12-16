@@ -9,6 +9,7 @@ using System.ComponentModel.Design;
 using static OJTEDU.Application.DTOs.CompanyDTO;
 using static OJTEDU.Application.DTOs.InternshipDTO;
 using static OJTEDU.Application.DTOs.JobDTO;
+using static OJTEDU.Application.DTOs.StudentDTO;
 
 namespace OJTEDU.Application.ApplicationServices.Services
 {
@@ -440,6 +441,65 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 {
                     StatusCode = 500,
                     Message = ex.Message,
+                    Data = null
+                };
+            }
+        }
+
+        // information 
+        public async Task<DataResponse<UpdateCompanyForCompanyDTO>> UpdateCompanyByUserIdAsync(int? userId, UpdateCompanyForCompanyDTO? updateInformation)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return new DataResponse<UpdateCompanyForCompanyDTO>
+                    {
+                        StatusCode = 404,
+                        Message = "Not found student.",
+                        Data = null
+                    };
+                }
+
+                // Create updated entities based on input data
+                var updatedUser = new User
+                {
+                    Image = updateInformation.Image
+                };
+
+                var updatedStudent = new Company
+                {
+                    AlternativeEmail = updateInformation.AlternativeEmail,
+                    Phone = updateInformation.Phone,
+                    TaxCode = updateInformation.TaxCode,
+                    Website = updateInformation.Website,
+                    Description = updateInformation.Description,
+                };
+
+                var updatedAddress = new Address
+                {
+                    Detail = updateInformation.Detail,
+                    WardId = updateInformation.WardId,
+                    DistrictId = updateInformation.DistrictId,
+                    ProvinceId = updateInformation.ProvinceId
+                };
+
+                var updateStudentInfo = await _companyRepository.UpdateCompanyByUserIdAsync(userId, updatedUser, updatedStudent, updatedAddress);
+                var response = _mapper.Map<UpdateCompanyForCompanyDTO>(updateStudentInfo);
+
+                return new DataResponse<UpdateCompanyForCompanyDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Student information retrieved successfully!",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<UpdateCompanyForCompanyDTO>
+                {
+                    StatusCode = 500,
+                    Message = $"An error occurred while updating student information for user id {userId}: {ex.Message}.",
                     Data = null
                 };
             }
