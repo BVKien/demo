@@ -6,6 +6,10 @@ using static OJTEDU.Application.DTOs.InternshipDTO;
 using System.Security.Claims;
 using OJTEDU.Application.ApplicationServices.Interfaces;
 using static OJTEDU.Application.DTOs.CompanyDTO;
+using OJTEDU.Application.ApplicationServices.Services;
+using static OJTEDU.Api.Input.StudentControllers.StudentController;
+using static OJTEDU.Application.DTOs.StudentDTO;
+using static OJTEDU.Api.Input.CompanyControllers.CompanyController;
 
 namespace OJTEDU.Api.Controllers.CompanyControllers
 {
@@ -69,6 +73,88 @@ namespace OJTEDU.Api.Controllers.CompanyControllers
                 var errorResponse = new ApiResponse<string>
                 {
                     Message = "An error occurred while get mentors list for company.",
+                    Data = ex.Message
+                };
+
+                return StatusCode(500, errorResponse);
+            }
+        }
+
+        [Authorize(Roles = "Company")]
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateCompany([FromBody] UpdateCompanyInput? updateInformation)
+        {
+            try
+            {
+                int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+                // Transfer from Input to DTO
+                var updateStudentDto = new UpdateCompanyForCompanyDTO
+                {
+                    Image = updateInformation?.Image,
+                    AlternativeEmail = updateInformation?.AlternativeEmail,
+                    Phone = updateInformation?.Phone,
+                    TaxCode = updateInformation?.TaxCode,
+                    Website = updateInformation?.Website,
+                    Description = updateInformation?.Description,
+                    Dob = updateInformation?.Dob,
+                    Gender = updateInformation?.Gender,
+                    Detail = updateInformation?.Detail,
+                    WardId = updateInformation?.WardId,
+                    DistrictId = updateInformation?.DistrictId,
+                    ProvinceId = updateInformation?.ProvinceId
+                };
+
+                var updatedStudentResponse = await _companyService.UpdateCompanyByUserIdAsync(userId, updateStudentDto);
+
+                if (updatedStudentResponse.StatusCode == 404)
+                {
+                    return BadRequest(new ApiResponse<UpdateCompanyForCompanyDTO>
+                    {
+                        Message = updatedStudentResponse.Message,
+                        Data = null
+                    });
+                }
+
+                if (updatedStudentResponse.StatusCode == 400)
+                {
+                    return BadRequest(new ApiResponse<UpdateCompanyForCompanyDTO>
+                    {
+                        Message = updatedStudentResponse.Message,
+                        Data = null
+                    });
+                }
+
+                if (updatedStudentResponse.StatusCode == 500)
+                {
+                    return StatusCode(500, new ApiResponse<UpdateCompanyForCompanyDTO>
+                    {
+                        Message = updatedStudentResponse.Message,
+                        Data = null
+                    });
+                }
+
+                if (updatedStudentResponse.StatusCode == 200)
+                {
+
+                    return Ok(new ApiResponse<UpdateCompanyForCompanyDTO>
+                    {
+                        Message = "Company information updated and retrieved successfully!",
+                        Data = updatedStudentResponse.Data
+                    });
+                }
+
+                return StatusCode(updatedStudentResponse.StatusCode, new ApiResponse<UpdateCompanyForCompanyDTO>
+                {
+                    Message = updatedStudentResponse.Message,
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new ApiResponse<string>
+                {
+                    Message = "An error occurred while updating company information.",
                     Data = ex.Message
                 };
 

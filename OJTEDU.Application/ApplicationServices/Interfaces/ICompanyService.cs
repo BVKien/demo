@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static OJTEDU.Application.DTOs.CompanyDTO;
+using static OJTEDU.Application.DTOs.StudentDTO;
 
 namespace OJTEDU.Application.ApplicationServices.Interfaces
 {
@@ -27,5 +28,6 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         // Company 
         Task<DataResponse<List<MentorListForCompanyDTO>>> GetMentorsListAsync(int? userId);
         Task<DataResponse<List<MentorsInfoListForCompanyDTO>>> GetAllMentorsInfoAsync();
+        Task<DataResponse<UpdateCompanyForCompanyDTO>> UpdateCompanyByUserIdAsync(int? userId, UpdateCompanyForCompanyDTO? updateInformation);
     }
 }

@@ -288,5 +288,78 @@ namespace OJTEDU.Infrastructure.Repositories
                 throw new Exception(ex.Message);
             }
         }
+
+        // profile 
+        public async Task<Company> UpdateCompanyByUserIdAsync(int? userId, User? updateUser, Company? updateInformation, Address? updateAddress)
+        {
+            if (userId == null || updateInformation == null)
+            {
+                throw new ArgumentNullException("User id or update information cannot be null.");
+            }
+
+            try
+            {
+                // Check if user exists
+                var user = await _context.Users
+                    .Include(u => u.Role)
+                    .FirstOrDefaultAsync(u => u.UserId == userId);
+
+                if (user == null)
+                {
+                    throw new KeyNotFoundException("Not found user.");
+                }
+
+                // Find the student by userId
+                var student = await _context.Companies
+                    .Include(c => c.User)
+                    .FirstOrDefaultAsync(s => s.UserId == userId);
+
+                if (student == null)
+                {
+                    throw new KeyNotFoundException("Not found student.");
+                }
+
+                // Update Student information
+                // TBL User
+                user.Image = updateUser.Image ?? user.Image;
+                user.UpdatedAt = DateTime.Now; // Update the timestamp
+
+                // TBL Student
+                student.AlternativeEmail = updateInformation.AlternativeEmail ?? student.AlternativeEmail;
+                student.Phone = updateInformation.Phone ?? student.Phone;
+                student.TaxCode = updateInformation.TaxCode ?? student.TaxCode;
+                student.Website = updateInformation.Website ?? student.Website;
+                student.Description = updateInformation.Description ?? student.Description;
+
+                // TBL Address
+                if (updateAddress != null && student.AddressId.HasValue)
+                {
+                    var address = await _context.Addresses.FirstOrDefaultAsync(a => a.AddressId == student.AddressId.Value);
+
+                    if (address == null)
+                    {
+                        throw new KeyNotFoundException("Not found address.");
+                    }
+
+                    // Update address details
+                    address.Detail = updateAddress.Detail ?? address.Detail;
+                    address.WardId = updateAddress.WardId ?? address.WardId;
+                    address.DistrictId = updateAddress.DistrictId ?? address.DistrictId;
+                    address.ProvinceId = updateAddress.ProvinceId ?? address.ProvinceId;
+                    address.UpdatedAt = DateTime.Now; // Update the timestamp
+                }
+
+                student.UpdatedAt = DateTime.Now; // Update the timestamp
+
+                // Save all changes to the database
+                await _context.SaveChangesAsync();
+
+                return student;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

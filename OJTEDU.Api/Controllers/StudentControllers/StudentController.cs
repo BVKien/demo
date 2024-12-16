@@ -104,7 +104,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
 
                 if (updatedStudentResponse.StatusCode == 404)
                 {
-                    return BadRequest(new ApiResponse<StudentDetailForStudentDTO>
+                    return BadRequest(new ApiResponse<UpdateStudentForStudentDTO>
                     {
                         Message = updatedStudentResponse.Message,
                         Data = null
@@ -113,7 +113,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
 
                 if (updatedStudentResponse.StatusCode == 400)
                 {
-                    return BadRequest(new ApiResponse<StudentDetailForStudentDTO>
+                    return BadRequest(new ApiResponse<UpdateStudentForStudentDTO>
                     {
                         Message = updatedStudentResponse.Message,
                         Data = null
@@ -122,7 +122,7 @@ namespace OJTEDU.Api.Controllers.StudentControllers
 
                 if (updatedStudentResponse.StatusCode == 500)
                 {
-                    return StatusCode(500, new ApiResponse<StudentDetailForStudentDTO>
+                    return StatusCode(500, new ApiResponse<UpdateStudentForStudentDTO>
                     {
                         Message = updatedStudentResponse.Message,
                         Data = null
@@ -131,12 +131,10 @@ namespace OJTEDU.Api.Controllers.StudentControllers
 
                 if (updatedStudentResponse.StatusCode == 200)
                 {
-                    var updatedStudentDetail = await _jobService.GetStudentDetailByUserIdAsync(userId);
-
-                    return Ok(new ApiResponse<StudentDetailForStudentDTO>
+                    return Ok(new ApiResponse<UpdateStudentForStudentDTO>
                     {
                         Message = "Student information updated and retrieved successfully!",
-                        Data = updatedStudentDetail.Data
+                        Data = updatedStudentResponse.Data
                     });
                 }
 
