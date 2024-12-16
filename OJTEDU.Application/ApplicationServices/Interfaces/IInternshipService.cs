@@ -78,6 +78,17 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         bool isDescending,
         int pageNumber,
         int pageSize);
+        Task<DataResponse<PagedResponse<List<InternshipDto>>>> GetAllInternshipsForDeanAsync(
+   int userId,
+   string role,
+   string? searchTerm,
+   DateTime? startDate,
+   DateTime? endDate,
+   string? statusFilter,
+   string? sortBy,
+   bool isDescending,
+   int pageNumber,
+   int pageSize);
         Task<DataResponse<InternshipDetailWithReportsDTO>> GetInternshipDetailsAsync(
         int internshipId,
         string? sortBy,

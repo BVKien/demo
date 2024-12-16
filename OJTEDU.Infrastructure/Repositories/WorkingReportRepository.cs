@@ -222,7 +222,7 @@ namespace OJTEDU.Infrastructure.Repositories
         public async Task<List<string>> GetWeeksForStudentAsync(int studentId, int? year = null)
         {
             var internship = await _context.Internships
-                .Where(i => i.StudentId == studentId)
+                .Where(i => i.IntershipId == studentId)
                 .FirstOrDefaultAsync();
 
             if (internship == null || internship.StartDate == null || internship.EndDate == null)
@@ -233,17 +233,12 @@ namespace OJTEDU.Infrastructure.Repositories
             DateTime startDate = internship.StartDate.Value;
             DateTime endDate = internship.EndDate.Value;
 
-            // Nếu năm không được cung cấp, mặc định là năm hiện tại theo giờ Việt Nam
-            if (!year.HasValue)
-            {
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
-                year = currentVietnamTime.Year;
-            }
+            // Nếu năm không được cung cấp, mặc định là năm hiện tại
+            year ??= DateTime.Now.Year;
 
             List<(DateTime WeekStart, string WeekRange, int Year)> weeks = new List<(DateTime, string, int)>();
 
-            // Tạo danh sách các năm trong khoảng thời gian thực tập
+            // Xác định khoảng năm cần xử lý
             int startYear = startDate.Year;
             int endYear = endDate.Year;
 
@@ -252,6 +247,7 @@ namespace OJTEDU.Infrastructure.Repositories
                 DateTime validStartDate = startDate.Year < y ? new DateTime(y, 1, 1) : startDate;
                 DateTime validEndDate = endDate.Year > y ? new DateTime(y, 12, 31) : endDate;
 
+                // Tính ngày bắt đầu tuần
                 DateTime weekStart = validStartDate.AddDays(-(int)validStartDate.DayOfWeek + (int)DayOfWeek.Monday);
 
                 while (weekStart <= validEndDate)
@@ -259,7 +255,7 @@ namespace OJTEDU.Infrastructure.Repositories
                     DateTime weekEnd = weekStart.AddDays(6);
                     if (weekStart <= validEndDate && weekEnd >= validStartDate)
                     {
-                        // Week overlaps with the internship period
+                        // Tuần nằm trong khoảng thời gian thực tập
                         string weekRange = $"{weekStart:dd/MM} to {weekEnd:dd/MM}";
                         weeks.Add((weekStart, weekRange, y));
                     }
@@ -273,6 +269,7 @@ namespace OJTEDU.Infrastructure.Repositories
             // Trả về danh sách chuỗi tuần (không bao gồm năm)
             return weeks.Select(w => w.WeekRange).ToList();
         }
+
 
 
         public async Task<Student> GetStudentDetailsByIdAsync(int studentId, int userId, string role)
@@ -386,10 +383,9 @@ namespace OJTEDU.Infrastructure.Repositories
             // Xử lý tuần
             if (string.IsNullOrEmpty(week))
             {
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                DateTime currentVietnamTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vietnamTimeZone);
-
-                DateTime currentWeekStart = currentVietnamTime.AddDays(-(int)currentVietnamTime.DayOfWeek + (int)DayOfWeek.Monday);
+                // Nếu không truyền `week`, lấy tuần hiện tại
+                DateTime now = DateTime.Now;
+                DateTime currentWeekStart = now.AddDays(-(int)now.DayOfWeek + (int)DayOfWeek.Monday);
                 DateTime currentWeekEnd = currentWeekStart.AddDays(6).AddDays(1).AddSeconds(-1);
 
                 query = query.Where(w => w.CreatedAt >= currentWeekStart && w.CreatedAt <= currentWeekEnd);
@@ -397,11 +393,13 @@ namespace OJTEDU.Infrastructure.Repositories
             }
             else
             {
+                // Xử lý tuần được truyền
                 var weekDates = week.Split(" to ");
                 if (weekDates.Length == 2)
                 {
-                    DateTime weekStart = DateTime.ParseExact($"{weekDates[0]}/{year}", "dd/MM/yyyy", null);
-                    DateTime weekEnd = DateTime.ParseExact($"{weekDates[1]}/{year}", "dd/MM/yyyy", null).AddDays(1).AddSeconds(-1);
+                    int targetYear = year ?? DateTime.Now.Year; // Nếu không truyền `year`, mặc định là năm hiện tại
+                    DateTime weekStart = DateTime.ParseExact($"{weekDates[0]}/{targetYear}", "dd/MM/yyyy", null);
+                    DateTime weekEnd = DateTime.ParseExact($"{weekDates[1]}/{targetYear}", "dd/MM/yyyy", null).AddDays(1).AddSeconds(-1);
                     query = query.Where(w => w.CreatedAt >= weekStart && w.CreatedAt <= weekEnd);
                     Console.WriteLine($"Query Filter: Week Start: {weekStart}, End: {weekEnd}");
                 }
@@ -426,6 +424,9 @@ namespace OJTEDU.Infrastructure.Repositories
 
             return await query.ToListAsync();
         }
+
+
+
 
         public async Task<Internship> GetInternshipByIdAsync(int internshipId)
         {
@@ -461,35 +462,76 @@ namespace OJTEDU.Infrastructure.Repositories
         }
 
         // Mentor 
-        public async Task<IEnumerable<WorkingReport>> GetAllWorkingReportsByStudentId(int? studentId)
+        public async Task<List<WorkingReport>> GetAllWorkingReportsByStudentIdAsync(
+            int? studentId, string? sortBy = null, bool? isDescending = null, string? week = null, int? year = null)
         {
             try
             {
+                // Kiểm tra sự tồn tại của sinh viên
                 var studentExists = await _context.Students
-                    .Include(s => s.User).ThenInclude(s => s.Role)
+                    .Include(s => s.User).ThenInclude(u => u.Role)
                     .FirstOrDefaultAsync(s => s.StudentId == studentId);
 
                 if (studentExists == null)
                 {
-                    throw new KeyNotFoundException("Not found student.");
+                    throw new KeyNotFoundException("Student not found.");
                 }
 
-                var workingReports = await _context.WorkingReports
-                    .Include(w => w.Mentor)
-                        .ThenInclude(w => w.User)
+                IQueryable<WorkingReport> query = _context.WorkingReports
+                    .Include(w => w.Mentor).ThenInclude(m => m.User)
                     .Include(w => w.Lecturer)
-                    .Include(s => s.Student)
-                        .ThenInclude(w => w.User)
-                    .Where(w => w.StudentId == studentExists.StudentId)
-                    .ToListAsync();
+                    .Include(w => w.Student).ThenInclude(s => s.User)
+                    .Where(w => w.StudentId == studentExists.StudentId);
 
-                return workingReports;
+                // Xử lý tuần và năm
+                DateTime weekStartDate;
+                DateTime weekEndDate;
+                int targetYear = year ?? DateTime.Now.Year; // Nếu không truyền năm, mặc định là năm hiện tại
+
+                if (string.IsNullOrEmpty(week))
+                {
+                    // Nếu không có tuần nào được truyền, lấy tuần hiện tại
+                    DateTime now = DateTime.Now;
+                    weekStartDate = now.AddDays(-(int)now.DayOfWeek + (int)DayOfWeek.Monday);
+                    weekEndDate = weekStartDate.AddDays(6).AddDays(1).AddSeconds(-1);
+                }
+                else
+                {
+                    // Xử lý tuần được truyền vào
+                    var weekDates = week.Split(" to ");
+                    if (weekDates.Length == 2)
+                    {
+                        weekStartDate = DateTime.ParseExact($"{weekDates[0]}/{targetYear}", "dd/MM/yyyy", null);
+                        weekEndDate = DateTime.ParseExact($"{weekDates[1]}/{targetYear}", "dd/MM/yyyy", null).AddDays(1).AddSeconds(-1);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Invalid week format. Expected format: 'dd/MM to dd/MM'.");
+                    }
+                }
+
+                // Lọc báo cáo theo tuần
+                query = query.Where(w => w.CreatedAt >= weekStartDate && w.CreatedAt <= weekEndDate);
+
+                // Sắp xếp kết quả
+                query = sortBy?.ToLower() switch
+                {
+                    "updatedat" => isDescending.GetValueOrDefault()
+                        ? query.OrderByDescending(w => w.UpdatedAt)
+                        : query.OrderBy(w => w.UpdatedAt),
+                    "createdat" or _ => isDescending.GetValueOrDefault()
+                        ? query.OrderByDescending(w => w.CreatedAt)
+                        : query.OrderBy(w => w.CreatedAt),
+                };
+
+                return await query.ToListAsync();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception($"Error retrieving working reports: {ex.Message}");
             }
         }
+
 
         public async Task<WorkingReport> CreateMentorFeedbackAsync(int? workingReportId, WorkingReport? info)
         {

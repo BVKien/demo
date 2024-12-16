@@ -23,56 +23,75 @@ namespace OJTEDU.Api.Controllers.MentorControllers
 
         [Authorize(Roles = "Mentor")]
         [HttpGet("list/{studentId}")]
-        public async Task<IActionResult> GetAllInternshipWorkingReportsList(int? studentId)
+        public async Task<IActionResult> GetAllWorkingReportsByStudentIdAsync(
+    int studentId,
+    string? sortBy = null,
+    bool? isDescending = null,
+    string? week = null,
+    int? year = null)
         {
             try
             {
-                var dataResponse = await _workingReportService.GetAllWorkingReportsByStudentId(studentId);
+                // Gọi service để lấy danh sách báo cáo
+                var response = await _workingReportService.GetAllWorkingReportsByStudentIdAsync(studentId, sortBy, isDescending, week, year);
 
-                if (dataResponse.StatusCode == 404)
+                // Kiểm tra mã trạng thái từ service và trả về phản hồi phù hợp
+                if (response.StatusCode != 200)
                 {
-                    return BadRequest(new ApiResponse<List<WorkingReportListForMentorDTO>>
+                    return StatusCode(response.StatusCode, new ApiResponse<object>
                     {
-                        Message = dataResponse.Message,
-                        Data = null
+                        Data = null,
+                        Message = response.Message
                     });
                 }
 
-                if (dataResponse.StatusCode == 400)
+                // Trả về phản hồi thành công với DTO đã map
+                return Ok(new ApiResponse<WorkingReportResponseDTO>
                 {
-                    return BadRequest(new ApiResponse<List<WorkingReportListForMentorDTO>>
-                    {
-                        Message = dataResponse.Message,
-                        Data = null
-                    });
-                }
-
-                if (dataResponse.StatusCode == 500)
-                {
-                    return StatusCode(500, new ApiResponse<List<WorkingReportListForMentorDTO>>
-                    {
-                        Message = dataResponse.Message,
-                        Data = null
-                    });
-                }
-
-                var apiResponse = new ApiResponse<List<WorkingReportListForMentorDTO>>
-                {
-                    Message = dataResponse.Message,
-                    Data = dataResponse.Data
-                };
-
-                return Ok(apiResponse);
+                    Data = response.Data,
+                    Message = response.Message
+                });
             }
             catch (Exception ex)
             {
-                var errorResponse = new ApiResponse<string>
+                // Xử lý lỗi hệ thống và trả về phản hồi 500
+                return StatusCode(500, new ApiResponse<object>
                 {
-                    Message = "An error occurred while get working report list for internship.",
-                    Data = ex.Message
-                };
+                    Data = null,
+                    Message = $"Internal server error: {ex.Message}"
+                });
+            }
+        }
 
-                return StatusCode(500, errorResponse);
+        [HttpGet("{internshipId}/weeks")]
+        public async Task<IActionResult> GetWeeksForStudentAsync(int internshipId, [FromQuery] int? year)
+        {
+            try
+            {
+                var response = await _workingReportService.GetWeeksForStudentAsync(internshipId, year);
+
+                if (response.StatusCode != 200)
+                {
+                    return StatusCode(response.StatusCode, new ApiResponse<object>
+                    {
+                        Data = null,
+                        Message = response.Message
+                    });
+                }
+
+                return Ok(new ApiResponse<List<string>>
+                {
+                    Data = response.Data,
+                    Message = response.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Data = null,
+                    Message = $"Internal server error: {ex.Message}"
+                });
             }
         }
 

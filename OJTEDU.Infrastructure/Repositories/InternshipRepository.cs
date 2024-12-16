@@ -838,7 +838,7 @@ bool isDescending)
                     i.Student.User.Name.ToLower().Contains(searchTerm) ||
                     i.Company.User.Name.ToLower().Contains(searchTerm) ||
                     i.Job.Title.ToLower().Contains(searchTerm) ||
-                    i.Student.Lecturer.Name.ToLower().Contains(searchTerm) ||
+                    i.Lecturer.Name.ToLower().Contains(searchTerm) ||
                     i.Semester.Name.ToLower().Contains(searchTerm) ||
                     i.Code.ToLower().Contains(searchTerm));
             }
@@ -874,7 +874,104 @@ bool isDescending)
                     query = isDescending ? query.OrderByDescending(i => i.Job.Title) : query.OrderBy(i => i.Job.Title);
                     break;
                 case "lecturername":
-                    query = isDescending ? query.OrderByDescending(i => i.Student.Lecturer.Name) : query.OrderBy(i => i.Student.Lecturer.Name);
+                    query = isDescending ? query.OrderByDescending(i => i.Lecturer.Name) : query.OrderBy(i => i.Lecturer.Name);
+                    break;
+                case "semestername":
+                    query = isDescending ? query.OrderByDescending(i => i.Semester.Name) : query.OrderBy(i => i.Semester.Name);
+                    break;
+                case "code":
+                    query = isDescending ? query.OrderByDescending(i => i.Code) : query.OrderBy(i => i.Code);
+                    break;
+                case "startdate":
+                    query = isDescending ? query.OrderByDescending(i => i.StartDate) : query.OrderBy(i => i.StartDate);
+                    break;
+                case "enddate":
+                    query = isDescending ? query.OrderByDescending(i => i.EndDate) : query.OrderBy(i => i.EndDate);
+                    break;
+                default:
+                    query = query.OrderBy(i => i.Student.User.Name);
+                    break;
+            }
+
+            // Execute the query and return the list
+            return await query.ToListAsync();
+        }
+
+        public async Task<List<Internship>> GetAllInternshipsForDeanAsync(
+int userId,
+string role,
+string? searchTerm,
+DateTime? startDate,
+DateTime? endDate,
+string? statusFilter,
+string? sortBy,
+bool isDescending)
+        {
+            IQueryable<Internship> query = _context.Internships
+                .Include(i => i.Student)
+                    .ThenInclude(s => s.User)
+                .Include(i => i.Lecturer)
+                .Include(i => i.Company)
+                   .ThenInclude(c => c.User)
+                .Include(i => i.Job)
+                .Include(i => i.Semester)
+                .Include(i => i.Major)
+                .Where(i => i.Student.User.Status != "Deleted" && i.Company.User.Status == "Active" && i.Job.Status == "1" && i.Major.Status == "Active" && i.Semester.Status == "Active");
+
+            if (role == "Dean")
+            {
+                query = query.Where(i => i.LecturerId == userId);
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("Role not authorized to view internships.");
+            }
+
+            // Search across multiple fields (excluding Evaluation Name)
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(i =>
+                    i.Student.User.Name.ToLower().Contains(searchTerm) ||
+                    i.Company.User.Name.ToLower().Contains(searchTerm) ||
+                    i.Job.Title.ToLower().Contains(searchTerm) ||
+                    i.Lecturer.Name.ToLower().Contains(searchTerm) ||
+                    i.Semester.Name.ToLower().Contains(searchTerm) ||
+                    i.Code.ToLower().Contains(searchTerm));
+            }
+
+            // Filter by Start Date and End Date
+            if (startDate.HasValue)
+            {
+                query = query.Where(i => i.StartDate >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(i => i.EndDate <= endDate.Value);
+            }
+
+            // Filter by Status
+            if (!string.IsNullOrWhiteSpace(statusFilter))
+            {
+                statusFilter = statusFilter.ToLower();
+                query = query.Where(i => i.Status.ToLower().Contains(statusFilter));
+            }
+
+            // Sorting
+            switch (sortBy?.ToLower())
+            {
+                case "studentname":
+                    query = isDescending ? query.OrderByDescending(i => i.Student.User.Name) : query.OrderBy(i => i.Student.User.Name);
+                    break;
+                case "companyname":
+                    query = isDescending ? query.OrderByDescending(i => i.Company.User.Name) : query.OrderBy(i => i.Company.User.Name);
+                    break;
+                case "jobname":
+                    query = isDescending ? query.OrderByDescending(i => i.Job.Title) : query.OrderBy(i => i.Job.Title);
+                    break;
+                case "lecturername":
+                    query = isDescending ? query.OrderByDescending(i => i.Lecturer.Name) : query.OrderBy(i => i.Lecturer.Name);
                     break;
                 case "semestername":
                     query = isDescending ? query.OrderByDescending(i => i.Semester.Name) : query.OrderBy(i => i.Semester.Name);
@@ -933,9 +1030,12 @@ bool isDescending)
         public async Task<List<Internship>> GetInternshipsByIdsAsync(List<int> internshipIds)
         {
             return await _context.Internships
+                .Include(i => i.Student) // Bao gồm thông tin Student
+                    .ThenInclude(s => s.User) // Bao gồm User của Student
                 .Where(i => internshipIds.Contains(i.IntershipId))
                 .ToListAsync();
         }
+
 
 
         public async Task UpdateInternshipsAsync(List<Internship> internships)
