@@ -75,5 +75,62 @@ namespace OJTEDU.Api.Controllers.StudentControllers
                 return StatusCode(500, errorResponse);
             }
         }
+
+        [Authorize(Roles = "Student")]
+        [HttpPost("get-score")]
+        public async Task<IActionResult> GetEvaluationScoreAsync()
+        {
+            try
+            {
+                int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+                var response = await _evaluationService.GetEvaluationScoreAsync(userId);
+
+                if (response.StatusCode == 404)
+                {
+                    return BadRequest(new ApiResponse<GetEvaluationStudentDTO>
+                    {
+                        Message = response.Message,
+                        Data = null
+                    });
+                }
+
+                if (response.StatusCode == 400)
+                {
+                    return BadRequest(new ApiResponse<GetEvaluationStudentDTO>
+                    {
+                        Message = response.Message,
+                        Data = null
+                    });
+                }
+
+                if (response.StatusCode == 500)
+                {
+                    return StatusCode(500, new ApiResponse<GetEvaluationStudentDTO>
+                    {
+                        Message = response.Message,
+                        Data = null
+                    });
+                }
+
+                var apiResponse = new ApiResponse<GetEvaluationStudentDTO>
+                {
+                    Message = response.Message,
+                    Data = response.Data
+                };
+
+                return Ok(apiResponse);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new ApiResponse<string>
+                {
+                    Message = "An error occurred while get evaluation information for student.",
+                    Data = ex.Message
+                };
+
+                return StatusCode(500, errorResponse);
+            }
+        }
     }
 }

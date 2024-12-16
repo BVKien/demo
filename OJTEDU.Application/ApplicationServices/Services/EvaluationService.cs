@@ -188,5 +188,40 @@ namespace OJTEDU.Application.ApplicationServices.Services
                 };
             }
         }
+
+        public async Task<DataResponse<GetEvaluationStudentDTO>> GetEvaluationScoreAsync(int? userId)
+        {
+            try
+            {
+                if (userId == null)
+                {
+                    return new DataResponse<GetEvaluationStudentDTO>
+                    {
+                        StatusCode = 400,
+                        Message = "Not found student.",
+                        Data = null
+                    };
+                }
+
+                var evaluation = await _evaluationRepository.GetEvaluationScoreAsync(userId);
+                var response = _mapper.Map<GetEvaluationStudentDTO>(evaluation);
+
+                return new DataResponse<GetEvaluationStudentDTO>
+                {
+                    StatusCode = 200,
+                    Message = "Evaluation for student retrieved successfully.",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResponse<GetEvaluationStudentDTO>
+                {
+                    StatusCode = 500,
+                    Message = "Error retrieving evaluation for student.",
+                    Data = null
+                };
+            }
+        }
     }
 }

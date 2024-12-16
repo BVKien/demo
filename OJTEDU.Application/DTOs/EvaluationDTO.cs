@@ -35,5 +35,22 @@ namespace OJTEDU.Application.DTOs
             public DateTime? UpdatedAt { get; set; }
             public DateTime? DeletedAt { get; set; }
         }
+
+        public partial class GetEvaluationStudentDTO
+        {
+            public int EvaluationId { get; set; }
+            public int? MentorId { get; set; }
+            public int? LecturerId { get; set; }
+            public int? StudentId { get; set; }
+            public string? CompanyComment { get; set; }
+            public string? DeanComment { get; set; }
+            public double? CompanyScore { get; set; }
+            public double? DeanScore { get; set; }
+            public double? EvaluationScore { get; set; }
+            public string? Status { get; set; }
+            public DateTime? CreatedAt { get; set; }
+            public DateTime? UpdatedAt { get; set; }
+            public DateTime? DeletedAt { get; set; }
+        }
     }
 }

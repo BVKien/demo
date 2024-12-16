@@ -30,5 +30,6 @@ namespace OJTEDU.Domain.Interfaces
         // University, Company, Student
         Task<Evaluation> GetEvaluationDetailByUserId(int? userId);
         Task<Evaluation> GetEvaluationDetailByInternshipId(int? internshipId);
+        Task<Evaluation> GetEvaluationScoreAsync(int? userId);
     }
 }

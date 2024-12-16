@@ -16,6 +16,7 @@ namespace OJTEDU.Application.Profiles
             // University, Company, Student
             CreateMap<Evaluation, CreateEvaluationForUniversityCompanyDTO>().ReverseMap();
             CreateMap<Evaluation, GetEvaluationDetailForUniversityCompanyStudentDTO>().ReverseMap();
+            CreateMap<Evaluation, GetEvaluationStudentDTO>().ReverseMap();
         }
     }
 }

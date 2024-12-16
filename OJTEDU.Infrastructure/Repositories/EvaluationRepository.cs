@@ -158,55 +158,75 @@ namespace OJTEDU.Infrastructure.Repositories
             }
         }
 
-        public async Task<Evaluation> GetEvaluationScoreAsync(int? userId, int? internshipId, Evaluation? info)
+        public async Task<Evaluation> GetEvaluationScoreAsync(int? userId)
         {
             try
             {
+                // Validate User
                 var user = await _context.Users.Include(s => s.Role)
                     .FirstOrDefaultAsync(s => s.UserId == userId);
 
                 if (user == null)
                 {
-                    throw new Exception("Not found user.");
+                    throw new Exception("User not found.");
                 }
 
-                // Internship 
-                var internship = await _context.Internships.FirstOrDefaultAsync(i => i.IntershipId == internshipId);
-
+                // Validate Internship
+                var internship = await _context.Internships.FirstOrDefaultAsync(i => i.Student.UserId == userId);
                 if (internship == null)
                 {
-                    throw new Exception("Not found internship.");
+                    throw new Exception("Internship not found.");
                 }
 
-                // Check evaluation exist
-                var evaluationExist = await _context.Evaluations.FirstOrDefaultAsync(e => e.StudentId == internship.StudentId);
+                // Check for Existing Evaluation
+                var evaluationExist = await _context.Evaluations
+                    .FirstOrDefaultAsync(e => e.StudentId == internship.StudentId);
 
-                if (evaluationExist == null)
+                // Retrieve Working Reports
+                var workingReports = await _context.WorkingReports
+                    .Where(wk => wk.StudentId == internship.StudentId)
+                    .ToListAsync();
+
+                if (workingReports == null || !workingReports.Any())
                 {
-                    throw new Exception("Not found working report list for this evaluation.");
+                    throw new Exception("No working reports found for this internship.");
                 }
 
-                if (user.Role.Name == "Mentor")
+                // Define Evaluation Object
+                Evaluation evaluation;
+
+                // Case: Internship status = "pass" (status == "2")
+                if (internship.Status == "2")
                 {
-                    // Update 
-                    evaluationExist.CompanyComment = info.CompanyComment;
-                    evaluationExist.CompanyScore = info.CompanyScore;
+                    // Calculate Process Scores (70%)
+                    var mentorProcessScore = (workingReports.Sum(wk => wk.MentorScore ?? 0)) / workingReports.Count();
+                    var uniProcessScore = (workingReports.Sum(wk => wk.LecturerScore ?? 0)) / workingReports.Count();
+                    var processScore = (((mentorProcessScore + uniProcessScore) / 2) * 70) / 100;
+
+                    // Final Score (30%)
+                    var finalScore = (((evaluationExist.DeanScore + evaluationExist.CompanyScore) / 2) * 30) / 100;
+
+                    // Total Evaluation Score
+                    var evaluationScore = processScore + finalScore;
+
+                    evaluationExist.EvaluationScore = evaluationScore;
+                    evaluationExist.UpdatedAt = DateTime.Now;
+                }
+                // Case: Internship status = "fail" (status == "0")
+                if (internship.Status == "0")
+                {
+                    evaluationExist.EvaluationScore = 0;
                     evaluationExist.UpdatedAt = DateTime.Now;
                 }
 
-                if (user.Role.Name == "Dean" || user.Role.Name == "Lecturer")
-                {
-                    // Update 
-                    evaluationExist.DeanComment = info.DeanComment;
-                    evaluationExist.DeanScore = info.DeanScore;
-                    evaluationExist.UpdatedAt = DateTime.Now;
-                }
+                // Save Evaluation to Database
+                await _context.SaveChangesAsync();
 
-                return null;
+                return evaluationExist;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception($"Error creating evaluation: {ex.Message}");
             }
         }
 

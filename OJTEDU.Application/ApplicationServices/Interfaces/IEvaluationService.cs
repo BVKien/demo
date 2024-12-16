@@ -17,5 +17,6 @@ namespace OJTEDU.Application.ApplicationServices.Interfaces
         // University, Company, Student
         Task<DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>> GetEvaluationDetailByUserId(int? userId);
         Task<DataResponse<GetEvaluationDetailForUniversityCompanyStudentDTO>> GetEvaluationDetailByInternshipId(int? internshipId);
+        Task<DataResponse<GetEvaluationStudentDTO>> GetEvaluationScoreAsync(int? userId);
     }
 }
