@@ -14,10 +14,16 @@ namespace OJTEDU.Api.Controllers.AdminControllers
     public class UserController : ControllerBase
     {
         private readonly IJobService _jobService;
+        private IUserService @object;
 
         public UserController(IJobService jobService)
         {
             _jobService = jobService;
+        }
+
+        public UserController(IUserService @object)
+        {
+            this.@object = @object;
         }
 
         [HttpGet("list")]
